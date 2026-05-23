@@ -98,6 +98,7 @@
 .cls-sel{font-size:9px;padding:1px 4px;border:1px solid var(--bd);border-radius:3px;background:var(--bg);color:var(--tx);font-family:inherit;cursor:pointer;margin-left:4px}
 .footer{text-align:center;padding:1rem 0 .5rem;font-size:9px;color:var(--tx3)}
 @media(max-width:700px){.C{padding:.6rem}.cg{gap:2px}.cd{padding:3px;min-height:62px}.G{grid-template-columns:1fr 1fr}.rg{grid-template-columns:1fr 1fr}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -118,6 +119,13 @@
 <div class="footer">Guardar Dinheiro © 2026</div>
 </div>
 <script>
+// ===== SUPABASE =====
+const SB_URL='https://qmvypslzwxxltqeidpoq.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtdnlwc2x6d3h4bHRxZWlkcG9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1MDY1ODAsImV4cCI6MjA5NTA4MjU4MH0.LpTPOTTIXN-QSCEgUVC4xmZvBteuSTYmMYltTptCKVU';
+const SB_HDR={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+async function sbGet(key){try{const r=await fetch(SB_URL+'/rest/v1/dashboard_state?key=eq.'+encodeURIComponent(key)+'&select=value',{headers:SB_HDR});if(!r.ok)return null;const d=await r.json();return d.length?d[0].value:null}catch(e){console.error('sbGet error',e);return null}}
+async function sbSet(key,value){try{const r=await fetch(SB_URL+'/rest/v1/dashboard_state',{method:'POST',headers:{...SB_HDR,'Prefer':'resolution=merge-duplicates'},body:JSON.stringify({key,value,updated_at:new Date().toISOString()})});if(!r.ok)throw new Error(r.status)}catch(e){console.error('sbSet error',e);throw e}}
+// ====================
 const MO=[
 {n:'Maio',s:'Mai',y:2026,mo:4,ph:'Preparação',pd:'Mapear operação e preparar base',pc:'#888780',pi:'ti-settings',tgt:{acessos:15000,leads:100,reels:25,artigos:8,pins:20,melhorias:5},days:[
 {d:1,tg:'planejamento',tl:'Planejamento',tt:'Planejamento estratégico',tk:['Definir posicionamento da marca','Mapear pilares editoriais','Escolher tom de voz','Revisar metas de 6 meses']},
@@ -197,9 +205,9 @@ const SITES=['gd','blog','cora'];
 const CATS=['reels','artigos','pins','melhorias'];
 const CATL={reels:'Reels',artigos:'Artigos',pins:'Pins',melhorias:'Melhorias'};
 const CATC={reels:'var(--red)',artigos:'var(--blu)',pins:'var(--cor)',melhorias:'var(--pur)'};
-function ld(){try{const s=localStorage.getItem('gd_v4');if(s){const d=JSON.parse(s);cT=d.t||{};ac=d.a||{};tE=d.e||{}}}catch(e){}}
-function sv(){try{localStorage.setItem('gd_v4',JSON.stringify({t:cT,a:ac,e:tE}))}catch(e){}}
-ld();
+async function ld(){try{const d=await sbGet('gd_v4');if(d){cT=d.t||{};ac=d.a||{};tE=d.e||{}}else{// migrar dados existentes do localStorage, se houver
+const s=localStorage.getItem('gd_v4');if(s){try{const lsd=JSON.parse(s);cT=lsd.t||{};ac=lsd.a||{};tE=lsd.e||{};await sbSet('gd_v4',{t:cT,a:ac,e:tE});localStorage.removeItem('gd_v4')}catch(e2){}}}}catch(e){console.error('ld error',e)}}
+function sv(){const el=document.querySelector('.sb');if(el)el.innerHTML='<i class="ti ti-loader-2" style="font-size:10px;display:inline-block;animation:spin .8s linear infinite"></i> Salvando...';sbSet('gd_v4',{t:cT,a:ac,e:tE}).then(()=>{const el2=document.querySelector('.sb');if(el2)el2.innerHTML='<i class="ti ti-device-floppy" style="font-size:10px"></i> Salvo'}).catch(()=>{const el2=document.querySelector('.sb');if(el2)el2.innerHTML='<i class="ti ti-alert-circle" style="font-size:10px;color:var(--red)"></i> Erro ao salvar'})}
 // Helpers
 function K(m,d,i){return m+'-'+d+'-'+i}
 function EK(m,d){return m+'-'+d}
@@ -390,7 +398,9 @@ function rE(a){
 // ===== EXPORT/IMPORT =====
 function xprt(){const d=JSON.stringify({t:cT,a:ac,e:tE},null,2);const b=new Blob([d],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='gd_backup_'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u)}
 function imprt(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=function(ev){try{const d=JSON.parse(ev.target.result);if(d.t)cT=d.t;if(d.a)ac=d.a;if(d.e)tE=d.e;sv();R();alert('Importado!')}catch(er){alert('Arquivo inválido')}};r.readAsText(f);e.target.value=''}
-R();
+// Inicialização assíncrona — carrega do Supabase antes de renderizar
+document.getElementById('app').innerHTML='<div style="text-align:center;padding:3rem;color:var(--tx2);font-size:12px"><i class="ti ti-loader-2" style="font-size:22px;display:block;margin-bottom:8px;animation:spin .8s linear infinite"></i>Carregando dados do Supabase...</div>';
+ld().then(()=>R());
 </script>
 </body>
 </html>
