@@ -5,15 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Guardar Dinheiro — Dashboard & Projetos Ecossistema</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#FAFAF8;--bg2:#F2F1ED;--bg3:#fff;--tx:#1a1a1a;--tx2:#6b6b6b;--tx3:#999;--bd:rgba(0,0,0,.1);--bd2:rgba(0,0,0,.18);--pur:#534AB7;--grn:#1D9E75;--cor:#D85A30;--blu:#378ADD;--amb:#BA7517;--red:#E24B4A;--teal:#0F6E56}
 @media(prefers-color-scheme:dark){:root{--bg:#141414;--bg2:#1e1e1e;--bg3:#232323;--tx:#e8e8e8;--tx2:#999;--tx3:#666;--bd:rgba(255,255,255,.08);--bd2:rgba(255,255,255,.15)}}
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:'DM Sans',-apple-system,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:15px}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:15px}
 .C{max-width:1060px;margin:0 auto;padding:1.25rem}
 .H{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem}
 .HL{display:flex;align-items:center;gap:14px}.logo{height:52px}
-.HL h1{font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:500}.HL p{font-size:12px;color:var(--tx2);margin-top:1px}
+.HL h1{font-family:Arial,sans-serif;font-size:21px;font-weight:700}.HL p{font-size:12px;color:var(--tx2);margin-top:1px}
 .HR{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .sb{font-size:10px;color:var(--tx3);background:var(--bg2);padding:4px 9px;border-radius:5px;display:flex;align-items:center;gap:3px}
 .hb{font-size:10px;padding:4px 9px;border-radius:5px;border:1px solid var(--bd);background:var(--bg2);color:var(--tx2);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:3px}.hb:hover{border-color:var(--bd2)}
@@ -30,10 +29,10 @@
 .D .Su{font-size:11px;color:var(--tx3)}
 .B{height:4px;background:var(--bd);border-radius:2px;margin-top:6px;overflow:hidden}.BF{height:100%;border-radius:2px;transition:width .4s}
 .Bp{font-size:9px;color:var(--tx2);margin-top:3px;text-align:right}
-.vd{font-size:10px;font-weight:600;margin-left:4px;display:inline-flex;align-items:center;gap:3px;padding:1px 5px;border-radius:4px}
-.vu{color:var(--grn);background:rgba(29,158,117,.1)}.vw{color:var(--red);background:rgba(226,75,74,.1)}.vm{color:var(--amb);background:rgba(186,117,23,.1)}
-.saf{width:6px;height:6px;border-radius:50%;flex-shrink:0;display:inline-block}
-.vu .saf{background:var(--grn)}.vw .saf{background:var(--red)}.vm .saf{background:var(--amb)}
+.vd{font-size:10px;font-weight:700;margin-left:4px;display:inline-flex;align-items:center}
+.vu{color:var(--grn)}.vw{color:var(--red)}.vm{color:var(--amb)}
+.ptabs{display:flex;gap:5px;margin-bottom:.9rem;flex-wrap:wrap}
+.ptb{padding:5px 16px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--bg3);color:var(--tx2);transition:.15s;font-family:inherit}.ptb:hover{border-color:var(--pur);color:var(--pur)}.ptb.a{background:var(--pur);color:#fff;border-color:var(--pur)}
 .ant-edit{cursor:pointer;font-size:9px;color:var(--tx3)}.ant-edit:hover{color:var(--pur)}
 .rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px}
 .rc{background:var(--bg2);border-radius:8px;padding:9px 11px}
@@ -202,7 +201,7 @@ const SAZ=[
 {m:'Novembro',it:[{g:'comercial',t:'Black Friday (27/11)',d:'Guias de compra, comparativos, alertas preços fake. MÁXIMO receita.'},{g:'comercial',t:'Cyber Monday (30/11)',d:'Extensão BF para eletrônicos e serviços.'},{g:'financeiro',t:'13º salário (1ª parcela)',d:'Como usar o 13º, quitar dívidas vs investir.'},{g:'viagem',t:'Réveillon antecipado',d:'Destinos baratos, reservas antecipadas.'}]}
 ];
 // ===== STATE =====
-let cM=0,selD=null,aT='dash',cT={},ac={},tE={};
+let cM=0,selD=null,aT='dash',cP='gd',cT={},ac={},tE={};
 const SITES=['gd','blog','cora'];
 const CATS=['reels','artigos','pins','melhorias'];
 const CATL={reels:'Reels',artigos:'Artigos',pins:'Pins',melhorias:'Melhorias'};
@@ -272,140 +271,215 @@ function mN(){return`<div class="mn">${MO.map((m,i)=>`<button class="mb ${i===cM
 // ===== DASHBOARD =====
 function rD(a){
   const m=MO[cM],pv=cM>0?cM-1:null,pvEff=pv!==null?pv:-1,dE=dElapsed(m.y,m.mo),tD=dIM(m.y,m.mo);
-  const chs=['organic_search','direct','unassigned','referral','social'];
-  const chL={organic_search:'Organic Search',direct:'Direct',unassigned:'Unassigned',referral:'Referral',social:'Social'};
-  const bK=['adsense','uol','indoleads','dgmax','cofrinho'];
-  const bL={adsense:'AdSense',uol:'UOL Afiliados',indoleads:'Indoleads',dgmax:'DGMax',cofrinho:'Cofrinho'};
-  const bC={adsense:'var(--blu)',uol:'var(--pur)',indoleads:'var(--cor)',dgmax:'var(--grn)',cofrinho:'var(--amb)'};
-  let h=mN();
-  // dlP: compara PROJEÇÃO do mês atual vs valor COMPLETO do mês anterior
-  function dlP(cur,prevFull){
+  // --- Semáforo helpers ---
+  function dlP(cur,prevFull){ // COUNT metrics: projeção vs mês anterior
     if(!prevFull||!cur)return'';
-    const pj=proj(cur,dE,tD);
-    const d=pj-prevFull;
-    const pct=Math.round(Math.abs(d)/Math.abs(prevFull)*100);
-    if(d>0)return`<span class="vd vu" title="Proj. vs mês ant.: +${pct}%"><span class="saf"></span>▲${pct}%</span>`;
-    if(d<0)return`<span class="vd vw" title="Proj. vs mês ant.: -${pct}%"><span class="saf"></span>▼${pct}%</span>`;
-    return`<span class="vd vm" title="Proj. vs mês ant.: estável"><span class="saf"></span>→0%</span>`;
+    const pj=proj(cur,dE,tD),d=pj-prevFull,pct=Math.round(Math.abs(d)/Math.abs(prevFull)*100);
+    if(d>0)return`<span class="vd vu" title="Proj. +${pct}% vs mês ant.">▲${pct}%</span>`;
+    if(d<0)return`<span class="vd vw" title="Proj. -${pct}% vs mês ant.">▼${pct}%</span>`;
+    return`<span class="vd vm">→0%</span>`;
   }
-  // KPI card
+  function dlPA(cur,prevFull){ // RATE/% metrics: comparação direta (sem projeção)
+    if(!prevFull||!cur)return'';
+    const d=cur-prevFull,pct=Math.round(Math.abs(d)/Math.abs(prevFull)*100);
+    if(d>0)return`<span class="vd vu">▲${pct}%</span>`;
+    if(d<0)return`<span class="vd vw">▼${pct}%</span>`;
+    return`<span class="vd vm">→0%</span>`;
+  }
+  function dlPPos(cur,prevFull){ // POSITION metrics: menor = melhor
+    if(!prevFull||!cur)return'';
+    const d=cur-prevFull,pct=Math.round(Math.abs(d)/Math.abs(prevFull)*100);
+    if(d<0)return`<span class="vd vu" title="Posição melhorou">▲${pct}%</span>`;
+    if(d>0)return`<span class="vd vw" title="Posição piorou">▼${pct}%</span>`;
+    return`<span class="vd vm">→0%</span>`;
+  }
+  // --- KPI cards ---
   function kpi(l,k,v,t,prevFull,isCur){
-    const p=pC(v,t);const pj=proj(v,dE,tD);
-    const clr=t?pCC(p):'var(--tx)';
+    const p=pC(v,t),pj=proj(v,dE,tD),clr=t?pCC(p):'var(--tx)';
     const antBtn=`<span class="E ant-edit" onclick="sM('${l} — mês anterior',${prevFull},v=>{sA(${pvEff},'${k}',v)})">Ant: ${prevFull?fN(prevFull):'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span>`;
     return`<div class="D"><div class="L">${l} <span class="E" onclick="sM('${l}',${v},v=>{sA(${cM},'${k}',v)})"><i class="ti ti-edit"></i></span></div><div class="V"><span class="R" style="color:${clr}">${isCur?fR(v):fN(v)}</span>${t?'<span class="Su">/ '+fN(t)+'</span>':''}${dlP(v,prevFull)}</div>${t?'<div class="B"><div class="BF" style="width:'+p+'%;background:'+pCC(p)+'"></div></div>':''}${!isCur?'<div class="Bp">Proj: '+fN(pj)+' · '+antBtn+'</div>':''}</div>`;
   }
-  // KPI card simples (sem meta, com projeção e comparação)
   function kpiS(l,k,v,prevFull){
     const pj=proj(v,dE,tD);
     const antBtn=`<span class="E ant-edit" onclick="sM('${l} — mês anterior',${prevFull},v=>{sA(${pvEff},'${k}',v)})">Ant: ${prevFull?fN(prevFull):'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span>`;
     return`<div class="D"><div class="L">${l} <span class="E" onclick="sM('${l}',${v},v=>{sA(${cM},'${k}',v)})"><i class="ti ti-edit"></i></span></div><div class="V"><span class="R">${fN(v)}</span>${dlP(v,prevFull)}</div><div class="Bp">Proj: ${fN(pj)} · ${antBtn}</div></div>`;
   }
-  // --- KPIs Guardar Dinheiro ---
-  const aR=gA(cM,'acessos'),aP=gA(pvEff,'acessos');
-  const eR=gA(cM,'ebitda'),eP=gA(pvEff,'ebitda');
-  const lR=gA(cM,'leads'),lP=gA(pvEff,'leads');
-  const enR=gA(cM,'engajamento'),enP=gA(pvEff,'engajamento');
-  const epR=gA(cM,'eng_pct'),epP=gA(pvEff,'eng_pct');
-  h+=`<div class="S"><div class="ST"><i class="ti ti-chart-bar" style="font-size:13px"></i> KPIs — Guardar Dinheiro <span style="font-weight:400;text-transform:none;margin-left:4px;font-size:10px">${dE}/${tD} dias</span></div><div class="G">`;
-  h+=kpi('Sessões (GA)','acessos',aR,m.tgt.acessos,aP,false);
-  h+=kpi('EBITDA','ebitda',eR,0,eP,true);
-  h+=kpi('Leads','leads',lR,m.tgt.leads,lP,false);
-  h+=kpiS('Eng. orgânico','engajamento',enR,enP);
-  h+=`<div class="D"><div class="L">% Engajamento <span class="E" onclick="sM('% Engajamento',${epR},v=>{sA(${cM},'eng_pct',v)})"><i class="ti ti-edit"></i></span></div><div class="V"><span class="R">${epR.toFixed(1)}%</span>${dlP(epR,epP)}</div><div class="Bp"><span class="E ant-edit" onclick="sM('% Engajamento — mês anterior',${epP},v=>{sA(${pvEff},'eng_pct',v)})">Ant: ${epP?epP.toFixed(1)+'%':'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span></div></div>`;
-  h+=`</div></div>`;
-  // --- KPIs Blog Guardar Dinheiro ---
-  const bAR=gA(cM,'blog_acessos'),bAP=gA(pvEff,'blog_acessos');
-  const bLR=gA(cM,'blog_leads'),bLP=gA(pvEff,'blog_leads');
-  const bEnR=gA(cM,'blog_eng'),bEnP=gA(pvEff,'blog_eng');
-  const bEpR=gA(cM,'blog_eng_pct'),bEpP=gA(pvEff,'blog_eng_pct');
-  const bSsR=gA(cM,'blog_sessoes'),bSsP=gA(pvEff,'blog_sessoes');
-  h+=`<div class="S"><div class="ST"><i class="ti ti-news" style="font-size:13px"></i> KPIs — Blog Guardar Dinheiro</div><div class="G">`;
-  h+=kpiS('Sessões (GA)','blog_acessos',bAR,bAP);
-  h+=kpiS('Leads','blog_leads',bLR,bLP);
-  h+=kpiS('Eng. orgânico','blog_eng',bEnR,bEnP);
-  h+=`<div class="D"><div class="L">% Engajamento <span class="E" onclick="sM('% Eng. Blog',${bEpR},v=>{sA(${cM},'blog_eng_pct',v)})"><i class="ti ti-edit"></i></span></div><div class="V"><span class="R">${bEpR.toFixed(1)}%</span>${dlP(bEpR,bEpP)}</div><div class="Bp"><span class="E ant-edit" onclick="sM('% Eng. Blog — mês anterior',${bEpP},v=>{sA(${pvEff},'blog_eng_pct',v)})">Ant: ${bEpP?bEpP.toFixed(1)+'%':'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span></div></div>`;
-  h+=`</div></div>`;
-  // --- KPIs CoraCora News ---
-  const cAR=gA(cM,'cora_acessos'),cAP=gA(pvEff,'cora_acessos');
-  const cLR=gA(cM,'cora_leads'),cLP=gA(pvEff,'cora_leads');
-  const cEnR=gA(cM,'cora_eng'),cEnP=gA(pvEff,'cora_eng');
-  const cEpR=gA(cM,'cora_eng_pct'),cEpP=gA(pvEff,'cora_eng_pct');
-  h+=`<div class="S"><div class="ST"><i class="ti ti-heart" style="font-size:13px"></i> KPIs — CoraCora News</div><div class="G">`;
-  h+=kpiS('Sessões (GA)','cora_acessos',cAR,cAP);
-  h+=kpiS('Leads','cora_leads',cLR,cLP);
-  h+=kpiS('Eng. orgânico','cora_eng',cEnR,cEnP);
-  h+=`<div class="D"><div class="L">% Engajamento <span class="E" onclick="sM('% Eng. CoraCora',${cEpR},v=>{sA(${cM},'cora_eng_pct',v)})"><i class="ti ti-edit"></i></span></div><div class="V"><span class="R">${cEpR.toFixed(1)}%</span>${dlP(cEpR,cEpP)}</div><div class="Bp"><span class="E ant-edit" onclick="sM('% Eng. CoraCora — mês anterior',${cEpP},v=>{sA(${pvEff},'cora_eng_pct',v)})">Ant: ${cEpP?cEpP.toFixed(1)+'%':'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span></div></div>`;
-  h+=`</div></div>`;
+  function kpiPct(l,k,v,prevFull){ // % rate: sem projeção, comparação direta
+    const antBtn=`<span class="E ant-edit" onclick="sM('${l} — mês anterior',${prevFull},v=>{sA(${pvEff},'${k}',v)})">Ant: ${prevFull?prevFull.toFixed(1)+'%':'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span>`;
+    return`<div class="D"><div class="L">${l} <span class="E" onclick="sM('${l}',${v},v=>{sA(${cM},'${k}',v)})"><i class="ti ti-edit"></i></span></div><div class="V"><span class="R">${v.toFixed(1)}%</span>${dlPA(v,prevFull)}</div><div class="Bp">${antBtn}</div></div>`;
+  }
   // --- Sessões por canal ---
-  h+=`<div class="S"><div class="ST"><i class="ti ti-route" style="font-size:13px"></i> Sessões por canal</div><div class="rg">`;
-  chs.forEach(c=>{
-    const v=gA(cM,'ch_'+c),p=gA(pvEff,'ch_'+c);
-    const pj=proj(v,dE,tD);
-    h+=`<div class="rc"><div class="rl">${chL[c]} <span class="E" onclick="sM('${chL[c]}',${v},v=>{sA(${cM},'ch_${c}',v)})"><i class="ti ti-edit"></i></span></div><div class="rv">${fN(v)} ${dlP(v,p)}</div><div style="font-size:9px;color:var(--tx3)">Proj: ${fN(pj)} · <span class="E ant-edit" onclick="sM('${chL[c]} — mês ant.',${p},v=>{sA(${pvEff},'ch_${c}',v)})">Ant: ${p?fN(p):'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span></div></div>`;
-  });
-  h+=`</div></div>`;
-  // --- Top URLs ---
-  const sL={gd:'Guardar Dinheiro (principal)',blog:'Blog Guardar Dinheiro',cora:'CoraCora News'};
-  SITES.forEach(site=>{
-    const urls=gU(cM,site);
-    h+=`<div class="S"><div class="ST"><i class="ti ti-world" style="font-size:13px"></i> Top páginas — ${sL[site]}</div><div style="overflow-x:auto"><table class="T"><tr><th>Página</th><th>Mês ant.</th><th>${m.n} (${dE}d)</th><th>Proj 30d</th><th>Var (proj vs ant)</th><th></th></tr>`;
-    urls.forEach((u,i)=>{
-      const p30=proj(u.cur,dE,tD);
-      const vr=u.prev?((p30-u.prev)/u.prev*100):0;
-      const vc=vr>=5?'var(--grn)':vr>=-5?'var(--amb)':'var(--red)';
-      const ar=vr>=0?'▲':'▼';
-      h+=`<tr><td class="un" onclick="eU(${cM},'${site}',${i},'n')" style="cursor:pointer">${u.n}</td><td onclick="eU(${cM},'${site}',${i},'prev')" style="cursor:pointer">${fN(u.prev)}</td><td onclick="eU(${cM},'${site}',${i},'cur')" style="cursor:pointer;font-weight:500">${fN(u.cur)}</td><td>${fN(p30)}</td><td style="color:${vc};font-weight:600">${u.prev?(vr>=0?'+':'')+vr.toFixed(0)+'% '+ar:'—'}</td><td><span class="E" onclick="rU(${cM},'${site}',${i})" style="cursor:pointer"><i class="ti ti-trash" style="font-size:11px"></i></span></td></tr>`;
+  function rChs(pfx){
+    const chs=['organic_search','direct','unassigned','referral','social'];
+    const chL={organic_search:'Organic Search',direct:'Direct',unassigned:'Unassigned',referral:'Referral',social:'Social'};
+    const pre=pfx?pfx+'_':'';
+    let h=`<div class="S"><div class="ST"><i class="ti ti-route" style="font-size:13px"></i> Sessões por canal</div><div class="rg">`;
+    chs.forEach(c=>{
+      const k=pre+'ch_'+c,v=gA(cM,k),p=gA(pvEff,k),pj=proj(v,dE,tD);
+      h+=`<div class="rc"><div class="rl">${chL[c]} <span class="E" onclick="sM('${chL[c]}',${v},v=>{sA(${cM},'${k}',v)})"><i class="ti ti-edit"></i></span></div><div class="rv">${fN(v)} ${dlP(v,p)}</div><div style="font-size:9px;color:var(--tx3)">Proj: ${fN(pj)} · <span class="E ant-edit" onclick="sM('${chL[c]} — mês ant.',${p},v=>{sA(${pvEff},'${k}',v)})">Ant: ${p?fN(p):'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span></div></div>`;
     });
-    h+=`</table></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px"><button class="ab" style="flex:1;min-width:140px" onclick="aU(${cM},'${site}')"><i class="ti ti-plus" style="font-size:11px"></i> Adicionar página</button><button class="ab" style="flex:1;min-width:140px" onclick="importCSV(${cM},'${site}')"><i class="ti ti-file-import" style="font-size:11px"></i> Importar CSV (GA4)</button></div></div>`;
-  });
-  // --- AdSense ---
-  const adsK=[{k:'ads_impressoes',l:'Impressões',f:'n'},{k:'ads_cliques',l:'Cliques',f:'n'},{k:'ads_ctr',l:'CTR',f:'p'},{k:'ads_ecpm',l:'eCPM',f:'d'},{k:'ads_receita',l:'Receita',f:'d'},{k:'ads_visibilidade',l:'Visibilidade',f:'p'}];
-  h+=`<div class="S"><div class="ST"><i class="ti ti-coin" style="font-size:13px"></i> Monetização AdSense (USD)</div><div class="rg">`;
-  adsK.forEach(({k,l,f})=>{
-    const v=gA(cM,k),p=gA(pvEff,k);
-    const pj=proj(v,dE,tD);
-    const fmt=f==='d'?fD(v):f==='p'?v.toFixed(1)+'%':fN(v);
-    const fmtPj=f==='d'?fD(pj):f==='p'?'—':fN(pj);
-    const antFmtA=p?(f==='d'?fD(p):f==='p'?p.toFixed(1)+'%':fN(p)):'—';
-    h+=`<div class="rc"><div class="rl">${l} <span class="E" onclick="sM('${l}',${v},v=>{sA(${cM},'${k}',v)})"><i class="ti ti-edit"></i></span></div><div class="rv">${fmt} ${dlP(v,p)}</div><div style="font-size:9px;color:var(--tx3)">Proj: ${fmtPj} · <span class="E ant-edit" onclick="sM('${l} — mês ant.',${p},v=>{sA(${pvEff},'${k}',v)})">Ant: ${antFmtA} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span></div></div>`;
-  });
-  h+=`</div></div>`;
-  // --- Regras de precificação ---
-  const pr=gPR(cM);
-  h+=`<div class="S"><div class="ST"><i class="ti ti-adjustments" style="font-size:13px"></i> Regras de precificação</div><table class="pr-tbl"><tr><th>Formato</th><th>Valor mínimo</th><th>Regra de negócio</th><th></th></tr>`;
-  pr.forEach((r,i)=>{
-    h+=`<tr><td><select onchange="const p=gPR(${cM});p[${i}].tipo=this.value;sPR(${cM},p);R()"><option ${r.tipo==='Banner'?'selected':''}>Banner</option><option ${r.tipo==='Interstitial'?'selected':''}>Interstitial</option><option ${r.tipo==='Anchor'?'selected':''}>Anchor</option></select></td><td style="cursor:pointer" onclick="sM('Valor mínimo','${r.min}',v=>{const p=gPR(${cM});p[${i}].min=v;sPR(${cM},p)},'text')">${r.min||'—'}</td><td style="cursor:pointer" onclick="sM('Regra de negócio','${r.regra}',v=>{const p=gPR(${cM});p[${i}].regra=v;sPR(${cM},p)},'text')">${r.regra||'—'}</td><td><span class="E" onclick="const p=gPR(${cM});p.splice(${i},1);sPR(${cM},p);R()"><i class="ti ti-trash" style="font-size:11px"></i></span></td></tr>`;
-  });
-  h+=`</table><button class="ab" style="margin-top:4px" onclick="const p=gPR(${cM});p.push({tipo:'Banner',min:'',regra:''});sPR(${cM},p);R()"><i class="ti ti-plus" style="font-size:11px"></i> Nova regra</button></div>`;
-  // --- Receita bruta ---
-  const bT=bK.reduce((s,k)=>s+gA(cM,'bruta_'+k),0);
-  const bTP=bK.reduce((s,k)=>s+gA(pvEff,'bruta_'+k),0);
-  const bTPj=proj(bT,dE,tD);
-  h+=`<div class="S"><div class="ST"><i class="ti ti-cash" style="font-size:13px"></i> Receita bruta por frente — ${fR(bT)} <span style="font-size:10px;font-weight:400;text-transform:none;margin-left:2px">Proj: ${fR(bTPj)}</span> ${dlP(bT,bTP)}</div><div class="rg">`;
-  bK.forEach(k=>{
-    const v=gA(cM,'bruta_'+k),p=gA(pvEff,'bruta_'+k);
-    const pj=proj(v,dE,tD);
-    h+=`<div class="rc"><div class="rl">${bL[k]} <span class="E" onclick="sM('${bL[k]}',${v},v=>{sA(${cM},'bruta_${k}',v)})"><i class="ti ti-edit"></i></span></div><div class="rv" style="color:${bC[k]}">${fR(v)} ${dlP(v,p)}</div><div style="font-size:9px;color:var(--tx3)">Proj: ${fR(pj)} · <span class="E ant-edit" onclick="sM('${bL[k]} — mês ant.',${p},v=>{sA(${pvEff},'bruta_${k}',v)})">Ant: ${p?fR(p):'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span></div></div>`;
-  });
-  h+=`</div></div>`;
-  // --- Custos ---
-  const costs=gCosts(cM);
-  const tCost=costs.reduce((s,c)=>s+c.items.reduce((s2,it)=>s2+it.brl,0),0);
-  const adMR=gA(cM,'ad_mgr'),adMP=gA(pvEff,'ad_mgr');
-  const roi=tCost?(adMR-tCost)/tCost*100:0;
-  h+=`<div class="S"><div class="ST"><i class="ti ti-receipt" style="font-size:13px"></i> Custos do ecossistema <span style="margin-left:auto;font-size:11px;color:${roi>=0?'var(--grn)':'var(--red)'}">ROI ≈ ${roi>=0?'+':''}${roi.toFixed(1)}%</span></div>`;
-  costs.forEach((cat,ci)=>{
-    const sub=cat.items.reduce((s,it)=>s+it.brl,0);
-    h+=`<table class="ct"><tr><th>${cat.cat}</th><th>BRL</th></tr>`;
-    cat.items.forEach((it,ii)=>{h+=`<tr><td>${it.n} <span class="E" onclick="sM('Nome','${it.n.replace(/'/g,"\\'")}',v=>{const c=gCosts(${cM});c[${ci}].items[${ii}].n=v;sCosts(${cM},c)},'text')"><i class="ti ti-pencil" style="font-size:10px"></i></span></td><td style="cursor:pointer" onclick="sM('BRL',${it.brl},v=>{const c=gCosts(${cM});c[${ci}].items[${ii}].brl=v;sCosts(${cM},c)})">${fR(it.brl)} <span class="E" onclick="event.stopPropagation();const c=gCosts(${cM});c[${ci}].items.splice(${ii},1);sCosts(${cM},c);R()"><i class="ti ti-trash" style="font-size:10px"></i></span></td></tr>`});
-    h+=`<tr class="su"><td>Subtotal ${cat.cat}</td><td>${fR(sub)}</td></tr></table>`;
-    h+=`<button class="ab" style="margin:3px 0 8px" onclick="sM('Nome do item','',v=>{if(!v.trim())return;const c=gCosts(${cM});c[${ci}].items.push({n:v.trim(),brl:0});sCosts(${cM},c)},'text')"><i class="ti ti-plus" style="font-size:10px"></i> Item</button>`;
-  });
-  h+=`<button class="ab" style="margin-bottom:5px" onclick="sM('Nova categoria','',v=>{if(!v.trim())return;const c=gCosts(${cM});c.push({cat:v.trim(),items:[]});sCosts(${cM},c)},'text')"><i class="ti ti-plus" style="font-size:10px"></i> Nova categoria</button>`;
-  h+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><div class="rc" style="flex:1;min-width:160px;background:var(--teal);color:#fff"><div class="rl" style="color:rgba(255,255,255,.7)">Custo total</div><div class="rv" style="color:#fff">${fR(tCost)}</div></div>`;
-  h+=`<div class="rc" style="flex:1;min-width:160px"><div class="rl">Receita Ad Mgr <span class="E" onclick="sM('Receita Ad Manager',${adMR},v=>{sA(${cM},'ad_mgr',v)})"><i class="ti ti-edit"></i></span></div><div class="rv">${fR(adMR)} ${dlP(adMR,adMP)}</div><div style="font-size:9px;color:var(--tx3)"><span class="E ant-edit" onclick="sM('Ad Manager — mês ant.',${adMP},v=>{sA(${pvEff},'ad_mgr',v)})">Ant: ${adMP?fR(adMP):'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span></div></div></div></div>`;
+    return h+`</div></div>`;
+  }
+  // --- Search Console ---
+  function rSC(site){
+    const scK=['cliques','impressoes','ctr','posicao'];
+    const scL={cliques:'Cliques',impressoes:'Impressões',ctr:'CTR Média',posicao:'Posição Média'};
+    const pfx=site+'_sc';
+    let h=`<div class="S"><div class="ST"><i class="ti ti-search" style="font-size:13px"></i> Search Console</div><div style="overflow-x:auto"><table class="T"><thead><tr><th>Métrica</th><th>Mês anterior</th><th>${m.n} (atual)</th><th>Últimas 24h</th></tr></thead><tbody>`;
+    scK.forEach(k=>{
+      const vCur=gA(cM,pfx+'_'+k),vPrev=gA(pvEff,pfx+'_'+k),v24=ac['24h_'+site+'_sc_'+k]||0;
+      const isCtr=k==='ctr',isPos=k==='posicao';
+      const fmtV=v=>isCtr?v.toFixed(1)+'%':isPos?v.toFixed(1):fN(v);
+      const sem=isPos?dlPPos(vCur,vPrev):isCtr?dlPA(vCur,vPrev):dlP(vCur,vPrev);
+      h+=`<tr><td>${scL[k]}</td>`;
+      h+=`<td style="cursor:pointer;text-align:right" onclick="sM('${scL[k]} — mês ant.',${vPrev},v=>{sA(${pvEff},'${pfx}_${k}',v)})">${fmtV(vPrev)}</td>`;
+      h+=`<td style="cursor:pointer;font-weight:500;text-align:right" onclick="sM('${scL[k]} — ${m.n}',${vCur},v=>{sA(${cM},'${pfx}_${k}',v)})">${fmtV(vCur)} ${sem}</td>`;
+      h+=`<td style="cursor:pointer;text-align:right" onclick="sM('${scL[k]} — 24h',${v24},v=>{ac['24h_${site}_sc_${k}']=v;sv()})">${fmtV(v24)}</td></tr>`;
+    });
+    return h+`</tbody></table></div></div>`;
+  }
+  // --- Indexação ---
+  function rIdx(site){
+    const iK=['indexed','notindexed'];
+    const iL={indexed:'Indexadas',notindexed:'Não indexadas'};
+    let h=`<div class="S"><div class="ST"><i class="ti ti-list-check" style="font-size:13px"></i> Indexação</div><div class="rg">`;
+    iK.forEach(k=>{
+      const v=gA(cM,site+'_'+k),p=gA(pvEff,site+'_'+k);
+      const sem=k==='notindexed'?dlPPos(v,p):dlP(v,p);
+      h+=`<div class="rc"><div class="rl">${iL[k]} <span class="E" onclick="sM('${iL[k]}',${v},v=>{sA(${cM},'${site}_${k}',v)})"><i class="ti ti-edit"></i></span></div><div class="rv">${fN(v)} ${sem}</div><div style="font-size:9px;color:var(--tx3)"><span class="E ant-edit" onclick="sM('${iL[k]} — mês ant.',${p},v=>{sA(${pvEff},'${site}_${k}',v)})">Ant: ${p?fN(p):'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span></div></div>`;
+    });
+    return h+`</div></div>`;
+  }
+  // --- Top páginas ---
+  function rTP(site){
+    const sL2={gd:'Guardar Dinheiro (principal)',blog:'Blog Guardar Dinheiro',cora:'CoraCora News'};
+    const urls=gU(cM,site);
+    const sortedIdx=urls.map((u,i)=>({u,i})).sort((a,b)=>(b.u.cur||0)-(a.u.cur||0));
+    let h=`<div class="S"><div class="ST"><i class="ti ti-world" style="font-size:13px"></i> Top páginas — ${sL2[site]}</div><div style="overflow-x:auto"><table class="T"><thead><tr><th>Página</th><th>Mês ant.</th><th>${m.n} (${dE}d)</th><th>Proj 30d</th><th>Var (proj vs ant)</th><th></th></tr></thead><tbody>`;
+    sortedIdx.forEach(({u,i})=>{
+      const p30=proj(u.cur||0,dE,tD),vr=u.prev?((p30-u.prev)/u.prev*100):0;
+      const vc=vr>=5?'var(--grn)':vr>=-5?'var(--amb)':'var(--red)',ar=vr>=0?'▲':'▼';
+      h+=`<tr><td class="un" onclick="eU(${cM},'${site}',${i},'n')" style="cursor:pointer">${u.n}</td><td onclick="eU(${cM},'${site}',${i},'prev')" style="cursor:pointer">${fN(u.prev||0)}</td><td onclick="eU(${cM},'${site}',${i},'cur')" style="cursor:pointer;font-weight:500">${fN(u.cur||0)}</td><td>${fN(p30)}</td><td style="color:${vc};font-weight:600">${u.prev?(vr>=0?'+':'')+vr.toFixed(0)+'% '+ar:'—'}</td><td><span class="E" onclick="rU(${cM},'${site}',${i})" style="cursor:pointer"><i class="ti ti-trash" style="font-size:11px"></i></span></td></tr>`;
+    });
+    h+=`</tbody></table></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px">`;
+    h+=`<button class="ab" style="flex:1;min-width:130px" onclick="aU(${cM},'${site}')"><i class="ti ti-plus" style="font-size:11px"></i> Adicionar página</button>`;
+    h+=`<button class="ab" style="flex:1;min-width:130px" onclick="importCSV(${cM},'${site}','prev')"><i class="ti ti-calendar-minus" style="font-size:11px"></i> Importar Mês Anterior</button>`;
+    h+=`<button class="ab" style="flex:1;min-width:130px" onclick="importCSV(${cM},'${site}','cur')"><i class="ti ti-file-import" style="font-size:11px"></i> Importar Mês Atual</button>`;
+    return h+`</div></div>`;
+  }
+  // =========== RENDER =============
+  let h=mN();
+  // Product tabs
+  h+=`<div class="ptabs">
+    <button class="ptb ${cP==='gd'?'a':''}" onclick="cP='gd';R()"><i class="ti ti-home-2" style="font-size:11px;margin-right:3px"></i>GD Principal</button>
+    <button class="ptb ${cP==='blog'?'a':''}" onclick="cP='blog';R()"><i class="ti ti-news" style="font-size:11px;margin-right:3px"></i>Blog GD</button>
+    <button class="ptb ${cP==='cora'?'a':''}" onclick="cP='cora';R()"><i class="ti ti-heart" style="font-size:11px;margin-right:3px"></i>CoraCora</button>
+    <button class="ptb ${cP==='fin'?'a':''}" onclick="cP='fin';R()"><i class="ti ti-cash" style="font-size:11px;margin-right:3px"></i>Financeiro</button>
+  </div>`;
+  if(cP==='gd'){
+    h+=`<div class="S"><div class="ST"><i class="ti ti-chart-bar" style="font-size:13px"></i> KPIs — Guardar Dinheiro <span style="font-weight:400;text-transform:none;margin-left:4px;font-size:10px">${dE}/${tD} dias</span></div><div class="G">`;
+    h+=kpi('Sessões (GA)','acessos',gA(cM,'acessos'),m.tgt.acessos,gA(pvEff,'acessos'),false);
+    h+=kpi('Leads','leads',gA(cM,'leads'),m.tgt.leads,gA(pvEff,'leads'),false);
+    h+=kpiS('Eng. orgânico','engajamento',gA(cM,'engajamento'),gA(pvEff,'engajamento'));
+    h+=kpiPct('% Engajamento','eng_pct',gA(cM,'eng_pct'),gA(pvEff,'eng_pct'));
+    h+=`</div></div>`;
+    h+=rChs('');
+    h+=rSC('gd');
+    h+=rIdx('gd');
+    h+=rTP('gd');
+  }else if(cP==='blog'){
+    h+=`<div class="S"><div class="ST"><i class="ti ti-news" style="font-size:13px"></i> KPIs — Blog Guardar Dinheiro <span style="font-weight:400;text-transform:none;margin-left:4px;font-size:10px">${dE}/${tD} dias</span></div><div class="G">`;
+    h+=kpiS('Sessões (GA)','blog_acessos',gA(cM,'blog_acessos'),gA(pvEff,'blog_acessos'));
+    h+=kpiS('Leads','blog_leads',gA(cM,'blog_leads'),gA(pvEff,'blog_leads'));
+    h+=kpiS('Eng. orgânico','blog_eng',gA(cM,'blog_eng'),gA(pvEff,'blog_eng'));
+    h+=kpiPct('% Engajamento','blog_eng_pct',gA(cM,'blog_eng_pct'),gA(pvEff,'blog_eng_pct'));
+    h+=`</div></div>`;
+    h+=rChs('blog');
+    h+=rSC('blog');
+    h+=rIdx('blog');
+    h+=rTP('blog');
+  }else if(cP==='cora'){
+    h+=`<div class="S"><div class="ST"><i class="ti ti-heart" style="font-size:13px"></i> KPIs — CoraCora News <span style="font-weight:400;text-transform:none;margin-left:4px;font-size:10px">${dE}/${tD} dias</span></div><div class="G">`;
+    h+=kpiS('Sessões (GA)','cora_acessos',gA(cM,'cora_acessos'),gA(pvEff,'cora_acessos'));
+    h+=kpiS('Leads','cora_leads',gA(cM,'cora_leads'),gA(pvEff,'cora_leads'));
+    h+=kpiS('Eng. orgânico','cora_eng',gA(cM,'cora_eng'),gA(pvEff,'cora_eng'));
+    h+=kpiPct('% Engajamento','cora_eng_pct',gA(cM,'cora_eng_pct'),gA(pvEff,'cora_eng_pct'));
+    h+=`</div></div>`;
+    h+=rChs('cora');
+    h+=rSC('cora');
+    h+=rIdx('cora');
+    h+=rTP('cora');
+  }else{ // Financeiro
+    const bK=['adsense','uol','indoleads','dgmax','cofrinho'];
+    const bL={adsense:'AdSense',uol:'UOL Afiliados',indoleads:'Indoleads',dgmax:'DGMax',cofrinho:'Cofrinho'};
+    const bC={adsense:'var(--blu)',uol:'var(--pur)',indoleads:'var(--cor)',dgmax:'var(--grn)',cofrinho:'var(--amb)'};
+    // EBITDA
+    h+=`<div class="S"><div class="ST"><i class="ti ti-chart-bar" style="font-size:13px"></i> KPIs Financeiros <span style="font-weight:400;text-transform:none;margin-left:4px;font-size:10px">${dE}/${tD} dias</span></div><div class="G">`;
+    h+=kpi('EBITDA','ebitda',gA(cM,'ebitda'),0,gA(pvEff,'ebitda'),true);
+    h+=`</div></div>`;
+    // AdSense
+    const adsK=[{k:'ads_impressoes',l:'Impressões',f:'n'},{k:'ads_cliques',l:'Cliques',f:'n'},{k:'ads_ctr',l:'CTR',f:'p'},{k:'ads_ecpm',l:'eCPM',f:'d'},{k:'ads_receita',l:'Receita',f:'d'},{k:'ads_visibilidade',l:'Visibilidade',f:'p'}];
+    h+=`<div class="S"><div class="ST"><i class="ti ti-coin" style="font-size:13px"></i> Monetização AdSense (USD)</div><div class="rg">`;
+    adsK.forEach(({k,l,f})=>{
+      const v=gA(cM,k),p=gA(pvEff,k),pj=proj(v,dE,tD);
+      const fmt=f==='d'?fD(v):f==='p'?v.toFixed(1)+'%':fN(v);
+      const fmtPj=f==='d'?fD(pj):f==='p'?'—':fN(pj);
+      const antFmt=p?(f==='d'?fD(p):f==='p'?p.toFixed(1)+'%':fN(p)):'—';
+      const sem=f==='p'?dlPA(v,p):dlP(v,p);
+      h+=`<div class="rc"><div class="rl">${l} <span class="E" onclick="sM('${l}',${v},v=>{sA(${cM},'${k}',v)})"><i class="ti ti-edit"></i></span></div><div class="rv">${fmt} ${sem}</div><div style="font-size:9px;color:var(--tx3)">Proj: ${fmtPj} · <span class="E ant-edit" onclick="sM('${l} — mês ant.',${p},v=>{sA(${pvEff},'${k}',v)})">Ant: ${antFmt} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span></div></div>`;
+    });
+    h+=`</div></div>`;
+    // Receita bruta
+    const bT=bK.reduce((s,k)=>s+gA(cM,'bruta_'+k),0),bTP=bK.reduce((s,k)=>s+gA(pvEff,'bruta_'+k),0),bTPj=proj(bT,dE,tD);
+    h+=`<div class="S"><div class="ST"><i class="ti ti-cash" style="font-size:13px"></i> Receita bruta por frente — ${fR(bT)} <span style="font-size:10px;font-weight:400;text-transform:none;margin-left:2px">Proj: ${fR(bTPj)}</span> ${dlP(bT,bTP)}</div><div class="rg">`;
+    bK.forEach(k=>{
+      const v=gA(cM,'bruta_'+k),p=gA(pvEff,'bruta_'+k),pj=proj(v,dE,tD);
+      h+=`<div class="rc"><div class="rl">${bL[k]} <span class="E" onclick="sM('${bL[k]}',${v},v=>{sA(${cM},'bruta_${k}',v)})"><i class="ti ti-edit"></i></span></div><div class="rv" style="color:${bC[k]}">${fR(v)} ${dlP(v,p)}</div><div style="font-size:9px;color:var(--tx3)">Proj: ${fR(pj)} · <span class="E ant-edit" onclick="sM('${bL[k]} — mês ant.',${p},v=>{sA(${pvEff},'bruta_${k}',v)})">Ant: ${p?fR(p):'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span></div></div>`;
+    });
+    h+=`</div></div>`;
+    // Regras de precificação
+    const pr=gPR(cM);
+    h+=`<div class="S"><div class="ST"><i class="ti ti-adjustments" style="font-size:13px"></i> Regras de precificação</div><table class="pr-tbl"><tr><th>Formato</th><th>Valor mínimo</th><th>Regra de negócio</th><th></th></tr>`;
+    pr.forEach((r,i)=>{h+=`<tr><td><select onchange="const p=gPR(${cM});p[${i}].tipo=this.value;sPR(${cM},p);R()"><option ${r.tipo==='Banner'?'selected':''}>Banner</option><option ${r.tipo==='Interstitial'?'selected':''}>Interstitial</option><option ${r.tipo==='Anchor'?'selected':''}>Anchor</option></select></td><td style="cursor:pointer" onclick="sM('Valor mínimo','${r.min}',v=>{const p=gPR(${cM});p[${i}].min=v;sPR(${cM},p)},'text')">${r.min||'—'}</td><td style="cursor:pointer" onclick="sM('Regra de negócio','${r.regra}',v=>{const p=gPR(${cM});p[${i}].regra=v;sPR(${cM},p)},'text')">${r.regra||'—'}</td><td><span class="E" onclick="const p=gPR(${cM});p.splice(${i},1);sPR(${cM},p);R()"><i class="ti ti-trash" style="font-size:11px"></i></span></td></tr>`});
+    h+=`</table><button class="ab" style="margin-top:4px" onclick="const p=gPR(${cM});p.push({tipo:'Banner',min:'',regra:''});sPR(${cM},p);R()"><i class="ti ti-plus" style="font-size:11px"></i> Nova regra</button></div>`;
+    // Custos
+    const costs=gCosts(cM),tCost=costs.reduce((s,c)=>s+c.items.reduce((s2,it)=>s2+it.brl,0),0);
+    const adMR=gA(cM,'ad_mgr'),adMP=gA(pvEff,'ad_mgr'),roi=tCost?(adMR-tCost)/tCost*100:0;
+    h+=`<div class="S"><div class="ST"><i class="ti ti-receipt" style="font-size:13px"></i> Custos do ecossistema <span style="margin-left:auto;font-size:11px;color:${roi>=0?'var(--grn)':'var(--red)'}">ROI ≈ ${roi>=0?'+':''}${roi.toFixed(1)}%</span></div>`;
+    costs.forEach((cat,ci)=>{
+      const sub=cat.items.reduce((s,it)=>s+it.brl,0);
+      h+=`<table class="ct"><tr><th>${cat.cat}</th><th>BRL</th></tr>`;
+      cat.items.forEach((it,ii)=>{h+=`<tr><td>${it.n} <span class="E" onclick="sM('Nome','${it.n.replace(/'/g,"\\'")}',v=>{const c=gCosts(${cM});c[${ci}].items[${ii}].n=v;sCosts(${cM},c)},'text')"><i class="ti ti-pencil" style="font-size:10px"></i></span></td><td style="cursor:pointer" onclick="sM('BRL',${it.brl},v=>{const c=gCosts(${cM});c[${ci}].items[${ii}].brl=v;sCosts(${cM},c)})">${fR(it.brl)} <span class="E" onclick="event.stopPropagation();const c=gCosts(${cM});c[${ci}].items.splice(${ii},1);sCosts(${cM},c);R()"><i class="ti ti-trash" style="font-size:10px"></i></span></td></tr>`});
+      h+=`<tr class="su"><td>Subtotal ${cat.cat}</td><td>${fR(sub)}</td></tr></table>`;
+      h+=`<button class="ab" style="margin:3px 0 8px" onclick="sM('Nome do item','',v=>{if(!v.trim())return;const c=gCosts(${cM});c[${ci}].items.push({n:v.trim(),brl:0});sCosts(${cM},c)},'text')"><i class="ti ti-plus" style="font-size:10px"></i> Item</button>`;
+    });
+    h+=`<button class="ab" style="margin-bottom:5px" onclick="sM('Nova categoria','',v=>{if(!v.trim())return;const c=gCosts(${cM});c.push({cat:v.trim(),items:[]});sCosts(${cM},c)},'text')"><i class="ti ti-plus" style="font-size:10px"></i> Nova categoria</button>`;
+    h+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><div class="rc" style="flex:1;min-width:160px;background:var(--teal);color:#fff"><div class="rl" style="color:rgba(255,255,255,.7)">Custo total</div><div class="rv" style="color:#fff">${fR(tCost)}</div></div>`;
+    h+=`<div class="rc" style="flex:1;min-width:160px"><div class="rl">Receita Ad Mgr <span class="E" onclick="sM('Receita Ad Manager',${adMR},v=>{sA(${cM},'ad_mgr',v)})"><i class="ti ti-edit"></i></span></div><div class="rv">${fR(adMR)} ${dlP(adMR,adMP)}</div><div style="font-size:9px;color:var(--tx3)"><span class="E ant-edit" onclick="sM('Ad Manager — mês ant.',${adMP},v=>{sA(${pvEff},'ad_mgr',v)})">Ant: ${adMP?fR(adMP):'—'} <i class="ti ti-edit" style="font-size:9px;opacity:.45"></i></span></div></div></div></div>`;
+    // Gráfico anual
+    h+=rAnual();
+  }
   a.innerHTML=h;
+}
+// ===== GRÁFICO ANUAL =====
+function rAnual(){
+  const sites=[{k:'acessos',l:'GD Principal',c:'var(--pur)'},{k:'blog_acessos',l:'Blog GD',c:'var(--blu)'},{k:'cora_acessos',l:'CoraCora',c:'var(--cor)'}];
+  let maxVal=1;
+  MO.forEach((_,mi)=>sites.forEach(s=>{const v=gA(mi,s.k);if(v>maxVal)maxVal=v;}));
+  const bw=18,gap=3,gp=6,pw=bw*sites.length+(sites.length-1)*gap+gp;
+  const svgW=MO.length*pw+44,svgH=120,bH=78;
+  let bars='';
+  MO.forEach((mo,mi)=>{
+    const x0=22+mi*pw;
+    sites.forEach((s,si)=>{
+      const v=gA(mi,s.k),h2=v?Math.max(2,Math.round(v/maxVal*bH)):0,bx=x0+si*(bw+gap),by=svgH-22-h2;
+      bars+=`<rect x="${bx}" y="${by}" width="${bw}" height="${h2}" fill="${s.c}" rx="2" opacity=".8"><title>${s.l} ${mo.s}: ${v?fN(v):'—'}</title></rect>`;
+      if(v&&h2>8)bars+=`<text x="${bx+bw/2}" y="${by-2}" text-anchor="middle" font-size="6" fill="var(--tx3)">${fN(v)}</text>`;
+    });
+    bars+=`<text x="${x0+pw/2-gp/2}" y="${svgH-6}" text-anchor="middle" font-size="8" fill="var(--tx3)">${mo.s}</text>`;
+  });
+  const legend=sites.map(s=>`<span style="font-size:9px;display:inline-flex;align-items:center;gap:3px;color:var(--tx2)"><i style="width:8px;height:8px;border-radius:2px;background:${s.c};display:inline-block"></i>${s.l}</span>`).join('');
+  return`<div class="S"><div class="ST"><i class="ti ti-chart-bar" style="font-size:13px"></i> Sessões por site — 2026</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px">${legend}</div><div style="overflow-x:auto"><svg viewBox="0 0 ${svgW} ${svgH}" style="width:100%;min-width:${Math.round(svgW*0.7)}px;height:auto;display:block">${bars}</svg></div></div>`;
 }
 // URL helpers
 function aU(m,s){sM('Nome da página','',v=>{if(!v.trim())return;const u=gU(m,s);u.push({n:v.trim(),prev:0,cur:0});sU(m,s,u)},'text')}
@@ -466,13 +540,14 @@ function rE(a){
 }
 // ===== CSV IMPORT (GA4) =====
 let _csv=null;
-function importCSV(m,s){
+function importCSV(m,s,field){
+  field=field||'cur';
   const inp=document.createElement('input');
   inp.type='file';inp.accept='.csv,text/csv,application/csv';
   inp.onchange=e=>{
     const f=e.target.files[0];if(!f)return;
     const rd=new FileReader();
-    rd.onload=ev=>_parseGA4CSV(m,s,ev.target.result);
+    rd.onload=ev=>_parseGA4CSV(m,s,ev.target.result,field);
     rd.readAsText(f,'UTF-8');
   };
   inp.click();
@@ -488,59 +563,41 @@ function _csvRow(line){
   }
   r.push(c.trim());return r;
 }
-function _parseGA4CSV(m,s,txt){
+function _parseGA4CSV(m,s,txt,field){
+  field=field||'cur';
   // Remover BOM (UTF-8)
   if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);
-  // Separar linhas, ignorar linhas de metadados (# ou vazias)
-  const lines=txt.split('\n')
-    .map(l=>l.trim())
-    .filter(l=>l&&!l.startsWith('#')&&!l.startsWith('"#')&&l!=='""');
+  // Separar linhas, ignorar metadados (# ou vazias)
+  const lines=txt.split('\n').map(l=>l.trim()).filter(l=>l&&!l.startsWith('#')&&!l.startsWith('"#')&&l!=='""');
   if(!lines.length){alert('CSV vazio ou sem dados reconhecíveis.');return;}
-  // Linha de cabeçalho = primeira linha não-metadado
   const hdr=_csvRow(lines[0]).map(h=>h.toLowerCase().replace(/"/g,'').trim());
-  // Detectar coluna de página/URL
-  const pathIdx=hdr.findIndex(h=>
-    h.includes('page path')||h==='page title and screen class'||
-    h.includes('pagina')||h.includes('página')||
-    h==='url'||h==='page'||h.includes('screen')
-  );
-  // Detectar coluna de sessões
-  const sessIdx=hdr.findIndex(h=>
-    h==='sessions'||h==='sessões'||h==='sessoes'||
-    h.includes('session')||h.includes('sessão')
-  );
+  const pathIdx=hdr.findIndex(h=>h.includes('page path')||h==='page title and screen class'||h.includes('pagina')||h.includes('página')||h==='url'||h==='page'||h.includes('screen'));
+  const sessIdx=hdr.findIndex(h=>h==='sessions'||h==='sessões'||h==='sessoes'||h.includes('session')||h.includes('sessão'));
   if(pathIdx===-1||sessIdx===-1){
-    alert(
-      'Colunas não reconhecidas automaticamente.\n\n'+
-      'Colunas detectadas: '+hdr.join(' | ')+'\n\n'+
-      'O CSV precisa ter colunas de "Page path" e "Sessions".\n'+
-      'Dica: no GA4, exporte o relatório "Páginas e telas" (Pages and screens).'
-    );
+    alert('Colunas não reconhecidas automaticamente.\n\nColunas detectadas: '+hdr.join(' | ')+'\n\nO CSV precisa ter colunas de "Page path" e "Sessions".\nDica: no GA4, exporte o relatório "Páginas e telas" (Pages and screens).');
     return;
   }
-  // Parsear linhas de dados
   const rows=[];
   for(let i=1;i<lines.length;i++){
     const cols=_csvRow(lines[i]);
     if(cols.length<=Math.max(pathIdx,sessIdx))continue;
     const path=(cols[pathIdx]||'').replace(/"/g,'').trim();
-    const rawSess=(cols[sessIdx]||'0').replace(/"/g,'').replace(/[,\.]/g,'').trim();
-    const sess=parseInt(rawSess)||0;
-    // Ignorar linhas de total ou inválidas
+    const sess=parseInt((cols[sessIdx]||'0').replace(/"/g,'').replace(/[,\.]/g,'').trim())||0;
     if(!path||path.toLowerCase()==='total'||path==='(not set)'||path==='(not provided)')continue;
-    rows.push({n:path,cur:sess,prev:0});
+    rows.push({n:path,val:sess});
   }
   if(!rows.length){alert('Nenhuma página encontrada no CSV.\nVerifique se o arquivo está correto.');return;}
-  // Mostrar preview (máx 25 linhas)
-  _csv={m,s,rows:rows.slice(0,25),total:rows.length};
+  _csv={m,s,field,rows:rows.slice(0,25),total:rows.length};
   const sL={gd:'Guardar Dinheiro (principal)',blog:'Blog Guardar Dinheiro',cora:'CoraCora News'};
+  const fieldLabel=field==='prev'?'Mês Anterior':'Mês Atual (parcial)';
+  const fieldIcon=field==='prev'?'ti-calendar-minus':'ti-file-import';
   const o=document.createElement('div');o.className='ov';o.id='ov-csv';
   o.innerHTML=`<div class="mx" style="width:540px;max-width:96vw;max-height:85vh;display:flex;flex-direction:column;gap:0">
-    <h4 style="display:flex;align-items:center;gap:6px"><i class="ti ti-file-import" style="color:var(--pur)"></i> Importar CSV — ${sL[s]}</h4>
+    <h4 style="display:flex;align-items:center;gap:6px"><i class="ti ${fieldIcon}" style="color:var(--pur)"></i> Importar ${fieldLabel} — ${sL[s]}</h4>
     <p style="font-size:11px;color:var(--tx2);margin:6px 0 10px;line-height:1.5">
       <strong>${rows.length}</strong> páginas encontradas${rows.length>25?' (mostrando as 25 primeiras)':''}.
-      Os valores serão salvos como <strong>Atual (parcial)</strong>.
-      O campo <em>Mês anterior</em> pode ser editado depois clicando em cada linha da tabela.
+      Os valores serão salvos como <strong>${fieldLabel}</strong>.
+      A tabela será ordenada por maior resultado ao confirmar.
     </p>
     <div style="overflow-y:auto;flex:1;border:1px solid var(--bd);border-radius:6px;margin-bottom:10px">
     <table style="width:100%;border-collapse:collapse;font-size:10px">
@@ -548,7 +605,7 @@ function _parseGA4CSV(m,s,txt){
         <th style="text-align:left;padding:5px 8px;border-bottom:1px solid var(--bd);color:var(--tx3);background:var(--bg2);font-weight:600">Página / URL</th>
         <th style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--bd);color:var(--tx3);background:var(--bg2);font-weight:600">Sessões</th>
       </tr>
-      ${_csv.rows.map((r,i)=>`<tr style="${i%2?'background:var(--bg2)':''}"><td style="padding:5px 8px;border-bottom:1px solid var(--bd);max-width:380px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.n}</td><td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--bd);font-weight:600;font-variant-numeric:tabular-nums">${fN(r.cur)}</td></tr>`).join('')}
+      ${_csv.rows.map((r,i)=>`<tr style="${i%2?'background:var(--bg2)':''}"><td style="padding:5px 8px;border-bottom:1px solid var(--bd);max-width:380px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.n}</td><td style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--bd);font-weight:600;font-variant-numeric:tabular-nums">${fN(r.val)}</td></tr>`).join('')}
     </table>
     </div>
     <div class="mbb">
@@ -561,12 +618,28 @@ function _parseGA4CSV(m,s,txt){
 }
 function _cfCSV(){
   if(!_csv)return;
-  // Preservar valores de "mês anterior" já existentes para a mesma URL
+  const field=_csv.field||'cur';
   const existing=gU(_csv.m,_csv.s);
-  const merged=_csv.rows.map(r=>{
-    const found=existing.find(e=>e.n===r.n);
-    return found?{...r,prev:found.prev}:r;
-  });
+  let merged;
+  if(field==='prev'){
+    // Mescla: atualiza prev de URLs existentes; adiciona novas com cur=0
+    merged=[...existing];
+    _csv.rows.forEach(r=>{
+      const found=merged.find(e=>e.n===r.n);
+      if(found)found.prev=r.val;
+      else merged.push({n:r.n,prev:r.val,cur:0});
+    });
+  }else{
+    // Mescla: substitui cur, preserva prev existente
+    merged=_csv.rows.map(r=>{
+      const found=existing.find(e=>e.n===r.n);
+      return{n:r.n,cur:r.val,prev:found?found.prev:0};
+    });
+    // Adiciona URLs existentes que não estão no CSV (preserva histórico)
+    existing.forEach(e=>{if(!merged.find(r=>r.n===e.n))merged.push(e);});
+  }
+  // Ordenar por cur desc, depois prev desc
+  merged.sort((a,b)=>(b.cur||0)-(a.cur||0)||(b.prev||0)-(a.prev||0));
   sU(_csv.m,_csv.s,merged);
   _csv=null;
   document.getElementById('ov-csv')?.remove();
