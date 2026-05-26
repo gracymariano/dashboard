@@ -99,6 +99,20 @@
 .mx button.pr{background:var(--pur);color:#fff;border-color:var(--pur)}.mx button:hover{opacity:.85}
 /* Classification badge select */
 .cls-sel{font-size:9px;padding:1px 4px;border:1px solid var(--bd);border-radius:3px;background:var(--bg);color:var(--tx);font-family:inherit;cursor:pointer;margin-left:4px}
+/* Cora Cora Editorial */
+.cc-stats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.7rem}.cc-st{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:8px 12px;flex:1;min-width:110px}.cc-st .sl{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px}.cc-st .sv{font-size:18px;font-weight:700;margin-top:2px}.cc-st .ss{font-size:9px;color:var(--tx3)}
+.cc-fil{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:.7rem}.cc-fb{padding:4px 10px;border-radius:14px;font-size:10px;font-weight:500;cursor:pointer;border:1px solid var(--bd);background:var(--bg3);color:var(--tx2);font-family:inherit;transition:.15s}.cc-fb:hover{border-color:var(--pur);color:var(--pur)}.cc-fb.a{background:#D85A30;color:#fff;border-color:#D85A30}
+.cc-cg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:.7rem}
+.cc-ch{font-size:8px;font-weight:600;color:var(--tx3);text-align:center;padding:3px 0;text-transform:uppercase;letter-spacing:.3px}
+.cc-cd{border-radius:5px;padding:4px;min-height:70px;border:1px solid var(--bd);background:var(--bg3);position:relative;transition:.15s}.cc-cd:hover{border-color:#D85A30}
+.cc-cd.emp{opacity:.25;border-style:dashed}.cc-cd .dn{font-size:8px;font-weight:600;margin-bottom:2px}
+.cc-pk{font-size:7px;padding:2px 4px;border-radius:3px;margin-bottom:2px;line-height:1.2;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:default}
+.cc-pk:hover{white-space:normal}
+.cc-pk.cm{background:#FBEAF0;color:#72243E}.cc-pk.ca{background:#EEEDFE;color:#3C3489}.cc-pk.cb{background:#EAF3DE;color:#27500A}.cc-pk.cr{background:#FCEBEB;color:#791F1F}.cc-pk.ce{background:#E6F1FB;color:#0C447C}.cc-pk.cl{background:#FAEEDA;color:#633806}.cc-pk.c35{background:#E0F2F1;color:#00695C}.cc-pk.cc{background:#FFF8E1;color:#F57F17}
+@media(prefers-color-scheme:dark){.cc-pk.cm{background:#72243E;color:#F4C0D1}.cc-pk.ca{background:#3C3489;color:#CECBF6}.cc-pk.cb{background:#27500A;color:#C0DD97}.cc-pk.cr{background:#791F1F;color:#F7C1C1}.cc-pk.ce{background:#0C447C;color:#B5D4F4}.cc-pk.cl{background:#633806;color:#FAC775}.cc-pk.c35{background:#00695C;color:#B2DFDB}.cc-pk.cc{background:#F57F17;color:#FFF8E1}}
+.cc-tbl{width:100%;border-collapse:collapse;font-size:10px;margin-top:4px}.cc-tbl th{text-align:left;padding:4px 6px;font-size:9px;font-weight:600;color:#fff;background:#D85A30}.cc-tbl th:first-child{border-radius:4px 0 0 0}.cc-tbl th:last-child{border-radius:0 4px 0 0}
+.cc-tbl td{padding:5px 6px;border-bottom:1px solid var(--bd)}.cc-tbl tr:hover td{background:var(--bg2)}
+.cc-tabs{display:flex;gap:4px;margin-bottom:.6rem}.cc-tb{padding:5px 14px;border-radius:14px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--bg3);color:var(--tx2);font-family:inherit;transition:.15s}.cc-tb:hover{border-color:#D85A30;color:#D85A30}.cc-tb.a{background:#D85A30;color:#fff;border-color:#D85A30}
 .footer{text-align:center;padding:1rem 0 .5rem;font-size:9px;color:var(--tx3)}
 @media(max-width:700px){.C{padding:.75rem}.cg{gap:2px}.cd{padding:4px;min-height:64px}.G{grid-template-columns:1fr 1fr}.rg{grid-template-columns:1fr 1fr}.D .R,.D .M{font-size:17px}.rc .rv{font-size:13px}.tabs{-webkit-overflow-scrolling:touch}.T th,.T td{padding:4px 5px;font-size:9px}.ST{font-size:10px}.HL h1{font-size:17px}}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
@@ -262,10 +276,10 @@ function addDay(m,d){sTt(m,d,'Nova atividade');sTk(m,d,['Tarefa 1']);sDg(m,d,'pl
 function togAll(m,d){const tk=gTk(m,d);if(!tk.length)return;const ad=tk.every((_,i)=>cT[K(m,d,i)]);tk.forEach((_,i)=>{cT[K(m,d,i)]=!ad});sv()}
 // ===== RENDER =====
 function R(){
-  const tabs=[{id:'dash',i:'ti-chart-bar',l:'Dashboard'},{id:'road',i:'ti-calendar',l:'Projetos'},{id:'edit',i:'ti-notebook',l:'Calendário editorial'}];
+  const tabs=[{id:'dash',i:'ti-chart-bar',l:'Dashboard'},{id:'road',i:'ti-calendar',l:'Projetos'},{id:'edit',i:'ti-notebook',l:'Calendário editorial'},{id:'cora',i:'ti-heart',l:'Cora Cora News'}];
   document.getElementById('tabs').innerHTML=tabs.map(t=>`<button class="tb ${aT===t.id?'a':''}" onclick="aT='${t.id}';R()"><i class="ti ${t.i}" style="font-size:12px;margin-right:2px"></i>${t.l}</button>`).join('');
   const a=document.getElementById('app');
-  if(aT==='dash')rD(a);else if(aT==='road')rR(a);else rE(a);
+  if(aT==='dash')rD(a);else if(aT==='road')rR(a);else if(aT==='cora')rCC(a);else rE(a);
 }
 function mN(){return`<div class="mn">${MO.map((m,i)=>`<button class="mb ${i===cM?'a':''}" onclick="cM=${i};selD=null;R()">${m.s}${aT==='road'?' <span class="p">'+gCP(i)+'%</span>':''}</button>`).join('')}</div>`}
 // ===== DASHBOARD =====
@@ -653,6 +667,109 @@ function _cfCSV(){
   _csv=null;
   document.getElementById('ov-csv')?.remove();
   R();
+}
+// ===== CORA CORA NEWS EDITORIAL CALENDAR =====
+let ccView='cal',ccFil='all';
+const CC_CATS={Menopausa:'cm',Autoestima:'ca','Bem-Estar':'cb',Relacionamentos:'cr',Espiritualidade:'ce',Lifestyle:'cl','Mulher 35+':'c35',Casa:'cc'};
+const CC_POSTS=[
+{day:1,slot:1,t:'Perimenopausa aos 40: 10 sintomas que você não deve ignorar',cat:'Menopausa',kw:'perimenopausa sintomas aos 40 anos',vol:1300,dif:'Baixa',pri:1},
+{day:1,slot:2,t:'O que comer na menopausa? Guia completo de alimentação',cat:'Bem-Estar',kw:'alimentação na menopausa o que comer',vol:1600,dif:'Baixa',pri:1},
+{day:2,slot:1,t:'Insônia na menopausa: 7 soluções naturais para dormir melhor',cat:'Menopausa',kw:'insônia na menopausa remédio natural',vol:1600,dif:'Baixa',pri:1},
+{day:2,slot:2,t:'Autoestima na menopausa: 8 formas de se reconectar com você',cat:'Autoestima',kw:'autoestima na menopausa como melhorar',vol:480,dif:'Baixa',pri:1},
+{day:3,slot:1,t:'Fogachos: 9 formas comprovadas de aliviar as ondas de calor',cat:'Menopausa',kw:'fogachos o que fazer para aliviar',vol:1300,dif:'Baixa',pri:1},
+{day:3,slot:2,t:'Libido na menopausa: como resgatar o desejo de forma saudável',cat:'Relacionamentos',kw:'como aumentar libido feminina na menopausa',vol:1300,dif:'Baixa',pri:1},
+{day:4,slot:1,t:'Suplementos para menopausa: o que realmente funciona?',cat:'Menopausa',kw:'suplementos para menopausa que funcionam',vol:1900,dif:'Média',pri:1},
+{day:4,slot:2,t:'Rotina de skincare depois dos 40: passo a passo completo',cat:'Lifestyle',kw:'skincare anti-idade depois dos 40 rotina',vol:720,dif:'Baixa',pri:2},
+{day:5,slot:1,t:'Menopausa e peso: por que você engorda e como reverter',cat:'Menopausa',kw:'menopausa e ganho de peso como evitar',vol:1600,dif:'Média',pri:1},
+{day:5,slot:2,t:'O despertar feminino aos 40: quando a vida finalmente começa',cat:'Espiritualidade',kw:'despertar feminino depois dos 40',vol:390,dif:'Baixa',pri:2},
+{day:6,slot:1,t:'Menopausa e queda de cabelo: causas e tratamentos',cat:'Menopausa',kw:'menopausa e queda de cabelo tratamento',vol:1000,dif:'Baixa',pri:1},
+{day:6,slot:2,t:'Ressecamento vaginal na menopausa: soluções práticas',cat:'Menopausa',kw:'ressecamento vaginal na menopausa o que usar',vol:1000,dif:'Baixa',pri:1},
+{day:7,slot:1,t:'Chás para aliviar ondas de calor na menopausa',cat:'Menopausa',kw:'chá para menopausa ondas de calor',vol:1300,dif:'Baixa',pri:1},
+{day:7,slot:2,t:'Como recuperar a autoestima depois dos 40 anos',cat:'Autoestima',kw:'como recuperar autoestima depois dos 40',vol:720,dif:'Baixa',pri:2},
+{day:8,slot:1,t:'Menopausa e ansiedade: por que acontece e como tratar',cat:'Menopausa',kw:'menopausa e ansiedade como tratar',vol:880,dif:'Baixa',pri:1},
+{day:8,slot:2,t:'Névoa mental na menopausa: exercícios e hábitos que ajudam',cat:'Menopausa',kw:'névoa mental na menopausa o que fazer',vol:880,dif:'Baixa',pri:1},
+{day:9,slot:1,t:'Menopausa precoce aos 35: sintomas, causas e o que fazer',cat:'Menopausa',kw:'menopausa precoce aos 35 anos sintomas',vol:720,dif:'Baixa',pri:1},
+{day:9,slot:2,t:'Rotina de autocuidado 40+: um dia completo para você',cat:'Bem-Estar',kw:'rotina de autocuidado para mulher 40+',vol:480,dif:'Baixa',pri:2},
+{day:10,slot:1,t:'Exercícios para aliviar sintomas da menopausa',cat:'Menopausa',kw:'exercícios para aliviar sintomas da menopausa',vol:720,dif:'Baixa',pri:1},
+{day:10,slot:2,t:'Meditação guiada para ansiedade: especial para mulheres',cat:'Espiritualidade',kw:'meditação guiada para ansiedade feminina',vol:590,dif:'Baixa',pri:2},
+{day:11,slot:1,t:'TRH: tudo sobre a Terapia de Reposição Hormonal',cat:'Menopausa',kw:'terapia de reposição hormonal é segura',vol:880,dif:'Média',pri:1},
+{day:11,slot:2,t:'Perimenopausa vs menopausa: entenda a diferença',cat:'Menopausa',kw:'diferença entre perimenopausa e menopausa',vol:590,dif:'Baixa',pri:1},
+{day:12,slot:1,t:'Como conversar com seu parceiro sobre a menopausa',cat:'Relacionamentos',kw:'como conversar com o parceiro sobre menopausa',vol:320,dif:'Baixa',pri:2},
+{day:12,slot:2,t:'Frases de empoderamento feminino para mulheres 40+',cat:'Autoestima',kw:'frases de empoderamento feminino 40 anos',vol:590,dif:'Baixa',pri:2},
+{day:13,slot:1,t:'Yoga para menopausa: poses que aliviam os sintomas',cat:'Bem-Estar',kw:'yoga para mulheres na menopausa',vol:590,dif:'Baixa',pri:2},
+{day:13,slot:2,t:'Check-up aos 40: quais exames toda mulher precisa fazer',cat:'Mulher 35+',kw:'check-up feminino aos 40 exames',vol:480,dif:'Baixa',pri:2},
+{day:14,slot:1,t:'A menopausa afeta o relacionamento? Como cuidar a dois',cat:'Relacionamentos',kw:'menopausa afeta o relacionamento',vol:480,dif:'Baixa',pri:2},
+{day:14,slot:2,t:'Rituais de autocuidado espiritual para a mulher madura',cat:'Espiritualidade',kw:'rituais de autocuidado espiritual',vol:480,dif:'Baixa',pri:2},
+{day:15,slot:1,t:'Como dormir melhor na menopausa: guia da higiene do sono',cat:'Bem-Estar',kw:'como dormir melhor na menopausa',vol:720,dif:'Baixa',pri:1},
+{day:15,slot:2,t:'Roupas que valorizam a mulher madura: guia de estilo 40+',cat:'Lifestyle',kw:'roupas que valorizam mulher madura',vol:590,dif:'Baixa',pri:2},
+{day:16,slot:1,t:'O que muda no corpo depois dos 35 anos?',cat:'Mulher 35+',kw:'o que muda no corpo depois dos 35',vol:590,dif:'Baixa',pri:2},
+{day:16,slot:2,t:'Perfumes para mulher 40+: fragrâncias que traduzem maturidade',cat:'Lifestyle',kw:'perfume para mulher 40 anos',vol:1000,dif:'Baixa',pri:2},
+{day:17,slot:1,t:'Isoflavonas, magnésio e vitamina D: suplementos sem hormônios',cat:'Menopausa',kw:'suplementos naturais menopausa',vol:880,dif:'Baixa',pri:1},
+{day:17,slot:2,t:'Como criar um cantinho de meditação em casa',cat:'Casa',kw:'como criar um espaço de meditação em casa',vol:480,dif:'Baixa',pri:2},
+{day:18,slot:1,t:'Colágeno na menopausa: funciona mesmo?',cat:'Menopausa',kw:'colágeno menopausa benefícios',vol:720,dif:'Baixa',pri:1},
+{day:18,slot:2,t:'Como se sentir bonita depois dos 40: guia sem filtros',cat:'Autoestima',kw:'como se sentir bonita depois dos 40',vol:590,dif:'Baixa',pri:2},
+{day:19,slot:1,t:'Saúde mental depois dos 35: como cuidar de você primeiro',cat:'Mulher 35+',kw:'como cuidar da saúde mental depois dos 35',vol:390,dif:'Baixa',pri:2},
+{day:19,slot:2,t:'Óleos essenciais para relaxar: aromaterapia prática',cat:'Casa',kw:'óleos essenciais para relaxar em casa',vol:720,dif:'Baixa',pri:2},
+{day:20,slot:1,t:'Climatério: o que é, quanto dura e como atravessar',cat:'Menopausa',kw:'climatério o que é',vol:4400,dif:'Média',pri:1},
+{day:20,slot:2,t:'Pilates na menopausa: benefícios para corpo e mente',cat:'Bem-Estar',kw:'pilates menopausa benefícios',vol:480,dif:'Baixa',pri:2},
+{day:21,slot:1,t:'Amor próprio feminino: práticas diárias para cultivar',cat:'Autoestima',kw:'amor próprio feminino',vol:2900,dif:'Média',pri:1},
+{day:21,slot:2,t:'Receitas anti-inflamatórias para mulheres na menopausa',cat:'Bem-Estar',kw:'receitas anti-inflamatórias menopausa',vol:390,dif:'Baixa',pri:2},
+{day:22,slot:1,t:'Menopausa e osteoporose: como proteger seus ossos',cat:'Menopausa',kw:'menopausa e osteoporose prevenção',vol:720,dif:'Baixa',pri:1},
+{day:22,slot:2,t:'Rotina matinal feminina: como começar o dia com intenção',cat:'Lifestyle',kw:'rotina matinal feminina',vol:1300,dif:'Baixa',pri:2},
+{day:23,slot:1,t:'Secura nos olhos e boca na menopausa: o que fazer',cat:'Menopausa',kw:'boca seca menopausa',vol:480,dif:'Baixa',pri:2},
+{day:23,slot:2,t:'Autoconhecimento feminino: ferramentas para recomeçar',cat:'Espiritualidade',kw:'autoconhecimento feminino',vol:1600,dif:'Baixa',pri:1},
+{day:24,slot:1,t:'Progesterona natural: o que a ciência diz',cat:'Menopausa',kw:'progesterona natural menopausa',vol:590,dif:'Baixa',pri:2},
+{day:24,slot:2,t:'Fertilidade depois dos 35: o que toda mulher deve saber',cat:'Mulher 35+',kw:'fertilidade depois dos 35',vol:2900,dif:'Média',pri:1},
+{day:25,slot:1,t:'Dores nas articulações na menopausa: causa e alívio',cat:'Menopausa',kw:'dores articulares menopausa tratamento',vol:590,dif:'Baixa',pri:1},
+{day:25,slot:2,t:'Decoração acolhedora: transforme sua casa num refúgio',cat:'Casa',kw:'decoração acolhedora',vol:1600,dif:'Média',pri:2},
+{day:26,slot:1,t:'Sangramento irregular: quando se preocupar na perimenopausa',cat:'Menopausa',kw:'sangramento irregular perimenopausa',vol:720,dif:'Baixa',pri:1},
+{day:26,slot:2,t:'Moda para mulher 40: peças essenciais e como combinar',cat:'Lifestyle',kw:'moda para mulher 40 anos',vol:3600,dif:'Média',pri:1},
+{day:27,slot:1,t:'Menopausa e coração: riscos cardiovasculares',cat:'Menopausa',kw:'menopausa risco cardiovascular',vol:390,dif:'Baixa',pri:2},
+{day:27,slot:2,t:'Qualidade de vida depois dos 40: pequenas mudanças',cat:'Bem-Estar',kw:'qualidade de vida mulher 40',vol:1300,dif:'Baixa',pri:1},
+{day:28,slot:1,t:'Reposição hormonal bioidêntica: mitos e verdades',cat:'Menopausa',kw:'reposição hormonal bioidêntica',vol:880,dif:'Média',pri:1},
+{day:28,slot:2,t:'Aromaterapia para menopausa: óleos que aliviam',cat:'Casa',kw:'aromaterapia em casa',vol:1300,dif:'Baixa',pri:2},
+{day:29,slot:1,t:'Menopausa e memória: como manter o cérebro afiado',cat:'Menopausa',kw:'menopausa e perda de memória',vol:590,dif:'Baixa',pri:2},
+{day:29,slot:2,t:'Skincare corporal depois dos 40: do pescoço aos pés',cat:'Lifestyle',kw:'skincare corporal 40+',vol:480,dif:'Baixa',pri:2},
+{day:30,slot:1,t:'Guia completo: tudo sobre menopausa em um só lugar',cat:'Menopausa',kw:'menopausa guia completo',vol:1000,dif:'Média',pri:1},
+{day:30,slot:2,t:'Carta para mim mesma aos 40: exercício de autoestima',cat:'Autoestima',kw:'autoestima depois dos 40',vol:1600,dif:'Baixa',pri:1}
+];
+function rCC(a){
+  const ps=ccFil==='all'?CC_POSTS:CC_POSTS.filter(p=>p.cat===ccFil);
+  const tVol=CC_POSTS.reduce((s,p)=>s+p.vol,0);
+  const uKw=[...new Set(CC_POSTS.map(p=>p.kw))].length;
+  const pBx=Math.round(CC_POSTS.filter(p=>p.dif==='Baixa').length/CC_POSTS.length*100);
+  const cats=Object.keys(CC_CATS);
+  let h=`<div class="S" style="margin-top:.7rem"><div class="ST"><i class="ti ti-heart" style="color:#D85A30"></i> Cora Cora News — Calendário Editorial Junho 2026 <span style="font-weight:400;text-transform:none;font-size:10px;color:var(--tx3)">2 conteúdos/dia · Keywords priorizadas por oportunidade</span></div></div>`;
+  // Stats
+  h+=`<div class="cc-stats"><div class="cc-st"><div class="sl">Posts</div><div class="sv">${CC_POSTS.length}</div><div class="ss">30 dias × 2/dia</div></div><div class="cc-st"><div class="sl">Keywords únicas</div><div class="sv">${uKw}</div><div class="ss">Long tail priorizadas</div></div><div class="cc-st"><div class="sl">Vol. potencial</div><div class="sv">${fN(tVol)}</div><div class="ss">buscas/mês</div></div><div class="cc-st"><div class="sl">% Dific. baixa</div><div class="sv">${pBx}%</div><div class="ss">Maior chance de rankear</div></div></div>`;
+  // Sub-tabs
+  h+=`<div class="cc-tabs"><button class="cc-tb ${ccView==='cal'?'a':''}" onclick="ccView='cal';R()"><i class="ti ti-calendar-event" style="font-size:10px"></i> Calendário</button><button class="cc-tb ${ccView==='list'?'a':''}" onclick="ccView='list';R()"><i class="ti ti-list" style="font-size:10px"></i> Lista</button></div>`;
+  // Filters
+  h+=`<div class="cc-fil"><button class="cc-fb ${ccFil==='all'?'a':''}" onclick="ccFil='all';R()">Todas</button>${cats.map(c=>`<button class="cc-fb ${ccFil===c?'a':''}" onclick="ccFil='${c}';R()">${c}</button>`).join('')}</div>`;
+  if(ccView==='cal'){
+    const dw=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+    h+='<div class="cc-cg">';
+    dw.forEach(d=>{h+=`<div class="cc-ch">${d}</div>`});
+    // Jun 2026 starts Monday
+    for(let d=1;d<=30;d++){
+      const dp=ps.filter(p=>p.day===d);
+      h+=`<div class="cc-cd"><div class="dn">${d}</div>`;
+      dp.forEach(p=>{h+=`<span class="cc-pk ${CC_CATS[p.cat]||''}" title="${p.kw} (${fN(p.vol)}/mês)">${p.pri===1?'★ ':''}${p.t}</span>`});
+      if(!dp.length&&ccFil!=='all')h+=`<span style="font-size:7px;color:var(--tx3)">—</span>`;
+      h+='</div>';
+    }
+    // fill remaining cells (Jun has 30 days starting Mon = needs 5 empty at end for grid of 35)
+    for(let i=0;i<5;i++) h+='<div class="cc-cd emp"></div>';
+    h+='</div>';
+  }else{
+    h+=`<div style="overflow-x:auto"><table class="cc-tbl"><tr><th>Dia</th><th>Slot</th><th>Título</th><th>Categoria</th><th>Keyword</th><th>Vol.</th><th>Dific.</th><th>P</th></tr>`;
+    ps.forEach(p=>{
+      const dc=p.dif==='Baixa'?'var(--grn)':p.dif==='Média'?'var(--amb)':'var(--red)';
+      h+=`<tr><td style="font-weight:600">${p.day}/Jun</td><td>${p.slot===1?'AM':'PM'}</td><td style="max-width:220px">${p.t}</td><td><span class="cc-pk ${CC_CATS[p.cat]||''}" style="display:inline;white-space:nowrap">${p.cat}</span></td><td style="color:var(--tx2);font-size:9px">${p.kw}</td><td style="font-weight:600">${fN(p.vol)}</td><td style="color:${dc};font-weight:600">${p.dif}</td><td style="font-weight:700;color:${p.pri===1?'var(--red)':'var(--tx3)'}">P${p.pri}</td></tr>`;
+    });
+    h+='</table></div>';
+  }
+  a.innerHTML=h;
 }
 // Inicialização assíncrona — carrega do Supabase antes de renderizar
 document.getElementById('app').innerHTML='<div style="text-align:center;padding:3rem;color:var(--tx2);font-size:12px"><i class="ti ti-loader-2" style="font-size:22px;display:block;margin-bottom:8px;animation:spin .8s linear infinite"></i>Carregando dados do Supabase...</div>';
