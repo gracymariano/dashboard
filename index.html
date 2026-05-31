@@ -116,6 +116,37 @@
 .footer{text-align:center;padding:1rem 0 .5rem;font-size:9px;color:var(--tx3)}
 @media(max-width:700px){.C{padding:.75rem}.cg{gap:2px}.cd{padding:4px;min-height:64px}.G{grid-template-columns:1fr 1fr}.rg{grid-template-columns:1fr 1fr}.D .R,.D .M{font-size:17px}.rc .rv{font-size:13px}.tabs{-webkit-overflow-scrolling:touch}.T th,.T td{padding:4px 5px;font-size:9px}.ST{font-size:10px}.HL h1{font-size:17px}}
 @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+/* ===== FEATURE 01: Top Páginas controls + Histórico ===== */
+.tpc{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:7px}
+.fsel{font-size:11px;padding:4px 8px;border:1px solid var(--bd);border-radius:6px;background:var(--bg3);color:var(--tx);font-family:inherit;cursor:pointer}
+.fsel:hover{border-color:var(--bd2)}
+.dirb{padding:4px 9px;border:1px solid var(--bd);border-radius:6px;background:var(--bg3);color:var(--tx2);font-family:inherit;font-size:11px;cursor:pointer;display:inline-flex;align-items:center;gap:3px;transition:.15s}.dirb:hover{border-color:var(--pur);color:var(--pur)}
+.dgr{color:var(--red)!important;border-color:var(--red)!important}.mx button.dgr{background:var(--red);color:#fff;border-color:var(--red)}
+/* Histórico editable table */
+.hwrap{overflow-x:auto;border:1px solid var(--bd);border-radius:8px}
+.htbl{width:100%;border-collapse:collapse;font-size:10px;min-width:640px}
+.htbl th{padding:5px 4px;font-size:9px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--bd);background:var(--bg2);text-align:center}
+.htbl th:first-child{text-align:left;padding-left:9px;position:sticky;left:0;background:var(--bg2);z-index:1}
+.htbl td{padding:0;border-bottom:1px solid var(--bd);text-align:center}
+.htbl td:first-child{padding:5px 9px;font-weight:500;color:var(--tx);text-align:left;white-space:nowrap;position:sticky;left:0;background:var(--bg3);z-index:1}
+.htbl tr:nth-child(even) td:first-child{background:var(--bg2)}
+.htbl tr:nth-child(even){background:var(--bg2)}
+.hin{width:100%;min-width:42px;border:none;background:transparent;color:var(--tx);font-family:inherit;font-size:10px;text-align:center;padding:6px 2px;font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+.hin::-webkit-outer-spin-button,.hin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.hin:focus{outline:none;background:var(--pur);color:#fff;border-radius:3px}
+.hin::placeholder{color:var(--tx3);opacity:.5}
+/* Smart indicator cards */
+.ind{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.ind .ic{background:var(--bg3);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}
+.ind .ic .il{font-size:10px;color:var(--tx3);display:flex;align-items:center;gap:4px;margin-bottom:3px}
+.ind .ic .iv{font-size:18px;font-weight:600}.ind .ic .is{font-size:10px;color:var(--tx3);margin-top:1px}
+/* Toast */
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(8px);background:var(--tx);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:12px;font-weight:500;z-index:2000;box-shadow:0 8px 30px rgba(0,0,0,.25);opacity:0;transition:opacity .2s,transform .2s;display:flex;align-items:center;gap:7px;max-width:90vw}
+.toast.sh{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast i{font-size:15px}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.gb{transform-box:fill-box;transform-origin:bottom;animation:grow .5s cubic-bezier(.2,.7,.3,1) both}
+@media(max-width:700px){.htbl{font-size:9px}.ind{grid-template-columns:1fr 1fr}.tpc{gap:4px}.fsel,.dirb{font-size:10px}}
 </style>
 </head>
 <body>
@@ -216,6 +247,13 @@ const SAZ=[
 ];
 // ===== STATE =====
 let cM=0,selD=null,aT='dash',cP='gd',cT={},ac={},tE={};
+// FEATURE 01 state: ordenação Top Páginas + Histórico Anual
+let tpSort={by:'cur',dir:'desc'};
+const HMET=[{k:'imp',l:'Impressões'},{k:'vis',l:'Visualizações'},{k:'usu',l:'Usuários'},{k:'cli',l:'Cliques'}];
+const HML={imp:'Impressões',vis:'Visualizações',usu:'Usuários',cli:'Cliques'};
+const HMESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+let hYear=String(new Date().getFullYear());
+let hMetric='imp',hCmpA='',hCmpB='';
 const SITES=['gd','blog','cora'];
 const CATS=['reels','artigos','pins','melhorias'];
 const CATL={reels:'Reels',artigos:'Artigos',pins:'Pins',melhorias:'Melhorias'};
@@ -258,6 +296,17 @@ function sCosts(m,c){ac[m+'-costs']=c;sv()}
 // URLs
 function gU(m,s){return ac[m+'-u-'+s]||[]}
 function sU(m,s,u){ac[m+'-u-'+s]=u;sv()}
+// ===== FEATURE 01: Histórico Anual (persistido em ac.hist via Supabase + localStorage) =====
+function gHistAll(){if(!ac.hist||typeof ac.hist!=='object')ac.hist={};return ac.hist}
+function emptyYear(){return{imp:Array(12).fill(null),vis:Array(12).fill(null),usu:Array(12).fill(null),cli:Array(12).fill(null)}}
+function gHist(y){const all=gHistAll();if(!all[y])all[y]=emptyYear();HMET.forEach(mt=>{if(!Array.isArray(all[y][mt.k]))all[y][mt.k]=Array(12).fill(null)});return all[y]}
+function sHistCell(y,metric,mi,val){const all=gHistAll();if(!all[y])all[y]=emptyYear();if(!Array.isArray(all[y][metric]))all[y][metric]=Array(12).fill(null);all[y][metric][mi]=(val===''||val==null||isNaN(val))?null:Number(val);sv()}
+function clearHist(y){const all=gHistAll();delete all[y];sv()}
+function gHistYears(){const ys=new Set(['2024','2025','2026']);Object.keys(gHistAll()).forEach(y=>ys.add(y));return[...ys].sort()}
+function hasYearData(y){const d=gHistAll()[y];if(!d)return false;return HMET.some(mt=>(d[mt.k]||[]).some(v=>v!=null&&v!==''))}
+// ===== FEATURE 01: componentes reutilizáveis (toast + modal de confirmação) =====
+function toast(msg,icon){const t=document.createElement('div');t.className='toast';t.innerHTML=`<i class="ti ${icon||'ti-circle-check'}"></i><span>${msg}</span>`;document.body.appendChild(t);requestAnimationFrame(()=>t.classList.add('sh'));setTimeout(()=>{t.classList.remove('sh');setTimeout(()=>t.remove(),250)},2600)}
+function cfm(title,msg,okLabel,okClass,cb){const o=document.createElement('div');o.className='ov';o.id='ov-cfm';o.innerHTML=`<div class="mx"><h4>${title}</h4><p style="font-size:11px;color:var(--tx2);line-height:1.5;margin-bottom:10px">${msg}</p><div class="mbb"><button onclick="document.getElementById('ov-cfm')?.remove()">Cancelar</button><button class="${okClass||'pr'}" id="cfm-ok">${okLabel||'Confirmar'}</button></div></div>`;document.body.appendChild(o);document.getElementById('cfm-ok').onclick=()=>{o.remove();cb()};o.addEventListener('click',e=>{if(e.target===o)o.remove()})}
 // Pricing rules
 function gPR(m){return ac[m+'-pr']||[{tipo:'Banner',min:'',regra:''},{tipo:'Interstitial',min:'',regra:''},{tipo:'Anchor',min:'',regra:''}]}
 function sPR(m,p){ac[m+'-pr']=p;sv()}
@@ -276,10 +325,10 @@ function addDay(m,d){sTt(m,d,'Nova atividade');sTk(m,d,['Tarefa 1']);sDg(m,d,'pl
 function togAll(m,d){const tk=gTk(m,d);if(!tk.length)return;const ad=tk.every((_,i)=>cT[K(m,d,i)]);tk.forEach((_,i)=>{cT[K(m,d,i)]=!ad});sv()}
 // ===== RENDER =====
 function R(){
-  const tabs=[{id:'dash',i:'ti-chart-bar',l:'Dashboard'},{id:'road',i:'ti-calendar',l:'Projetos'},{id:'edit',i:'ti-notebook',l:'Calendário editorial'},{id:'cora',i:'ti-heart',l:'Cora Cora News'}];
+  const tabs=[{id:'dash',i:'ti-chart-bar',l:'Dashboard'},{id:'hist',i:'ti-history',l:'Histórico'},{id:'road',i:'ti-calendar',l:'Projetos'},{id:'edit',i:'ti-notebook',l:'Calendário editorial'},{id:'cora',i:'ti-heart',l:'Cora Cora News'}];
   document.getElementById('tabs').innerHTML=tabs.map(t=>`<button class="tb ${aT===t.id?'a':''}" onclick="aT='${t.id}';R()"><i class="ti ${t.i}" style="font-size:12px;margin-right:2px"></i>${t.l}</button>`).join('');
   const a=document.getElementById('app');
-  if(aT==='dash')rD(a);else if(aT==='road')rR(a);else if(aT==='cora')rCC(a);else rE(a);
+  if(aT==='dash')rD(a);else if(aT==='hist')rH(a);else if(aT==='road')rR(a);else if(aT==='cora')rCC(a);else rE(a);
 }
 function mN(){return`<div class="mn">${MO.map((m,i)=>`<button class="mb ${i===cM?'a':''}" onclick="cM=${i};selD=null;R()">${m.s}${aT==='road'?' <span class="p">'+gCP(i)+'%</span>':''}</button>`).join('')}</div>`}
 // ===== DASHBOARD =====
@@ -368,8 +417,21 @@ function rD(a){
   function rTP(site){
     const sL2={gd:'Guardar Dinheiro (principal)',blog:'Blog Guardar Dinheiro',cora:'CoraCora News'};
     const urls=gU(cM,site);
-    const sortedIdx=urls.map((u,i)=>({u,i})).sort((a,b)=>(b.u.cur||0)-(a.u.cur||0));
-    let h=`<div class="S"><div class="ST"><i class="ti ti-world" style="font-size:13px"></i> Top páginas — ${sL2[site]}</div><div style="overflow-x:auto"><table class="T"><thead><tr><th>Página</th><th>Mês ant.</th><th>${m.n} (${dE}d)</th><th>Proj 30d</th><th>Var (proj vs ant)</th><th></th></tr></thead><tbody>`;
+    // Módulo 2 — ordenação dinâmica (instantânea, sem novo upload)
+    const sval=u=>{const p30=proj(u.cur||0,dE,tD),vr=u.prev?((p30-u.prev)/u.prev*100):0;
+      if(tpSort.by==='prev')return u.prev||0;if(tpSort.by==='p30')return p30;
+      if(tpSort.by==='var')return vr;if(tpSort.by==='name')return(u.n||'').toLowerCase();return u.cur||0;};
+    const sortedIdx=urls.map((u,i)=>({u,i})).sort((a,b)=>{const va=sval(a.u),vb=sval(b.u);
+      if(typeof va==='string')return tpSort.dir==='asc'?va.localeCompare(vb):vb.localeCompare(va);
+      return tpSort.dir==='asc'?va-vb:vb-va;});
+    const sortOpts=[['var','Variação (%)'],['cur','Sessões atuais'],['prev','Sessões mês ant.'],['p30','Projeção 30d'],['name','Nome (A–Z)']];
+    let h=`<div class="S"><div class="ST"><i class="ti ti-world" style="font-size:13px"></i> Top páginas — ${sL2[site]} <span style="font-weight:400;text-transform:none;margin-left:auto;font-size:10px;color:var(--tx3)">${urls.length} página${urls.length===1?'':'s'}</span></div>`;
+    if(urls.length){
+      h+=`<div class="tpc"><span style="font-size:10px;color:var(--tx3)">Ordenar por:</span><select class="fsel" onchange="tpSort.by=this.value;R()">${sortOpts.map(([v,l])=>`<option value="${v}" ${tpSort.by===v?'selected':''}>${l}</option>`).join('')}</select>`;
+      h+=`<button class="dirb" onclick="tpSort.dir=tpSort.dir==='asc'?'desc':'asc';R()" title="Inverter direção">${tpSort.dir==='asc'?'<i class="ti ti-sort-ascending"></i> Crescente':'<i class="ti ti-sort-descending"></i> Decrescente'}</button>`;
+      h+=`<button class="dirb dgr" style="margin-left:auto" onclick="delAllPages(${cM},'${site}','${sL2[site]}')"><i class="ti ti-trash"></i> Excluir todas as páginas</button></div>`;
+    }
+    h+=`<div style="overflow-x:auto"><table class="T"><thead><tr><th>Página</th><th>Mês ant.</th><th>${m.n} (${dE}d)</th><th>Proj 30d</th><th>Var (proj vs ant)</th><th></th></tr></thead><tbody>`;
     sortedIdx.forEach(({u,i})=>{
       const p30=proj(u.cur||0,dE,tD),vr=u.prev?((p30-u.prev)/u.prev*100):0;
       const vc=vr>=5?'var(--grn)':vr>=-5?'var(--amb)':'var(--red)',ar=vr>=0?'▲':'▼';
@@ -499,6 +561,15 @@ function rAnual(){
 function aU(m,s){sM('Nome da página','',v=>{if(!v.trim())return;const u=gU(m,s);u.push({n:v.trim(),prev:0,cur:0});sU(m,s,u)},'text')}
 function eU(m,s,i,f){const u=gU(m,s);const cv=f==='n'?u[i].n:u[i][f];sM(f==='n'?'Página':f==='prev'?'Mês anterior':'Atual (parcial)',cv,v=>{u[i][f]=f==='n'?v:(v||0);sU(m,s,u)},f==='n'?'text':'number')}
 function rU(m,s,i){const u=gU(m,s);u.splice(i,1);sU(m,s,u);R()}
+// Módulo 1 — exclusão em massa com confirmação
+function delAllPages(m,s,label){
+  const n=gU(m,s).length;
+  if(!n){toast('Não há páginas para excluir.','ti-info-circle');return;}
+  cfm('Excluir todas as páginas','Tem certeza que deseja excluir todas as páginas cadastradas? Esta ação não poderá ser desfeita.','Excluir tudo','dgr',()=>{
+    sU(m,s,[]);R();
+    toast(`${n} página${n===1?'':'s'} removida${n===1?'':'s'} com sucesso.`,'ti-trash');
+  });
+}
 // ===== ROADMAP =====
 function rR(a){
   const m=MO[cM],cp=gCP(cM),tt=totalTasks(cM);
@@ -770,6 +841,154 @@ function rCC(a){
     h+='</table></div>';
   }
   a.innerHTML=h;
+}
+// ===== FEATURE 01 — HISTÓRICO ANUAL (Módulos 3, 4, 5, 6) =====
+function hNf(v){return(v==null||v==='')?'—':Number(v).toLocaleString('pt-BR')}
+// Gráfico de barras único (12 meses) — Módulo 4
+function hSingleChart(vals,color){
+  const mx=Math.max(1,...vals.map(v=>v||0));
+  const bw=30,gap=14,padL=10,padR=10,padTop=16,padBot=22,bH=120;
+  const W=padL+padR+12*bw+11*gap,svgH=padTop+bH+padBot,baseY=padTop+bH;
+  let bars=`<line x1="${padL}" y1="${baseY}" x2="${W-padR}" y2="${baseY}" stroke="var(--bd)" stroke-width="1"/>`;
+  vals.forEach((v,i)=>{
+    const x=padL+i*(bw+gap),val=v||0,bhh=val?Math.max(3,Math.round(val/mx*bH)):0,y=baseY-bhh;
+    if(val)bars+=`<rect class="gb" style="animation-delay:${(i*0.025).toFixed(3)}s" x="${x}" y="${y}" width="${bw}" height="${bhh}" rx="3" fill="${color}"><title>${HMESES[i]}: ${hNf(v)}</title></rect>`;
+    else bars+=`<rect x="${x}" y="${baseY-3}" width="${bw}" height="3" rx="1.5" fill="var(--bd)"><title>${HMESES[i]}: sem dados</title></rect>`;
+    if(val&&bhh>14)bars+=`<text x="${x+bw/2}" y="${y-3}" text-anchor="middle" font-size="7" fill="var(--tx2)">${fN(val)}</text>`;
+    bars+=`<text x="${x+bw/2}" y="${baseY+12}" text-anchor="middle" font-size="8" fill="var(--tx3)">${HMESES[i]}</text>`;
+  });
+  return`<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${svgH}" style="width:100%;min-width:${Math.round(W*0.62)}px;height:auto;display:block">${bars}</svg></div>`;
+}
+// Gráfico de barras agrupadas (comparação entre anos) — Módulo 4
+function hGroupChart(va,vb,ca,cb){
+  const mx=Math.max(1,...va.map(v=>v||0),...vb.map(v=>v||0));
+  const bw=11,ig=2,gap=12,padL=10,padR=10,padTop=16,padBot=22,bH=120,gw=bw*2+ig;
+  const W=padL+padR+12*gw+11*gap,svgH=padTop+bH+padBot,baseY=padTop+bH;
+  let bars=`<line x1="${padL}" y1="${baseY}" x2="${W-padR}" y2="${baseY}" stroke="var(--bd)" stroke-width="1"/>`;
+  for(let i=0;i<12;i++){
+    const gx=padL+i*(gw+gap);
+    [[va[i],ca,0],[vb[i],cb,1]].forEach(([v,c,j])=>{
+      const x=gx+j*(bw+ig),val=v||0,bhh=val?Math.max(3,Math.round(val/mx*bH)):0,y=baseY-bhh;
+      if(val)bars+=`<rect class="gb" style="animation-delay:${(i*0.025+j*0.012).toFixed(3)}s" x="${x}" y="${y}" width="${bw}" height="${bhh}" rx="2" fill="${c}"><title>${HMESES[i]}: ${hNf(v)}</title></rect>`;
+      else bars+=`<rect x="${x}" y="${baseY-2}" width="${bw}" height="2" fill="var(--bd)"/>`;
+    });
+    bars+=`<text x="${gx+gw/2}" y="${baseY+12}" text-anchor="middle" font-size="8" fill="var(--tx3)">${HMESES[i]}</text>`;
+  }
+  return`<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${svgH}" style="width:100%;min-width:${Math.round(W*0.7)}px;height:auto;display:block">${bars}</svg></div>`;
+}
+// Indicadores inteligentes — Módulo 5
+function hIndicators(y,metric){
+  const vals=gHist(y)[metric]||[];
+  const filled=vals.map((v,i)=>({v,i})).filter(o=>o.v!=null&&o.v!=='');
+  const card=(ic,lbl,val,sub)=>`<div class="ic"><div class="il"><span>${ic}</span> ${lbl}</div><div class="iv">${val}</div>${sub?`<div class="is">${sub}</div>`:''}</div>`;
+  if(!filled.length)return`<div class="ind">${card('🏆','Melhor mês','—')}${card('📉','Pior mês','—')}${card('📈','Crescimento acumulado','—')}${card('📊','Média mensal','—')}${card('📅','Último mês preenchido','—')}</div>`;
+  const best=filled.reduce((a,b)=>b.v>a.v?b:a),worst=filled.reduce((a,b)=>b.v<a.v?b:a);
+  const first=filled[0],last=filled[filled.length-1];
+  const growth=first.v?((last.v-first.v)/Math.abs(first.v)*100):0;
+  const avg=filled.reduce((s,o)=>s+o.v,0)/filled.length;
+  const gc=growth>=0?'var(--grn)':'var(--red)',ga=growth>=0?'▲':'▼';
+  return`<div class="ind">
+    ${card('🏆','Melhor mês',HMESES[best.i],hNf(best.v))}
+    ${card('📉','Pior mês',HMESES[worst.i],hNf(worst.v))}
+    ${card('📈','Crescimento acumulado',`<span style="color:${gc}">${growth>=0?'+':''}${growth.toFixed(0)}% ${ga}</span>`,`${HMESES[first.i]} → ${HMESES[last.i]}`)}
+    ${card('📊','Média mensal',hNf(Math.round(avg)),`${filled.length} ${filled.length===1?'mês':'meses'} preenchido${filled.length===1?'':'s'}`)}
+    ${card('📅','Último mês preenchido',HMESES[last.i],hNf(last.v))}
+  </div>`;
+}
+// Bloco visual (indicadores + gráfico + comparação) — re-renderizado sem perder foco da tabela
+function hViewHTML(y){
+  const mLbl=HML[hMetric];
+  let h=`<div class="S"><div class="ST"><i class="ti ti-bulb" style="font-size:13px"></i> Indicadores inteligentes — ${mLbl} · ${y}</div>${hIndicators(y,hMetric)}</div>`;
+  // Dashboard histórico (gráfico único)
+  h+=`<div class="S"><div class="ST"><i class="ti ti-chart-bar" style="font-size:13px"></i> Dashboard histórico — ${y}
+    <select class="fsel" style="margin-left:auto" onchange="hMetric=this.value;hRefresh()">${HMET.map(mt=>`<option value="${mt.k}" ${hMetric===mt.k?'selected':''}>${mt.l}</option>`).join('')}</select></div>`;
+  h+=`<div style="font-size:9px;color:var(--tx2);margin-bottom:6px;display:flex;align-items:center;gap:4px"><i style="width:8px;height:8px;border-radius:2px;background:var(--pur);display:inline-block"></i>${mLbl} ${y}</div>`;
+  h+=hSingleChart(gHist(y)[hMetric]||[],'var(--pur)')+`</div>`;
+  // Comparação entre anos
+  const years=gHistYears();
+  if(!years.includes(hCmpA))hCmpA=y;
+  if(!years.includes(hCmpB)||hCmpB===hCmpA)hCmpB=years.find(yy=>yy!==hCmpA)||years[0];
+  h+=`<div class="S"><div class="ST"><i class="ti ti-chart-bar" style="font-size:13px"></i> Comparação entre anos — ${mLbl}</div>`;
+  h+=`<div class="tpc"><select class="fsel" onchange="hCmpA=this.value;hRefresh()">${years.map(yy=>`<option value="${yy}" ${hCmpA===yy?'selected':''}>${yy}</option>`).join('')}</select>`;
+  h+=`<span style="font-size:11px;color:var(--tx3)">×</span><select class="fsel" onchange="hCmpB=this.value;hRefresh()">${years.map(yy=>`<option value="${yy}" ${hCmpB===yy?'selected':''}>${yy}</option>`).join('')}</select></div>`;
+  h+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px"><span style="font-size:9px;color:var(--tx2);display:inline-flex;align-items:center;gap:4px"><i style="width:8px;height:8px;border-radius:2px;background:var(--pur);display:inline-block"></i>${hCmpA}</span><span style="font-size:9px;color:var(--tx2);display:inline-flex;align-items:center;gap:4px"><i style="width:8px;height:8px;border-radius:2px;background:var(--cor);display:inline-block"></i>${hCmpB}</span></div>`;
+  h+=hGroupChart(gHist(hCmpA)[hMetric]||[],gHist(hCmpB)[hMetric]||[],'var(--pur)','var(--cor)')+`</div>`;
+  return h;
+}
+function hRefresh(){const el=document.getElementById('hview');if(el)el.innerHTML=hViewHTML(hYear)}
+// Seleção / criação de ano
+function hPickYear(v){
+  if(v==='__new'){sM('Novo ano (ex.: 2027)','',val=>{const y=String(parseInt(val)||'').trim();if(!y||y==='0'){R();return;}hYear=y;gHist(y);sv();R();toast('Ano '+y+' criado.','ti-calendar-plus')},'number');return;}
+  hYear=v;R();
+}
+// Ações do histórico
+function hSave(y){sv();toast('Histórico de '+y+' salvo.','ti-device-floppy')}
+function hClear(y){
+  if(!hasYearData(y)){toast('O ano '+y+' já está vazio.','ti-info-circle');return;}
+  cfm('Limpar dados do ano','Tem certeza que deseja apagar todos os dados de '+y+'? Esta ação não poderá ser desfeita.','Limpar dados','dgr',()=>{clearHist(y);R();toast('Dados de '+y+' removidos.','ti-eraser')});
+}
+// Render principal da aba Histórico — Módulo 3
+function rH(a){
+  const years=gHistYears();
+  if(!years.includes(hYear))hYear=years[years.length-1];
+  const d=gHist(hYear);
+  let h=`<p style="font-size:11px;color:var(--tx2);margin-bottom:.7rem;line-height:1.5">Acompanhe a evolução anual dos sites. Os dados são inseridos manualmente por ano e ficam salvos automaticamente (Supabase + navegador).</p>`;
+  // Seletor de ano + ações
+  h+=`<div class="tpc" style="margin-bottom:.7rem">
+    <span style="font-size:11px;color:var(--tx2)">Ano:</span>
+    <select class="fsel" onchange="hPickYear(this.value)">${years.map(y=>`<option value="${y}" ${hYear===y?'selected':''}>${y}</option>`).join('')}<option value="__new">+ Novo ano…</option></select>
+    <button class="mb" onclick="hSave('${hYear}')"><i class="ti ti-device-floppy" style="font-size:11px;margin-right:3px"></i>Salvar histórico</button>
+    <button class="mb" onclick="hImport('${hYear}')"><i class="ti ti-file-import" style="font-size:11px;margin-right:3px"></i>Importar dados</button>
+    <button class="mb" style="border-color:var(--red);color:var(--red)" onclick="hClear('${hYear}')"><i class="ti ti-trash" style="font-size:11px;margin-right:3px"></i>Limpar dados do ano</button>
+  </div>`;
+  // Tabela editável — Módulo 3
+  h+=`<div class="S"><div class="ST"><i class="ti ti-table" style="font-size:13px"></i> Cadastro mensal — ${hYear}</div><div class="hwrap"><table class="htbl"><thead><tr><th>Métrica</th>${HMESES.map(m=>`<th>${m}</th>`).join('')}</tr></thead><tbody>`;
+  HMET.forEach(mt=>{
+    h+=`<tr><td>${mt.l}</td>`;
+    for(let i=0;i<12;i++){const v=d[mt.k][i];h+=`<td><input class="hin" type="number" inputmode="numeric" value="${v==null?'':v}" placeholder="—" onchange="sHistCell('${hYear}','${mt.k}',${i},this.value);hRefresh()"></td>`;}
+    h+=`</tr>`;
+  });
+  h+=`</tbody></table></div><p style="font-size:9px;color:var(--tx3);margin-top:5px">Edite qualquer célula e saia do campo para salvar. Use Tab para navegar entre os meses.</p></div>`;
+  // Bloco de indicadores + gráficos (atualizado isoladamente)
+  h+=`<div id="hview">${hViewHTML(hYear)}</div>`;
+  a.innerHTML=h;
+}
+// Importação de dados do histórico via CSV — Módulo 3 (📤 Importar Dados)
+let _hcsv=null;
+function hImport(y){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.csv,text/csv,application/csv';
+  inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=ev=>hParseCSV(y,ev.target.result);rd.readAsText(f,'UTF-8')};
+  inp.click();
+}
+function hMetricMatch(s){s=(s||'').toLowerCase();if(s.includes('impress'))return'imp';if(s.includes('visualiz')||s.includes('view')||s.includes('exib'))return'vis';if(s.includes('usuár')||s.includes('usuar')||s.includes('user'))return'usu';if(s.includes('clique')||s.includes('click'))return'cli';return null}
+function hNumParse(raw){if(raw==null)return null;raw=String(raw).replace(/"/g,'').trim();if(raw===''||raw==='—')return null;let s=raw.replace(/\s/g,'');if(s.indexOf(',')>-1&&s.indexOf('.')>-1)s=s.replace(/\./g,'').replace(',','.');else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,'');else s=s.replace(',','.');const v=parseFloat(s);return isNaN(v)?null:v}
+function hParseCSV(y,txt){
+  if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);
+  const lines=txt.split('\n').map(l=>l.trim()).filter(l=>l&&!l.startsWith('#'));
+  if(!lines.length){toast('CSV vazio ou inválido.','ti-alert-circle');return;}
+  const parsed={};
+  lines.forEach(line=>{const cols=_csvRow(line);const mk=hMetricMatch((cols[0]||'').replace(/"/g,''));if(!mk||parsed[mk])return;const nums=[];for(let i=1;i<cols.length&&nums.length<12;i++)nums.push(hNumParse(cols[i]));while(nums.length<12)nums.push(null);parsed[mk]=nums;});
+  const found=Object.keys(parsed);
+  if(!found.length){toast('Nenhuma métrica reconhecida. Use uma linha por métrica.','ti-alert-circle');return;}
+  _hcsv={y,parsed};
+  const o=document.createElement('div');o.className='ov';o.id='ov-hcsv';
+  let prev=`<table style="width:100%;border-collapse:collapse;font-size:10px"><tr><th style="text-align:left;padding:5px 8px;border-bottom:1px solid var(--bd);background:var(--bg2);color:var(--tx3);font-weight:600">Métrica</th>${HMESES.map(m=>`<th style="text-align:right;padding:5px 4px;border-bottom:1px solid var(--bd);background:var(--bg2);color:var(--tx3);font-weight:600">${m}</th>`).join('')}</tr>`;
+  HMET.forEach(mt=>{if(!parsed[mt.k])return;prev+=`<tr><td style="padding:4px 8px;border-bottom:1px solid var(--bd);font-weight:500">${mt.l}</td>${parsed[mt.k].map(v=>`<td style="text-align:right;padding:4px;border-bottom:1px solid var(--bd);font-variant-numeric:tabular-nums">${v==null?'—':fN(v)}</td>`).join('')}</tr>`;});
+  prev+=`</table>`;
+  o.innerHTML=`<div class="mx" style="width:560px;max-width:96vw;max-height:85vh;display:flex;flex-direction:column">
+    <h4 style="display:flex;align-items:center;gap:6px"><i class="ti ti-file-import" style="color:var(--pur)"></i> Importar dados — ${y}</h4>
+    <p style="font-size:11px;color:var(--tx2);margin:6px 0 8px;line-height:1.5">Detectadas <strong>${found.length}</strong> métrica(s). Os valores substituirão os dados atuais de <strong>${y}</strong>.<br>Formato esperado: uma linha por métrica (Impressões, Visualizações, Usuários, Cliques) seguida de até 12 valores (Jan…Dez).</p>
+    <div style="overflow:auto;flex:1;border:1px solid var(--bd);border-radius:6px;margin-bottom:10px">${prev}</div>
+    <div class="mbb"><button onclick="document.getElementById('ov-hcsv')?.remove();_hcsv=null">Cancelar</button><button class="pr" onclick="hApplyCSV()"><i class="ti ti-check" style="font-size:11px"></i> Confirmar importação</button></div>
+  </div>`;
+  document.body.appendChild(o);
+  o.addEventListener('click',e=>{if(e.target===o){o.remove();_hcsv=null;}});
+}
+function hApplyCSV(){
+  if(!_hcsv)return;const{y,parsed}=_hcsv;const yd=gHist(y);
+  let n=0;HMET.forEach(mt=>{if(parsed[mt.k]){yd[mt.k]=parsed[mt.k].slice(0,12);n++;}});
+  sv();document.getElementById('ov-hcsv')?.remove();_hcsv=null;hYear=y;R();
+  toast(n+' métrica(s) importada(s) para '+y+'.','ti-file-import');
 }
 // Inicialização assíncrona — carrega do Supabase antes de renderizar
 document.getElementById('app').innerHTML='<div style="text-align:center;padding:3rem;color:var(--tx2);font-size:12px"><i class="ti ti-loader-2" style="font-size:22px;display:block;margin-bottom:8px;animation:spin .8s linear infinite"></i>Carregando dados do Supabase...</div>';
