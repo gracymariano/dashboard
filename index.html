@@ -249,11 +249,50 @@ const SAZ=[
 let cM=0,selD=null,aT='dash',cP='gd',cT={},ac={},tE={};
 // FEATURE 01 state: ordenação Top Páginas + Histórico Anual
 let tpSort={by:'cur',dir:'desc'};
-const HMET=[{k:'imp',l:'Impressões'},{k:'vis',l:'Visualizações'},{k:'usu',l:'Usuários'},{k:'cli',l:'Cliques'}];
-const HML={imp:'Impressões',vis:'Visualizações',usu:'Usuários',cli:'Cliques'};
+// FEATURE 01 + Módulo de Entrada de Dados: datasets anuais (manual + importação)
 const HMESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const HDS=[
+  {id:'geral',l:'Visão Geral',ic:'ti-layout-dashboard',metrics:[
+    {k:'imp',l:'Impressões',fmt:'int',al:['impress']},
+    {k:'vis',l:'Visualizações',fmt:'int',al:['visualiz','views','view','exib']},
+    {k:'usu',l:'Usuários',fmt:'int',al:['user']},
+    {k:'cli',l:'Cliques',fmt:'int',al:['clique','click']}]},
+  {id:'gsc',l:'Search Console',ic:'ti-brand-google',metrics:[
+    {k:'imp',l:'Impressões',fmt:'int',al:['impress']},
+    {k:'cli',l:'Cliques',fmt:'int',al:['clique','click']},
+    {k:'ctr',l:'CTR',fmt:'pct',al:['ctr','taxa de clique']},
+    {k:'pos',l:'Posição Média',fmt:'dec',invert:true,al:['posi','position']}]},
+  {id:'ga',l:'Analytics',ic:'ti-chart-dots',metrics:[
+    {k:'usuarios_tot',l:'Usuários Totais',fmt:'int',al:['usuários totais','usuarios totais','total users','total user','usuários tot','total de usu']},
+    {k:'novos',l:'Novos Usuários',fmt:'int',al:['novos usu','new users','new user','novos']},
+    {k:'recorrentes',l:'Usuários Recorrentes',fmt:'int',al:['recorrent','returning']},
+    {k:'tempo_eng',l:'Tempo Médio de Engajamento',fmt:'dec',al:['tempo méd','tempo med','engagement time','tempo de engaj','tempo engaj']},
+    {k:'sessoes',l:'Sessões',fmt:'int',al:['sessõe','sessoe','session']},
+    {k:'tx_eng',l:'Taxa de Engajamento',fmt:'pct',al:['taxa de engaj','engagement rate','taxa eng']},
+    {k:'ev_sessao',l:'Eventos por Sessão',fmt:'dec',al:['eventos por sess','events per sess','evento']}]},
+  {id:'admgr',l:'Ad Manager',ic:'ti-coin',metrics:[
+    {k:'imp',l:'Impressões',fmt:'int',al:['impress']},
+    {k:'cli',l:'Cliques',fmt:'int',al:['clique','click']},
+    {k:'ctr',l:'CTR',fmt:'pct',al:['ctr']},
+    {k:'ecpm',l:'eCPM',fmt:'dec',al:['ecpm','cpm']},
+    {k:'receita',l:'Receita',fmt:'money',al:['receita','revenue','faturament']},
+    {k:'visib',l:'Visibilidade',fmt:'pct',al:['visib','viewab']}]},
+  {id:'aquis',l:'Aquisição de Tráfego',ic:'ti-route',metrics:[
+    {k:'organic_search',l:'Organic Search',fmt:'int',al:['organic search','busca orgân']},
+    {k:'direct',l:'Direct',fmt:'int',al:['direct','direto']},
+    {k:'unassigned',l:'Unassigned',fmt:'int',al:['unassigned','não atribuí','nao atribui']},
+    {k:'referral',l:'Referral',fmt:'int',al:['referral','referênc','referenc']},
+    {k:'paid_search',l:'Paid Search',fmt:'int',al:['paid search','busca paga']},
+    {k:'organic_social',l:'Organic Social',fmt:'int',al:['organic social','social orgân']},
+    {k:'organic_video',l:'Organic Video',fmt:'int',al:['organic video','vídeo orgân','video organ']},
+    {k:'email',l:'Email',fmt:'int',al:['email','e-mail']},
+    {k:'outros',l:'Outros',fmt:'int',al:['outros','other']}]}
+];
+function dsById(id){return HDS.find(d=>d.id===id)||HDS[0]}
+function curDS(){return dsById(hDS)}
+let hDS='geral';
 let hYear=String(new Date().getFullYear());
-let hMetric='imp',hCmpA='',hCmpB='';
+let hMetric='imp',hCmpA='',hCmpB='',hImpMode='replace';
 const SITES=['gd','blog','cora'];
 const CATS=['reels','artigos','pins','melhorias'];
 const CATL={reels:'Reels',artigos:'Artigos',pins:'Pins',melhorias:'Melhorias'};
@@ -297,13 +336,16 @@ function sCosts(m,c){ac[m+'-costs']=c;sv()}
 function gU(m,s){return ac[m+'-u-'+s]||[]}
 function sU(m,s,u){ac[m+'-u-'+s]=u;sv()}
 // ===== FEATURE 01: Histórico Anual (persistido em ac.hist via Supabase + localStorage) =====
-function gHistAll(){if(!ac.hist||typeof ac.hist!=='object')ac.hist={};return ac.hist}
-function emptyYear(){return{imp:Array(12).fill(null),vis:Array(12).fill(null),usu:Array(12).fill(null),cli:Array(12).fill(null)}}
-function gHist(y){const all=gHistAll();if(!all[y])all[y]=emptyYear();HMET.forEach(mt=>{if(!Array.isArray(all[y][mt.k]))all[y][mt.k]=Array(12).fill(null)});return all[y]}
-function sHistCell(y,metric,mi,val){const all=gHistAll();if(!all[y])all[y]=emptyYear();if(!Array.isArray(all[y][metric]))all[y][metric]=Array(12).fill(null);all[y][metric][mi]=(val===''||val==null||isNaN(val))?null:Number(val);sv()}
-function clearHist(y){const all=gHistAll();delete all[y];sv()}
+function gHistAll(){if(!ac.hist||typeof ac.hist!=='object')ac.hist={};migrateHist();return ac.hist}
+// Migração: estrutura antiga {ano:{imp:[],vis:[],usu:[],cli:[]}} -> {ano:{geral:{...}}}
+function migrateHist(){const all=ac.hist;Object.keys(all).forEach(y=>{const yd=all[y];if(yd&&Array.isArray(yd.imp)){all[y]={geral:yd}}})}
+function emptyDS(ds){const o={};ds.metrics.forEach(m=>o[m.k]=Array(12).fill(null));return o}
+function gDSData(y,dsId){const all=gHistAll();if(!all[y]||typeof all[y]!=='object')all[y]={};const ds=dsById(dsId);if(!all[y][dsId])all[y][dsId]=emptyDS(ds);ds.metrics.forEach(m=>{if(!Array.isArray(all[y][dsId][m.k]))all[y][dsId][m.k]=Array(12).fill(null)});return all[y][dsId]}
+function sHistCell(y,dsId,metric,mi,val){const d=gDSData(y,dsId);d[metric][mi]=(val===''||val==null||isNaN(Number(val)))?null:Number(val);sv()}
+function clearDSYear(y,dsId){const all=gHistAll();if(all[y]&&all[y][dsId])delete all[y][dsId];sv()}
 function gHistYears(){const ys=new Set(['2024','2025','2026']);Object.keys(gHistAll()).forEach(y=>ys.add(y));return[...ys].sort()}
-function hasYearData(y){const d=gHistAll()[y];if(!d)return false;return HMET.some(mt=>(d[mt.k]||[]).some(v=>v!=null&&v!==''))}
+function hasDSData(y,dsId){const all=gHistAll();const d=all[y]&&all[y][dsId];if(!d)return false;return Object.values(d).some(arr=>Array.isArray(arr)&&arr.some(v=>v!=null&&v!==''))}
+function ensureMetric(forceFirst){const ds=curDS();if(forceFirst||!ds.metrics.some(m=>m.k===hMetric))hMetric=ds.metrics[0].k}
 // ===== FEATURE 01: componentes reutilizáveis (toast + modal de confirmação) =====
 function toast(msg,icon){const t=document.createElement('div');t.className='toast';t.innerHTML=`<i class="ti ${icon||'ti-circle-check'}"></i><span>${msg}</span>`;document.body.appendChild(t);requestAnimationFrame(()=>t.classList.add('sh'));setTimeout(()=>{t.classList.remove('sh');setTimeout(()=>t.remove(),250)},2600)}
 function cfm(title,msg,okLabel,okClass,cb){const o=document.createElement('div');o.className='ov';o.id='ov-cfm';o.innerHTML=`<div class="mx"><h4>${title}</h4><p style="font-size:11px;color:var(--tx2);line-height:1.5;margin-bottom:10px">${msg}</p><div class="mbb"><button onclick="document.getElementById('ov-cfm')?.remove()">Cancelar</button><button class="${okClass||'pr'}" id="cfm-ok">${okLabel||'Confirmar'}</button></div></div>`;document.body.appendChild(o);document.getElementById('cfm-ok').onclick=()=>{o.remove();cb()};o.addEventListener('click',e=>{if(e.target===o)o.remove()})}
@@ -842,25 +884,31 @@ function rCC(a){
   }
   a.innerHTML=h;
 }
-// ===== FEATURE 01 — HISTÓRICO ANUAL (Módulos 3, 4, 5, 6) =====
-function hNf(v){return(v==null||v==='')?'—':Number(v).toLocaleString('pt-BR')}
+// ===== FEATURE 01 + ENTRADA DE DADOS — HISTÓRICO ANUAL (multi-dataset) =====
+function hFmt(v,fmt){if(v==null||v==='')return'—';v=Number(v);
+  if(fmt==='pct')return v.toLocaleString('pt-BR',{maximumFractionDigits:2})+'%';
+  if(fmt==='dec')return v.toLocaleString('pt-BR',{maximumFractionDigits:2});
+  if(fmt==='money')return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return v.toLocaleString('pt-BR');}
+function hLbl(v,fmt){if(v==null)return'';if(fmt==='int')return fN(v);if(fmt==='pct')return Number(v).toFixed(1)+'%';return Number(v).toLocaleString('pt-BR',{maximumFractionDigits:1})}
+function metaOf(dsId,mk){return dsById(dsId).metrics.find(m=>m.k===mk)||{fmt:'int'}}
 // Gráfico de barras único (12 meses) — Módulo 4
-function hSingleChart(vals,color){
+function hSingleChart(vals,color,fmt){
   const mx=Math.max(1,...vals.map(v=>v||0));
   const bw=30,gap=14,padL=10,padR=10,padTop=16,padBot=22,bH=120;
   const W=padL+padR+12*bw+11*gap,svgH=padTop+bH+padBot,baseY=padTop+bH;
   let bars=`<line x1="${padL}" y1="${baseY}" x2="${W-padR}" y2="${baseY}" stroke="var(--bd)" stroke-width="1"/>`;
   vals.forEach((v,i)=>{
     const x=padL+i*(bw+gap),val=v||0,bhh=val?Math.max(3,Math.round(val/mx*bH)):0,y=baseY-bhh;
-    if(val)bars+=`<rect class="gb" style="animation-delay:${(i*0.025).toFixed(3)}s" x="${x}" y="${y}" width="${bw}" height="${bhh}" rx="3" fill="${color}"><title>${HMESES[i]}: ${hNf(v)}</title></rect>`;
+    if(val)bars+=`<rect class="gb" style="animation-delay:${(i*0.025).toFixed(3)}s" x="${x}" y="${y}" width="${bw}" height="${bhh}" rx="3" fill="${color}"><title>${HMESES[i]}: ${hFmt(v,fmt)}</title></rect>`;
     else bars+=`<rect x="${x}" y="${baseY-3}" width="${bw}" height="3" rx="1.5" fill="var(--bd)"><title>${HMESES[i]}: sem dados</title></rect>`;
-    if(val&&bhh>14)bars+=`<text x="${x+bw/2}" y="${y-3}" text-anchor="middle" font-size="7" fill="var(--tx2)">${fN(val)}</text>`;
+    if(val&&bhh>14)bars+=`<text x="${x+bw/2}" y="${y-3}" text-anchor="middle" font-size="7" fill="var(--tx2)">${hLbl(val,fmt)}</text>`;
     bars+=`<text x="${x+bw/2}" y="${baseY+12}" text-anchor="middle" font-size="8" fill="var(--tx3)">${HMESES[i]}</text>`;
   });
   return`<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${svgH}" style="width:100%;min-width:${Math.round(W*0.62)}px;height:auto;display:block">${bars}</svg></div>`;
 }
 // Gráfico de barras agrupadas (comparação entre anos) — Módulo 4
-function hGroupChart(va,vb,ca,cb){
+function hGroupChart(va,vb,ca,cb,fmt){
   const mx=Math.max(1,...va.map(v=>v||0),...vb.map(v=>v||0));
   const bw=11,ig=2,gap=12,padL=10,padR=10,padTop=16,padBot=22,bH=120,gw=bw*2+ig;
   const W=padL+padR+12*gw+11*gap,svgH=padTop+bH+padBot,baseY=padTop+bH;
@@ -869,7 +917,7 @@ function hGroupChart(va,vb,ca,cb){
     const gx=padL+i*(gw+gap);
     [[va[i],ca,0],[vb[i],cb,1]].forEach(([v,c,j])=>{
       const x=gx+j*(bw+ig),val=v||0,bhh=val?Math.max(3,Math.round(val/mx*bH)):0,y=baseY-bhh;
-      if(val)bars+=`<rect class="gb" style="animation-delay:${(i*0.025+j*0.012).toFixed(3)}s" x="${x}" y="${y}" width="${bw}" height="${bhh}" rx="2" fill="${c}"><title>${HMESES[i]}: ${hNf(v)}</title></rect>`;
+      if(val)bars+=`<rect class="gb" style="animation-delay:${(i*0.025+j*0.012).toFixed(3)}s" x="${x}" y="${y}" width="${bw}" height="${bhh}" rx="2" fill="${c}"><title>${HMESES[i]}: ${hFmt(v,fmt)}</title></rect>`;
       else bars+=`<rect x="${x}" y="${baseY-2}" width="${bw}" height="2" fill="var(--bd)"/>`;
     });
     bars+=`<text x="${gx+gw/2}" y="${baseY+12}" text-anchor="middle" font-size="8" fill="var(--tx3)">${HMESES[i]}</text>`;
@@ -877,34 +925,34 @@ function hGroupChart(va,vb,ca,cb){
   return`<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${svgH}" style="width:100%;min-width:${Math.round(W*0.7)}px;height:auto;display:block">${bars}</svg></div>`;
 }
 // Indicadores inteligentes — Módulo 5
-function hIndicators(y,metric){
-  const vals=gHist(y)[metric]||[];
+function hIndicators(y,dsId,mk){
+  const meta=metaOf(dsId,mk),fmt=meta.fmt,inv=!!meta.invert;
+  const vals=gDSData(y,dsId)[mk]||[];
   const filled=vals.map((v,i)=>({v,i})).filter(o=>o.v!=null&&o.v!=='');
   const card=(ic,lbl,val,sub)=>`<div class="ic"><div class="il"><span>${ic}</span> ${lbl}</div><div class="iv">${val}</div>${sub?`<div class="is">${sub}</div>`:''}</div>`;
   if(!filled.length)return`<div class="ind">${card('🏆','Melhor mês','—')}${card('📉','Pior mês','—')}${card('📈','Crescimento acumulado','—')}${card('📊','Média mensal','—')}${card('📅','Último mês preenchido','—')}</div>`;
-  const best=filled.reduce((a,b)=>b.v>a.v?b:a),worst=filled.reduce((a,b)=>b.v<a.v?b:a);
+  const best=inv?filled.reduce((a,b)=>b.v<a.v?b:a):filled.reduce((a,b)=>b.v>a.v?b:a);
+  const worst=inv?filled.reduce((a,b)=>b.v>a.v?b:a):filled.reduce((a,b)=>b.v<a.v?b:a);
   const first=filled[0],last=filled[filled.length-1];
-  const growth=first.v?((last.v-first.v)/Math.abs(first.v)*100):0;
+  const delta=last.v-first.v,growth=first.v?(delta/Math.abs(first.v)*100):0;
+  const improved=inv?delta<0:delta>0;const gc=improved?'var(--grn)':(delta===0?'var(--amb)':'var(--red)'),ar=delta>=0?'▲':'▼';
   const avg=filled.reduce((s,o)=>s+o.v,0)/filled.length;
-  const gc=growth>=0?'var(--grn)':'var(--red)',ga=growth>=0?'▲':'▼';
   return`<div class="ind">
-    ${card('🏆','Melhor mês',HMESES[best.i],hNf(best.v))}
-    ${card('📉','Pior mês',HMESES[worst.i],hNf(worst.v))}
-    ${card('📈','Crescimento acumulado',`<span style="color:${gc}">${growth>=0?'+':''}${growth.toFixed(0)}% ${ga}</span>`,`${HMESES[first.i]} → ${HMESES[last.i]}`)}
-    ${card('📊','Média mensal',hNf(Math.round(avg)),`${filled.length} ${filled.length===1?'mês':'meses'} preenchido${filled.length===1?'':'s'}`)}
-    ${card('📅','Último mês preenchido',HMESES[last.i],hNf(last.v))}
+    ${card('🏆','Melhor mês',HMESES[best.i],hFmt(best.v,fmt))}
+    ${card('📉','Pior mês',HMESES[worst.i],hFmt(worst.v,fmt))}
+    ${card('📈','Crescimento acumulado',`<span style="color:${gc}">${growth>=0?'+':''}${growth.toFixed(0)}% ${ar}</span>`,`${HMESES[first.i]} → ${HMESES[last.i]}`)}
+    ${card('📊','Média mensal',hFmt(fmt==='int'?Math.round(avg):avg,fmt),`${filled.length} ${filled.length===1?'mês':'meses'} preenchido${filled.length===1?'':'s'}`)}
+    ${card('📅','Último mês preenchido',HMESES[last.i],hFmt(last.v,fmt))}
   </div>`;
 }
 // Bloco visual (indicadores + gráfico + comparação) — re-renderizado sem perder foco da tabela
 function hViewHTML(y){
-  const mLbl=HML[hMetric];
-  let h=`<div class="S"><div class="ST"><i class="ti ti-bulb" style="font-size:13px"></i> Indicadores inteligentes — ${mLbl} · ${y}</div>${hIndicators(y,hMetric)}</div>`;
-  // Dashboard histórico (gráfico único)
-  h+=`<div class="S"><div class="ST"><i class="ti ti-chart-bar" style="font-size:13px"></i> Dashboard histórico — ${y}
-    <select class="fsel" style="margin-left:auto" onchange="hMetric=this.value;hRefresh()">${HMET.map(mt=>`<option value="${mt.k}" ${hMetric===mt.k?'selected':''}>${mt.l}</option>`).join('')}</select></div>`;
+  const ds=curDS();ensureMetric();const meta=metaOf(hDS,hMetric),fmt=meta.fmt,mLbl=meta.l;
+  let h=`<div class="S"><div class="ST"><i class="ti ti-bulb" style="font-size:13px"></i> Indicadores inteligentes — ${mLbl} · ${y}</div>${hIndicators(y,hDS,hMetric)}</div>`;
+  h+=`<div class="S"><div class="ST"><i class="ti ti-chart-bar" style="font-size:13px"></i> Dashboard histórico — ${ds.l} · ${y}
+    <select class="fsel" style="margin-left:auto" onchange="hMetric=this.value;hRefresh()">${ds.metrics.map(mt=>`<option value="${mt.k}" ${hMetric===mt.k?'selected':''}>${mt.l}</option>`).join('')}</select></div>`;
   h+=`<div style="font-size:9px;color:var(--tx2);margin-bottom:6px;display:flex;align-items:center;gap:4px"><i style="width:8px;height:8px;border-radius:2px;background:var(--pur);display:inline-block"></i>${mLbl} ${y}</div>`;
-  h+=hSingleChart(gHist(y)[hMetric]||[],'var(--pur)')+`</div>`;
-  // Comparação entre anos
+  h+=hSingleChart(gDSData(y,hDS)[hMetric]||[],'var(--pur)',fmt)+`</div>`;
   const years=gHistYears();
   if(!years.includes(hCmpA))hCmpA=y;
   if(!years.includes(hCmpB)||hCmpB===hCmpA)hCmpB=years.find(yy=>yy!==hCmpA)||years[0];
@@ -912,84 +960,129 @@ function hViewHTML(y){
   h+=`<div class="tpc"><select class="fsel" onchange="hCmpA=this.value;hRefresh()">${years.map(yy=>`<option value="${yy}" ${hCmpA===yy?'selected':''}>${yy}</option>`).join('')}</select>`;
   h+=`<span style="font-size:11px;color:var(--tx3)">×</span><select class="fsel" onchange="hCmpB=this.value;hRefresh()">${years.map(yy=>`<option value="${yy}" ${hCmpB===yy?'selected':''}>${yy}</option>`).join('')}</select></div>`;
   h+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px"><span style="font-size:9px;color:var(--tx2);display:inline-flex;align-items:center;gap:4px"><i style="width:8px;height:8px;border-radius:2px;background:var(--pur);display:inline-block"></i>${hCmpA}</span><span style="font-size:9px;color:var(--tx2);display:inline-flex;align-items:center;gap:4px"><i style="width:8px;height:8px;border-radius:2px;background:var(--cor);display:inline-block"></i>${hCmpB}</span></div>`;
-  h+=hGroupChart(gHist(hCmpA)[hMetric]||[],gHist(hCmpB)[hMetric]||[],'var(--pur)','var(--cor)')+`</div>`;
+  h+=hGroupChart(gDSData(hCmpA,hDS)[hMetric]||[],gDSData(hCmpB,hDS)[hMetric]||[],'var(--pur)','var(--cor)',fmt)+`</div>`;
   return h;
 }
 function hRefresh(){const el=document.getElementById('hview');if(el)el.innerHTML=hViewHTML(hYear)}
-// Seleção / criação de ano
+function hSetDS(id){hDS=id;ensureMetric(true);R()}
 function hPickYear(v){
-  if(v==='__new'){sM('Novo ano (ex.: 2027)','',val=>{const y=String(parseInt(val)||'').trim();if(!y||y==='0'){R();return;}hYear=y;gHist(y);sv();R();toast('Ano '+y+' criado.','ti-calendar-plus')},'number');return;}
+  if(v==='__new'){sM('Novo ano (ex.: 2027)','',val=>{const y=String(parseInt(val)||'').trim();if(!y||y==='0'){R();return;}hYear=y;gDSData(y,hDS);sv();R();toast('Ano '+y+' criado.','ti-calendar-plus')},'number');return;}
   hYear=v;R();
 }
-// Ações do histórico
-function hSave(y){sv();toast('Histórico de '+y+' salvo.','ti-device-floppy')}
-function hClear(y){
-  if(!hasYearData(y)){toast('O ano '+y+' já está vazio.','ti-info-circle');return;}
-  cfm('Limpar dados do ano','Tem certeza que deseja apagar todos os dados de '+y+'? Esta ação não poderá ser desfeita.','Limpar dados','dgr',()=>{clearHist(y);R();toast('Dados de '+y+' removidos.','ti-eraser')});
+function hFocusTable(){const el=document.querySelector('.htbl .hin');if(el){el.focus();el.select();el.scrollIntoView({behavior:'smooth',block:'center'})}}
+function hSave(y){sv();toast('Histórico de '+y+' salvo no Supabase.','ti-device-floppy')}
+function hClear(y,dsId){
+  const ds=dsById(dsId);
+  if(!hasDSData(y,dsId)){toast(ds.l+' · '+y+' já está vazio.','ti-info-circle');return;}
+  cfm('Limpar dados',`Tem certeza que deseja apagar os dados de <strong>${ds.l}</strong> em <strong>${y}</strong>? Esta ação não poderá ser desfeita.`,'Limpar dados','dgr',()=>{clearDSYear(y,dsId);R();toast('Dados de '+ds.l+' · '+y+' removidos.','ti-eraser')});
 }
-// Render principal da aba Histórico — Módulo 3
+// Render principal da aba Histórico — Módulo 3 + Entrada de Dados
 function rH(a){
   const years=gHistYears();
   if(!years.includes(hYear))hYear=years[years.length-1];
-  const d=gHist(hYear);
-  let h=`<p style="font-size:11px;color:var(--tx2);margin-bottom:.7rem;line-height:1.5">Acompanhe a evolução anual dos sites. Os dados são inseridos manualmente por ano e ficam salvos automaticamente (Supabase + navegador).</p>`;
-  // Seletor de ano + ações
-  h+=`<div class="tpc" style="margin-bottom:.7rem">
-    <span style="font-size:11px;color:var(--tx2)">Ano:</span>
+  ensureMetric();
+  const ds=curDS(),d=gDSData(hYear,hDS);
+  let h=`<p style="font-size:11px;color:var(--tx2);margin-bottom:.7rem;line-height:1.5">Atualize os dados anuais por <strong>digitação manual</strong> ou <strong>importação de arquivo</strong> (CSV/XLSX). Tudo é salvo automaticamente no <strong>Supabase</strong> (base oficial) e publicado via GitHub — sem recarregar a página.</p>`;
+  // Seletores: área (dataset) + ano
+  h+=`<div class="tpc" style="margin-bottom:.6rem">
+    <span style="font-size:11px;color:var(--tx2)">Área:</span>
+    <select class="fsel" onchange="hSetDS(this.value)">${HDS.map(x=>`<option value="${x.id}" ${hDS===x.id?'selected':''}>${x.l}</option>`).join('')}</select>
+    <span style="font-size:11px;color:var(--tx2);margin-left:6px">Ano:</span>
     <select class="fsel" onchange="hPickYear(this.value)">${years.map(y=>`<option value="${y}" ${hYear===y?'selected':''}>${y}</option>`).join('')}<option value="__new">+ Novo ano…</option></select>
-    <button class="mb" onclick="hSave('${hYear}')"><i class="ti ti-device-floppy" style="font-size:11px;margin-right:3px"></i>Salvar histórico</button>
-    <button class="mb" onclick="hImport('${hYear}')"><i class="ti ti-file-import" style="font-size:11px;margin-right:3px"></i>Importar dados</button>
-    <button class="mb" style="border-color:var(--red);color:var(--red)" onclick="hClear('${hYear}')"><i class="ti ti-trash" style="font-size:11px;margin-right:3px"></i>Limpar dados do ano</button>
   </div>`;
-  // Tabela editável — Módulo 3
-  h+=`<div class="S"><div class="ST"><i class="ti ti-table" style="font-size:13px"></i> Cadastro mensal — ${hYear}</div><div class="hwrap"><table class="htbl"><thead><tr><th>Métrica</th>${HMESES.map(m=>`<th>${m}</th>`).join('')}</tr></thead><tbody>`;
-  HMET.forEach(mt=>{
+  // Ações: manual / importar / modelo / salvar / limpar
+  h+=`<div class="tpc" style="margin-bottom:.7rem">
+    <button class="mb a" onclick="hFocusTable()"><i class="ti ti-edit" style="font-size:11px;margin-right:3px"></i>✍️ Inserir manualmente</button>
+    <button class="mb" onclick="hImport('${hYear}','${hDS}')"><i class="ti ti-upload" style="font-size:11px;margin-right:3px"></i>📤 Importar arquivo</button>
+    <button class="mb" onclick="hDownloadModel('${hDS}','${hYear}')"><i class="ti ti-download" style="font-size:11px;margin-right:3px"></i>📥 Baixar modelo</button>
+    <button class="mb" onclick="hSave('${hYear}')"><i class="ti ti-device-floppy" style="font-size:11px;margin-right:3px"></i>Salvar</button>
+    <button class="mb" style="border-color:var(--red);color:var(--red)" onclick="hClear('${hYear}','${hDS}')"><i class="ti ti-trash" style="font-size:11px;margin-right:3px"></i>Limpar área/ano</button>
+  </div>`;
+  // Tabela editável (Modo 1 — digitação manual)
+  const col1=hDS==='aquis'?'Origem':'Métrica';
+  h+=`<div class="S"><div class="ST"><i class="ti ${ds.ic}" style="font-size:13px"></i> ${ds.l} — cadastro mensal ${hYear}</div><div class="hwrap"><table class="htbl"><thead><tr><th>${col1}</th>${HMESES.map(m=>`<th>${m}</th>`).join('')}</tr></thead><tbody>`;
+  ds.metrics.forEach(mt=>{
     h+=`<tr><td>${mt.l}</td>`;
-    for(let i=0;i<12;i++){const v=d[mt.k][i];h+=`<td><input class="hin" type="number" inputmode="numeric" value="${v==null?'':v}" placeholder="—" onchange="sHistCell('${hYear}','${mt.k}',${i},this.value);hRefresh()"></td>`;}
+    for(let i=0;i<12;i++){const v=d[mt.k][i];h+=`<td><input class="hin" type="number" inputmode="decimal" step="any" value="${v==null?'':v}" placeholder="—" onchange="sHistCell('${hYear}','${hDS}','${mt.k}',${i},this.value);hRefresh()"></td>`;}
     h+=`</tr>`;
   });
-  h+=`</tbody></table></div><p style="font-size:9px;color:var(--tx3);margin-top:5px">Edite qualquer célula e saia do campo para salvar. Use Tab para navegar entre os meses.</p></div>`;
-  // Bloco de indicadores + gráficos (atualizado isoladamente)
+  h+=`</tbody></table></div><p style="font-size:9px;color:var(--tx3);margin-top:5px">Edite uma célula e saia do campo (Tab) para salvar — é possível corrigir um único valor, um mês ou o ano inteiro. Os gráficos atualizam na hora.</p></div>`;
   h+=`<div id="hview">${hViewHTML(hYear)}</div>`;
   a.innerHTML=h;
 }
-// Importação de dados do histórico via CSV — Módulo 3 (📤 Importar Dados)
-let _hcsv=null;
-function hImport(y){
-  const inp=document.createElement('input');inp.type='file';inp.accept='.csv,text/csv,application/csv';
-  inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=ev=>hParseCSV(y,ev.target.result);rd.readAsText(f,'UTF-8')};
+// ===== Importação CSV/XLSX (validação + prévia + modo de mesclagem) =====
+let _himp=null,_xlsxP=null;
+function loadXLSX(){if(window.XLSX)return Promise.resolve(window.XLSX);if(_xlsxP)return _xlsxP;_xlsxP=new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';s.onload=()=>res(window.XLSX);s.onerror=()=>rej(new Error('Não foi possível carregar o leitor de XLSX. Verifique a conexão.'));document.head.appendChild(s)});return _xlsxP}
+function hMatchMetric(ds,label){label=(label==null?'':label).toString().toLowerCase().replace(/"/g,'').trim();if(!label)return null;
+  for(const m of ds.metrics){if(label===m.l.toLowerCase()||label===m.k)return m.k;}
+  for(const m of ds.metrics){if((m.al||[]).some(a=>label.includes(a)))return m.k;}
+  return null;}
+function hNumParse(raw){if(raw==null)return null;let s=String(raw).replace(/"/g,'').trim();if(s===''||s==='—')return null;s=s.replace(/[^\d.,-]/g,'');if(s===''||s==='-')return null;
+  if(s.indexOf(',')>-1&&s.indexOf('.')>-1)s=s.replace(/\./g,'').replace(',','.');
+  else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,'');
+  else s=s.replace(',','.');
+  const v=parseFloat(s);return isNaN(v)?null:v}
+function hImport(y,dsId){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(XLSX=>{const rd=new FileReader();rd.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''});hPreviewImport(y,dsId,rows,f.name)}catch(err){toast('Falha ao ler o XLSX: '+err.message,'ti-alert-circle')}};rd.readAsArrayBuffer(f)}).catch(err=>toast(err.message,'ti-alert-circle'))}
+    else{const rd=new FileReader();rd.onload=ev=>{let txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);const rows=txt.split(/\r?\n/).filter(l=>l.trim()&&!l.trim().startsWith('#')).map(l=>_csvRow(l));hPreviewImport(y,dsId,rows,f.name)};rd.readAsText(f,'UTF-8')}
+  };
   inp.click();
 }
-function hMetricMatch(s){s=(s||'').toLowerCase();if(s.includes('impress'))return'imp';if(s.includes('visualiz')||s.includes('view')||s.includes('exib'))return'vis';if(s.includes('usuár')||s.includes('usuar')||s.includes('user'))return'usu';if(s.includes('clique')||s.includes('click'))return'cli';return null}
-function hNumParse(raw){if(raw==null)return null;raw=String(raw).replace(/"/g,'').trim();if(raw===''||raw==='—')return null;let s=raw.replace(/\s/g,'');if(s.indexOf(',')>-1&&s.indexOf('.')>-1)s=s.replace(/\./g,'').replace(',','.');else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,'');else s=s.replace(',','.');const v=parseFloat(s);return isNaN(v)?null:v}
-function hParseCSV(y,txt){
-  if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);
-  const lines=txt.split('\n').map(l=>l.trim()).filter(l=>l&&!l.startsWith('#'));
-  if(!lines.length){toast('CSV vazio ou inválido.','ti-alert-circle');return;}
-  const parsed={};
-  lines.forEach(line=>{const cols=_csvRow(line);const mk=hMetricMatch((cols[0]||'').replace(/"/g,''));if(!mk||parsed[mk])return;const nums=[];for(let i=1;i<cols.length&&nums.length<12;i++)nums.push(hNumParse(cols[i]));while(nums.length<12)nums.push(null);parsed[mk]=nums;});
+function hPreviewImport(y,dsId,rows,fname){
+  const ds=dsById(dsId);
+  if(!rows||!rows.length){toast('Arquivo vazio ou ilegível.','ti-alert-circle');return;}
+  const parsed={};let invalid=0;
+  rows.forEach(cols=>{if(!cols||!cols.length)return;const mk=hMatchMetric(ds,cols[0]);if(!mk||parsed[mk])return;
+    const nums=[];for(let i=1;i<cols.length&&nums.length<12;i++){const raw=cols[i];const v=hNumParse(raw);const rs=(raw==null?'':String(raw)).trim();if(v==null&&rs!==''&&rs!=='—')invalid++;nums.push(v);}
+    while(nums.length<12)nums.push(null);parsed[mk]=nums;});
   const found=Object.keys(parsed);
-  if(!found.length){toast('Nenhuma métrica reconhecida. Use uma linha por métrica.','ti-alert-circle');return;}
-  _hcsv={y,parsed};
-  const o=document.createElement('div');o.className='ov';o.id='ov-hcsv';
-  let prev=`<table style="width:100%;border-collapse:collapse;font-size:10px"><tr><th style="text-align:left;padding:5px 8px;border-bottom:1px solid var(--bd);background:var(--bg2);color:var(--tx3);font-weight:600">Métrica</th>${HMESES.map(m=>`<th style="text-align:right;padding:5px 4px;border-bottom:1px solid var(--bd);background:var(--bg2);color:var(--tx3);font-weight:600">${m}</th>`).join('')}</tr>`;
-  HMET.forEach(mt=>{if(!parsed[mt.k])return;prev+=`<tr><td style="padding:4px 8px;border-bottom:1px solid var(--bd);font-weight:500">${mt.l}</td>${parsed[mt.k].map(v=>`<td style="text-align:right;padding:4px;border-bottom:1px solid var(--bd);font-variant-numeric:tabular-nums">${v==null?'—':fN(v)}</td>`).join('')}</tr>`;});
+  if(!found.length){toast('Nenhuma métrica de "'+ds.l+'" reconhecida no arquivo. Baixe o modelo para ver o formato.','ti-alert-circle');return;}
+  hImpMode='replace';_himp={y,dsId,parsed,invalid};
+  let prev=`<table style="width:100%;border-collapse:collapse;font-size:10px"><tr><th style="text-align:left;padding:5px 8px;border-bottom:1px solid var(--bd);background:var(--bg2);color:var(--tx3);font-weight:600;position:sticky;left:0">${dsId==='aquis'?'Origem':'Métrica'}</th>${HMESES.map(m=>`<th style="text-align:right;padding:5px 4px;border-bottom:1px solid var(--bd);background:var(--bg2);color:var(--tx3);font-weight:600">${m}</th>`).join('')}</tr>`;
+  ds.metrics.forEach(mt=>{if(!parsed[mt.k])return;prev+=`<tr><td style="padding:4px 8px;border-bottom:1px solid var(--bd);font-weight:500;white-space:nowrap">${mt.l}</td>${parsed[mt.k].map(v=>`<td style="text-align:right;padding:4px;border-bottom:1px solid var(--bd);font-variant-numeric:tabular-nums">${v==null?'<span style="color:var(--tx3)">—</span>':hLbl(v,mt.fmt)}</td>`).join('')}</tr>`;});
   prev+=`</table>`;
-  o.innerHTML=`<div class="mx" style="width:560px;max-width:96vw;max-height:85vh;display:flex;flex-direction:column">
-    <h4 style="display:flex;align-items:center;gap:6px"><i class="ti ti-file-import" style="color:var(--pur)"></i> Importar dados — ${y}</h4>
-    <p style="font-size:11px;color:var(--tx2);margin:6px 0 8px;line-height:1.5">Detectadas <strong>${found.length}</strong> métrica(s). Os valores substituirão os dados atuais de <strong>${y}</strong>.<br>Formato esperado: uma linha por métrica (Impressões, Visualizações, Usuários, Cliques) seguida de até 12 valores (Jan…Dez).</p>
-    <div style="overflow:auto;flex:1;border:1px solid var(--bd);border-radius:6px;margin-bottom:10px">${prev}</div>
-    <div class="mbb"><button onclick="document.getElementById('ov-hcsv')?.remove();_hcsv=null">Cancelar</button><button class="pr" onclick="hApplyCSV()"><i class="ti ti-check" style="font-size:11px"></i> Confirmar importação</button></div>
+  const radio=(val,lbl,desc)=>`<label style="display:flex;gap:7px;align-items:flex-start;padding:7px 9px;border:1px solid var(--bd);border-radius:7px;cursor:pointer;font-size:11px"><input type="radio" name="himpmode" value="${val}" ${hImpMode===val?'checked':''} onchange="hImpMode=this.value" style="margin-top:2px;width:auto"><span><strong>${lbl}</strong><br><span style="color:var(--tx2);font-size:10px">${desc}</span></span></label>`;
+  const o=document.createElement('div');o.className='ov';o.id='ov-himp';
+  o.innerHTML=`<div class="mx" style="width:600px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column">
+    <h4 style="display:flex;align-items:center;gap:6px"><i class="ti ti-upload" style="color:var(--pur)"></i> Importar — ${ds.l} · ${y}</h4>
+    <p style="font-size:11px;color:var(--tx2);margin:6px 0 8px;line-height:1.5"><strong>${found.length}</strong> métrica(s) reconhecida(s) em <em>${(fname||'arquivo')}</em>.${invalid?` <span style="color:var(--amb)"><i class="ti ti-alert-triangle" style="font-size:11px"></i> ${invalid} valor(es) não numérico(s) foram ignorados.</span>`:''}</p>
+    <div style="overflow:auto;border:1px solid var(--bd);border-radius:6px;margin-bottom:10px;max-height:34vh">${prev}</div>
+    <div style="font-size:10px;font-weight:600;color:var(--tx2);margin-bottom:5px">Como deseja importar?</div>
+    <div style="display:grid;grid-template-columns:1fr;gap:5px;margin-bottom:11px">
+      ${radio('replace','Substituir dados existentes','Sobrescreve as métricas enviadas (meses em branco no arquivo ficam vazios).')}
+      ${radio('add','Adicionar aos dados existentes','Soma os valores do arquivo aos já cadastrados, mês a mês.')}
+      ${radio('update','Atualizar apenas os meses enviados','Mantém o que existe e troca somente os meses preenchidos no arquivo.')}
+    </div>
+    <div class="mbb"><button onclick="document.getElementById('ov-himp')?.remove();_himp=null">Cancelar</button><button class="pr" onclick="hApplyImport()"><i class="ti ti-check" style="font-size:11px"></i> Confirmar importação</button></div>
   </div>`;
   document.body.appendChild(o);
-  o.addEventListener('click',e=>{if(e.target===o){o.remove();_hcsv=null;}});
+  o.addEventListener('click',e=>{if(e.target===o){o.remove();_himp=null;}});
 }
-function hApplyCSV(){
-  if(!_hcsv)return;const{y,parsed}=_hcsv;const yd=gHist(y);
-  let n=0;HMET.forEach(mt=>{if(parsed[mt.k]){yd[mt.k]=parsed[mt.k].slice(0,12);n++;}});
-  sv();document.getElementById('ov-hcsv')?.remove();_hcsv=null;hYear=y;R();
-  toast(n+' métrica(s) importada(s) para '+y+'.','ti-file-import');
+function hApplyImport(){
+  if(!_himp)return;const{y,dsId,parsed}=_himp,mode=hImpMode;const d=gDSData(y,dsId);let n=0;
+  Object.keys(parsed).forEach(k=>{const inc=parsed[k];const cur=Array.isArray(d[k])?d[k].slice():Array(12).fill(null);
+    if(mode==='add')d[k]=cur.map((c,i)=>inc[i]==null?(c==null?null:c):((Number(c)||0)+Number(inc[i])));
+    else if(mode==='update')d[k]=cur.map((c,i)=>inc[i]==null?(c==null?null:c):inc[i]);
+    else d[k]=inc.slice(0,12);
+    n++;});
+  sv();document.getElementById('ov-himp')?.remove();_himp=null;hYear=y;hDS=dsId;ensureMetric();R();
+  const ml={replace:'substituídos',add:'somados',update:'meses atualizados'}[mode];
+  toast(n+' métrica(s) importada(s) — '+ml+'.','ti-file-import');
 }
+// Download de modelo (CSV) — Módulo "Baixar Modelo"
+function hDownloadModel(dsId,y){
+  const ds=dsById(dsId);
+  const esc=s=>/[",;\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+  const head=[dsId==='aquis'?'Origem':'Metrica',...HMESES].map(esc).join(',');
+  const body=ds.metrics.map(m=>[m.l,...Array(12).fill('')].map(esc).join(',')).join('\n');
+  const csv='\uFEFF'+head+'\n'+body+'\n';
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);const a2=document.createElement('a');a2.href=url;a2.download='modelo_'+dsId+'_'+y+'.csv';document.body.appendChild(a2);a2.click();a2.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+  toast('Modelo de '+ds.l+' baixado.','ti-download');
+}
+
 // Inicialização assíncrona — carrega do Supabase antes de renderizar
 document.getElementById('app').innerHTML='<div style="text-align:center;padding:3rem;color:var(--tx2);font-size:12px"><i class="ti ti-loader-2" style="font-size:22px;display:block;margin-bottom:8px;animation:spin .8s linear infinite"></i>Carregando dados do Supabase...</div>';
 ld().then(()=>R());
