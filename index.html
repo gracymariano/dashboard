@@ -539,6 +539,30 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 /* ── Responsivo ── */
 @media(max-width:1100px){.an-exec{grid-template-columns:repeat(3,1fr)}.an-metrics{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.an-exec{grid-template-columns:repeat(2,1fr)}.an-metrics{grid-template-columns:1fr}.an-seg{width:100%}.an-seg-btn{flex:1;justify-content:center}.an-drawer{width:100%}.an-entry{flex-direction:column;align-items:stretch}.an-entry .lbl{margin-bottom:4px}}
+/* destaque do % ao lado do número */
+.an-mcard-valrow{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.an-mcard-valrow .an-var{margin-left:0;font-size:12.5px;padding:3px 9px}
+/* meta do mês — progresso */
+.an-gp{padding:16px 18px}
+.an-gp-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.an-gp-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.an-gp-controls .fsel{max-width:210px}
+.an-gp-bar{height:12px;border-radius:8px;background:var(--bg);overflow:hidden;border:1px solid rgba(11,34,57,.06)}
+.an-gp-fill{height:100%;border-radius:8px;min-width:2px;transition:width .5s ease}
+.an-gp-nums{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:13px}
+.an-gp-pair{display:flex;flex-direction:column;gap:2px}
+.an-gp-pair span{font-size:10px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.an-gp-pair b{font-size:16px;color:var(--navy);font-weight:700}
+.an-gp-pct{margin-left:auto;font-size:26px;font-weight:800;letter-spacing:-1px}
+/* histórico por métrica (small multiples) */
+.an-hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.an-hcell{background:var(--bg);border:1px solid rgba(11,34,57,.05);border-radius:var(--radius-xs);padding:12px 13px 8px}
+.an-hcell-hd{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:4px}
+.an-hcell-lbl{font-size:11px;color:var(--text-secondary);font-weight:600;line-height:1.25}
+.an-hcell-val{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+/* badge de dia nas anotações */
+.an-note-day{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:var(--primary-dark);background:var(--primary-light);border-radius:6px;padding:3px 7px;flex-shrink:0}
+.an-note-day i{font-size:12px}
 </style>
 </head>
 <body>
@@ -2478,22 +2502,37 @@ var AN_SECTIONS={
       {k:'recorrentes',   l:'Usuários Recorrentes',          fmt:'int', al:['recorrent','returning users','usuários que retorn','returning','usuários recorrentes']},
       {k:'tempo_usuario', l:'Tempo Médio de Engaj./Usuário', fmt:'dur', al:['tempo médio de engajamento por usuário','tempo medio de engajamento por usuário','average engagement time per active user','tempo por usuá','tempo de engaj por usuá','tempo méd. por usuário']},
       {k:'sessoes_eng',   l:'Sessões Engaj./Usuário',        fmt:'dec', al:['sessões engajadas por usuário','sessoes engajadas por usuario','engaged sessions per','sessões engaj. por usuário','sessões engaj','sessoes engaj','engaged sessions']}
+    ]},
+  camp:{l:'Origem da Campanha', ic:'ti-flag', head:'sessoes',
+    metrics:[
+      {k:'sessoes',        l:'Sessões',                       fmt:'int', al:['sessões','sessoes','sessions','total de sess']},
+      {k:'usuarios_ativos',l:'Usuários Ativos',               fmt:'int', al:['usuários ativos','usuarios ativos','active users','usuários ativo','total de usuá']},
+      {k:'sessoes_eng',    l:'Sessões Engajadas',             fmt:'int', al:['sessões engaj','sessoes engaj','engaged sessions','sessões com engaj']},
+      {k:'tx_eng',         l:'Taxa de Engajamento',           fmt:'pct', al:['taxa de engaj','engagement rate','taxa eng','% engaj','taxa de engajamento']},
+      {k:'tempo_sessao',   l:'Tempo Médio de Engaj./Sessão',  fmt:'dur', al:['tempo médio de engajamento por sess','tempo medio de engajamento por sess','average engagement time per session','tempo por sess','tempo de engajamento por sess']},
+      {k:'ev_sessao',      l:'Eventos por Sessão',            fmt:'dec', al:['eventos por sess','events per session','evento por sess','eventos/sess']}
     ]}
 };
 
 /* ── Estado ── */
 var anSection='traf', anProp='all', anYear=String(new Date().getFullYear());
-var anFocusSel={traf:null,user:null};
-var anCmpSel={traf:null,user:null};
+var anFocusSel={traf:null,user:null,camp:null};
+var anCmpSel={traf:null,user:null,camp:null};
+var anGoalSel={};   // section -> métrica escolhida para a meta (persistido)
+var anGoalMonth={}; // section -> mês escolhido para a meta (sessão; null = mês-alvo automático)
 var _anInit=false, _anImp=null, _anDrawerMi=null;
 
 function anMeta(section,mk){return AN_SECTIONS[section].metrics.find(function(m){return m.k===mk;})||{fmt:'int',l:mk};}
 function propLabel(p){var x=AN_PROPS.find(function(z){return z.k===p;});return x?x.l:p;}
 function anCurFocus(){var sec=AN_SECTIONS[anSection];if(!anFocusSel[anSection]||!sec.metrics.some(function(m){return m.k===anFocusSel[anSection];}))anFocusSel[anSection]=sec.head;return anFocusSel[anSection];}
+function anCurGoalMk(){var sec=AN_SECTIONS[anSection];var mk=anGoalSel[anSection];if(!mk||!sec.metrics.some(function(m){return m.k===mk;}))mk=sec.head;anGoalSel[anSection]=mk;return mk;}
+function anCurGoalMi(){var mi=anGoalMonth[anSection];if(mi==null||mi<0||mi>11)mi=anTargetMonth(anYear,anSection,anProp,anCurGoalMk());return mi;}
+function anSetGoalMetric(mk){anGoalSel[anSection]=mk;var s=anStore();s.ui=s.ui||{};s.ui.goalSel=anGoalSel;sv();anR();}
+function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.ui)s.ui={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.ui)s.ui={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -2516,16 +2555,24 @@ function anHasAny(year,section,prop){var d=anData(year,section,prop);return AN_S
 function anYears(){var ys=new Set([String(new Date().getFullYear())]);var s=anStore();Object.keys(s.data).forEach(function(y){ys.add(y);});return Array.from(ys).sort();}
 
 /* ── Anotações ── */
+/* ── Anotações (com data específica do dia) ── */
 function anNotes(year,mi){var s=anStore();s.notes[year]=s.notes[year]||{};s.notes[year][mi]=s.notes[year][mi]||[];return s.notes[year][mi];}
 function anNoteCount(year,mi){var s=anStore();return((s.notes[year]||{})[mi]||[]).length;}
 function anYearHasNotes(year){var s=anStore();var y=s.notes[year]||{};return Object.keys(y).some(function(mi){return(y[mi]||[]).length;});}
-function anAddNote(year,mi,text){if(!text||!text.trim())return;anNotes(year,mi).push({id:'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),text:text.trim()});sv();}
-function anEditNote(year,mi,id,text){var arr=anNotes(year,mi);var n=arr.find(function(x){return x.id===id;});if(n){n.text=(text||'').trim();sv();}}
+function anAddNote(year,mi,text,date){if(!text||!text.trim())return;anNotes(year,mi).push({id:'n'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),text:text.trim(),date:date||''});sv();}
+function anEditNote(year,mi,id,text,date){var arr=anNotes(year,mi);var n=arr.find(function(x){return x.id===id;});if(n){n.text=(text||'').trim();if(date!=null)n.date=date;sv();}}
 function anDelNote(year,mi,id){var s=anStore();if(s.notes[year]&&s.notes[year][mi])s.notes[year][mi]=s.notes[year][mi].filter(function(x){return x.id!==id;});sv();}
+function anNoteFind(year,id){var s=anStore();var y=s.notes[year]||{};var found=null;Object.keys(y).forEach(function(mi){(y[mi]||[]).forEach(function(n){if(n.id===id)found={mi:Number(mi),note:n};});});return found;}
+function anDayLabel(date){if(!date)return'';var p=String(date).split('-');if(p.length<3)return'';return p[2]+'/'+p[1];}
 
 /* ── Metas ── */
 function anGoal(year,section,prop){var s=anStore();return(((s.goals[year]||{})[section]||{})[prop])||0;}
 function anSetGoal(year,section,prop,v){var s=anStore();s.goals[year]=s.goals[year]||{};s.goals[year][section]=s.goals[year][section]||{};s.goals[year][section][prop]=Number(v)||0;sv();}
+/* meta mensal por métrica em foco */
+function anMGoal(year,section,prop,mi,mk){var s=anStore();return(((((s.mgoals[year]||{})[section]||{})[prop]||{})[mk]||{})[mi])||0;}
+function anSetMGoal(year,section,prop,mi,mk,v){var s=anStore();s.mgoals[year]=s.mgoals[year]||{};s.mgoals[year][section]=s.mgoals[year][section]||{};s.mgoals[year][section][prop]=s.mgoals[year][section][prop]||{};s.mgoals[year][section][prop][mk]=s.mgoals[year][section][prop][mk]||{};s.mgoals[year][section][prop][mk][mi]=Number(v)||0;sv();}
+/* mês-alvo: mês corrente se ano atual; senão último mês preenchido (ou Dez) */
+function anTargetMonth(year,section,prop,mk){var now=new Date();if(String(now.getFullYear())===String(year))return now.getMonth();var f=anFilled(anSeries(year,section,prop,mk));return f.length?f[f.length-1].i:11;}
 
 /* ── Formatação ── */
 function anFmt(v,fmt){if(v==null||v==='')return'—';v=Number(v);
@@ -2572,7 +2619,7 @@ function anExec(year,section,prop,mk){
 /* ── Ações de UI ── */
 function anR(){rHub(document.getElementById('app'));}
 function anPersistUI(){var s=anStore();s.ui={prop:anProp,section:anSection};sv();}
-function anInit(){if(_anInit)return;_anInit=true;var s=anStore();if(s.ui){if(s.ui.prop&&AN_PROPS.some(function(p){return p.k===s.ui.prop;}))anProp=s.ui.prop;if(s.ui.section&&AN_SECTIONS[s.ui.section])anSection=s.ui.section;}}
+function anInit(){if(_anInit)return;_anInit=true;var s=anStore();if(s.ui){if(s.ui.prop&&AN_PROPS.some(function(p){return p.k===s.ui.prop;}))anProp=s.ui.prop;if(s.ui.section&&AN_SECTIONS[s.ui.section])anSection=s.ui.section;if(s.ui.goalSel&&typeof s.ui.goalSel==='object')anGoalSel=s.ui.goalSel;}}
 function anSetProp(p){anProp=p;anPersistUI();anR();}
 function anSetSection(sec){anSection=sec;anPersistUI();anR();}
 function anSetYear(v){anYear=v;anR();}
@@ -2635,6 +2682,77 @@ function anGoalEdit(){
   sM('Meta anual — '+meta.l+' ('+propLabel(anProp)+' · '+anYear+')',cur||'',function(v){anSetGoal(anYear,anSection,anProp,v);anR();toast('Meta anual atualizada.','ti-target');},'number');
 }
 
+/* ── Componente: progresso da meta DO MÊS (métrica em foco) ── */
+function anGoalProgress(){
+  var sec=AN_SECTIONS[anSection];
+  var mk=anCurGoalMk(),meta=anMeta(anSection,mk);
+  var mi=anCurGoalMi();
+  var goal=anMGoal(anYear,anSection,anProp,mi,mk);
+  var real=anSeries(anYear,anSection,anProp,mk)[mi];
+  var realNum=(real==null||real==='')?0:Number(real);
+  var pct=goal>0?(realNum/goal*100):null;
+  var pctClamp=pct==null?0:Math.max(0,Math.min(100,pct));
+  var col=pct==null?'var(--text-secondary)':pct>=100?'var(--success)':pct>=60?'var(--warning)':'var(--danger)';
+  var mSel='<select class="fsel" onchange="anSetGoalMetric(this.value)" title="Métrica da meta">'+sec.metrics.map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select>';
+  var moSel='<select class="fsel" onchange="anSetGoalMonth(this.value)" title="Mês da meta">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select>';
+  var setBtn='<button class="an-btn prim" onclick="anMGoalEdit('+mi+')"><i class="ti ti-target"></i> '+(goal>0?'Editar meta':'Definir meta')+'</button>';
+  var right;
+  if(goal>0){
+    var falta=goal-realNum;
+    right='<div class="an-gp-nums"><div class="an-gp-pair"><span>Realizado</span><b>'+anFmt(realNum,meta.fmt)+'</b></div>'
+      +'<div class="an-gp-pair"><span>Meta</span><b>'+anFmt(goal,meta.fmt)+'</b></div>'
+      +'<div class="an-gp-pair"><span>'+(falta>0?'Falta':'Excedente')+'</span><b style="color:'+col+'">'+anFmt(Math.abs(falta),meta.fmt)+'</b></div>'
+      +'<div class="an-gp-pct" style="color:'+col+'">'+pct.toFixed(0)+'%</div></div>';
+  }else{
+    right='<div class="an-gp-nums"><div class="an-gp-pair"><span>Realizado</span><b>'+anFmt(realNum,meta.fmt)+'</b></div><div style="font-size:11.5px;color:var(--text-secondary);align-self:center">Escolha a métrica e o mês acima e defina a meta para acompanhar o progresso.</div></div>';
+  }
+  return '<div class="an-card an-gp">'
+    +'<div class="an-gp-hd"><div class="an-card-ttl"><i class="ti ti-flag-check"></i> Meta do mês</div>'
+    +'<div class="an-gp-controls">'+mSel+moSel+setBtn+'</div></div>'
+    +'<div class="an-gp-bar"><div class="an-gp-fill" style="width:'+pctClamp.toFixed(1)+'%;background:'+col+'"></div></div>'
+    +right+'</div>';
+}
+function anMGoalEdit(mi){
+  if(anProp==='all'){toast('Selecione uma propriedade específica para definir a meta.','ti-info-circle');return;}
+  var mk=anCurGoalMk(),meta=anMeta(anSection,mk),cur=anMGoal(anYear,anSection,anProp,mi,mk);
+  sM('Meta de '+AN_MES_LONG[mi]+'/'+anYear+' — '+meta.l+' ('+propLabel(anProp)+')',cur||'',function(v){anSetMGoal(anYear,anSection,anProp,mi,mk,v);anR();toast('Meta do mês atualizada.','ti-target');},'number');
+}
+
+/* ── Componente: histórico por métrica (small multiples) ── */
+function anMiniChart(arr,fmt,color){
+  var vals=arr.map(function(v){return v==null||v===''?null:Number(v);});
+  var mx=Math.max.apply(null,[1].concat(vals.map(function(v){return v||0;})));
+  var W=300,H=84,padB=14,plotH=H-padB-4,baseY=4+plotH,slot=W/12,bw=slot*0.56;
+  var out='';
+  for(var i=0;i<12;i++){var cx=slot*i+slot/2,x=cx-bw/2,v=vals[i],has=v!=null;
+    var bh=has?Math.max(2,Math.round((v||0)/mx*plotH)):0,y=baseY-bh;
+    var fill=has?color:'rgba(11,34,57,.06)';
+    out+='<rect x="'+x.toFixed(1)+'" y="'+(has?y:baseY-2).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(has?bh:2)+'" rx="2.5" fill="'+fill+'"><title>'+HMESES[i]+': '+anFmt(v,fmt)+'</title></rect>';
+    out+='<text class="an-axis" x="'+cx.toFixed(1)+'" y="'+(baseY+11)+'" text-anchor="middle" style="font-size:7px">'+HMESES[i].charAt(0)+'</text>';
+  }
+  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">'+out+'</svg>';
+}
+function anHistoryGrid(){
+  var anyData=anHasAny(anYear,anSection,anProp);
+  var cells=AN_SECTIONS[anSection].metrics.map(function(m){
+    var arr=anSeries(anYear,anSection,anProp,m.k),filled=anFilled(arr);
+    var last=filled.length?filled[filled.length-1]:null;
+    var st=anStats(anYear,anSection,anProp,m.k),sem=anSemaphore(st.varp);
+    var varHtml=st.varp==null?'':'<span class="an-var '+sem+'" style="font-size:11px">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
+    return '<div class="an-hcell">'
+      +'<div class="an-hcell-hd"><span class="an-hcell-lbl">'+m.l+'</span><span class="an-dot" style="background:'+anSemColor(sem)+'"></span></div>'
+      +'<div class="an-hcell-val">'+(last?anFmt(last.v,m.fmt):'—')+' '+varHtml+'</div>'
+      +anMiniChart(arr,m.fmt,'var(--primary)')
+    +'</div>';
+  }).join('');
+  var body=anyData?'<div class="an-hgrid">'+cells+'</div>'
+    :'<div class="an-empty"><i class="ti ti-timeline"></i><p>Sem histórico para '+anYear+'</p><span>Importe ou insira os dados para ver a evolução de cada métrica</span></div>';
+  return '<div class="an-card">'
+    +'<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-timeline"></i> Histórico por métrica · '+anYear+'</div>'
+    +'<div class="an-card-sub">'+propLabel(anProp)+'</div></div>'
+    +body+'</div>';
+}
+
 /* ── Componente: cards de métrica com semáforo ── */
 function anMetricCards(){
   var cards=AN_SECTIONS[anSection].metrics.map(function(m){
@@ -2645,11 +2763,10 @@ function anMetricCards(){
     var valTxt=st.cur==null?'—':anFmt(st.cur,m.fmt);
     return '<div class="an-mcard">'
       +'<div class="an-mcard-top"><div class="an-mcard-lbl">'+m.l+'</div><div class="an-mcard-tools"><button class="an-edit" title="Inserir/editar dados" onclick="anManualOpen()"><i class="ti ti-pencil"></i></button><span class="an-dot" style="background:'+anSemColor(sem)+'" title="'+(sem==='up'?'Crescimento':sem==='down'?'Queda':'Estabilidade')+'"></span></div></div>'
-      +'<div class="an-mcard-val">'+valTxt+'</div>'
+      +'<div class="an-mcard-valrow"><span class="an-mcard-val">'+valTxt+'</span>'+varHtml+'</div>'
       +'<div class="an-mcard-foot">'
-        +'<span class="an-pill">Ant: <b>'+(st.prev==null?'—':anShort(st.prev,m.fmt))+'</b></span>'
-        +'<span class="an-pill">Proj: <b>'+(st.proj==null?'—':anShort(st.proj,m.fmt))+'</b></span>'
-        +varHtml
+        +'<span class="an-pill">Mês ant.: <b>'+(st.prev==null?'—':anShort(st.prev,m.fmt))+'</b></span>'
+        +'<span class="an-pill">Projeção: <b>'+(st.proj==null?'—':anShort(st.proj,m.fmt))+'</b></span>'
       +'</div>'
     +'</div>';
   }).join('');
@@ -2754,8 +2871,10 @@ function anAnnotationsCard(){
     body='<div class="an-empty"><i class="ti ti-notes"></i><p>Nenhuma anotação em '+anYear+'</p><span>Registre marcos como atualizações de SEO, lançamentos ou campanhas</span></div>';
   }else{
     body=months.map(function(mi){
-      var list=yObj[mi].map(function(nt){
-        return '<div class="an-note-li"><span class="ndot"></span><span class="ntxt">'+anEsc(nt.text)+'</span>'
+      var arr=yObj[mi].slice().sort(function(a,b){return String(a.date||'').localeCompare(String(b.date||''));});
+      var list=arr.map(function(nt){
+        var dl=anDayLabel(nt.date);
+        return '<div class="an-note-li">'+(dl?'<span class="an-note-day"><i class="ti ti-calendar-event"></i>'+dl+'</span>':'<span class="ndot"></span>')+'<span class="ntxt">'+anEsc(nt.text)+'</span>'
           +'<span class="acts"><button class="an-ic-btn" title="Editar" onclick="anNoteModalOpen('+mi+',\''+nt.id+'\')"><i class="ti ti-pencil"></i></button>'
           +'<button class="an-ic-btn del" title="Excluir" onclick="anNoteDel('+mi+',\''+nt.id+'\')"><i class="ti ti-trash"></i></button></span></div>';
       }).join('');
@@ -2771,14 +2890,20 @@ function anEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 
 /* ── Modal de anotação (adicionar/editar) ── */
 function anNoteModalOpen(mi,editId){
-  var preset='';
-  if(editId){var arr=anNotes(anYear,mi);var n=arr.find(function(x){return x.id===editId;});if(n)preset=n.text;}
-  var monthField= (mi>=0)
-    ? '<input type="hidden" id="an-note-mi" value="'+mi+'"><div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Mês: <strong style="color:var(--navy)">'+AN_MES_LONG[mi]+'/'+anYear+'</strong></div>'
-    : '<select id="an-note-mi" style="margin-bottom:8px">'+AN_MES_LONG.map(function(m,i){return '<option value="'+i+'"'+(i===new Date().getMonth()?' selected':'')+'>'+m+'/'+anYear+'</option>';}).join('')+'</select>';
+  var preset='',presetDate='';
+  if(editId){var arr=anNotes(anYear,mi);var n=arr.find(function(x){return x.id===editId;});if(n){preset=n.text;presetDate=n.date||'';}}
+  var pad=function(x){return String(x).padStart(2,'0');};
+  if(!presetDate){
+    var now=new Date(),m=(mi>=0?mi:now.getMonth());
+    var day=(String(now.getFullYear())===String(anYear)&&m===now.getMonth())?now.getDate():1;
+    presetDate=anYear+'-'+pad(m+1)+'-'+pad(day);
+  }
   var o=document.createElement('div');o.className='ov';o.id='an-note-ov';
   o.innerHTML='<div class="mx"><h4>'+(editId?'Editar anotação':'Nova anotação')+'</h4>'
-    +monthField
+    +'<input type="hidden" id="an-note-mi-old" value="'+mi+'">'
+    +'<label style="font-size:11.5px;color:var(--text-secondary);font-weight:600;display:block;margin-bottom:5px">Data da feature</label>'
+    +'<input id="an-note-date" type="date" min="'+anYear+'-01-01" max="'+anYear+'-12-31" value="'+presetDate+'" style="margin-bottom:10px">'
+    +'<label style="font-size:11.5px;color:var(--text-secondary);font-weight:600;display:block;margin-bottom:5px">Descrição</label>'
     +'<input id="an-note-txt" type="text" placeholder="Ex.: Atualização SEO, lançamento da calculadora…" value="'+anEsc(preset)+'">'
     +'<div class="mbb"><button onclick="document.getElementById(\'an-note-ov\').remove()">Cancelar</button>'
     +'<button class="pr" onclick="anNoteSave('+(editId?'\''+editId+'\'':'null')+')">Salvar</button></div></div>';
@@ -2787,9 +2912,14 @@ function anNoteModalOpen(mi,editId){
   var ti=document.getElementById('an-note-txt');ti.focus();ti.addEventListener('keydown',function(e){if(e.key==='Enter')anNoteSave(editId||null);});
 }
 function anNoteSave(editId){
-  var mi=parseInt(document.getElementById('an-note-mi').value),txt=document.getElementById('an-note-txt').value;
+  var date=document.getElementById('an-note-date').value,txt=document.getElementById('an-note-txt').value;
+  var oldMi=parseInt(document.getElementById('an-note-mi-old').value);
   if(!txt||!txt.trim()){toast('Digite o texto da anotação.','ti-alert-circle');return;}
-  if(editId)anEditNote(anYear,mi,editId,txt);else anAddNote(anYear,mi,txt);
+  var newMi=date?(parseInt(date.split('-')[1],10)-1):(oldMi>=0?oldMi:new Date().getMonth());
+  if(editId){
+    if(newMi!==oldMi){anDelNote(anYear,oldMi,editId);anAddNote(anYear,newMi,txt,date);}
+    else anEditNote(anYear,oldMi,editId,txt,date);
+  }else anAddNote(anYear,newMi,txt,date);
   document.getElementById('an-note-ov').remove();
   anR();if(_anDrawerMi!=null)anOpenPanel(_anDrawerMi);
   toast(editId?'Anotação atualizada.':'Anotação adicionada.','ti-check');
@@ -2812,8 +2942,9 @@ function anOpenPanel(mi){
   var mrows=AN_SECTIONS[anSection].metrics.map(function(m){var v=anSeries(anYear,anSection,anProp,m.k)[mi];
     return '<div class="an-dr-mrow"><span class="k">'+m.l+'</span><span class="v">'+anFmt(v,m.fmt)+'</span></div>';}).join('');
   var notes=anNotes(anYear,mi);
-  var notesHtml=notes.length?notes.map(function(nt){
-      return '<div class="an-note-li"><span class="ndot"></span><span class="ntxt">'+anEsc(nt.text)+'</span>'
+  var notesHtml=notes.length?notes.slice().sort(function(a,b){return String(a.date||'').localeCompare(String(b.date||''));}).map(function(nt){
+      var dl=anDayLabel(nt.date);
+      return '<div class="an-note-li">'+(dl?'<span class="an-note-day"><i class="ti ti-calendar-event"></i>'+dl+'</span>':'<span class="ndot"></span>')+'<span class="ntxt">'+anEsc(nt.text)+'</span>'
         +'<span class="acts" style="opacity:1"><button class="an-ic-btn" onclick="anNoteModalOpen('+mi+',\''+nt.id+'\')"><i class="ti ti-pencil"></i></button>'
         +'<button class="an-ic-btn del" onclick="anNoteDel('+mi+',\''+nt.id+'\')"><i class="ti ti-trash"></i></button></span></div>';
     }).join(''):'<div style="font-size:12px;color:var(--text-secondary);padding:6px 0">Nenhuma anotação para este mês.</div>';
@@ -2985,9 +3116,11 @@ function hGA(){
   h+=anSubNav();
   h+=anFocusBar();
   h+=anExecRow();
+  h+=anGoalProgress();
   h+=anMetricCards();
   h+=anEntryBar();
   h+=anChartCard();
+  h+=anHistoryGrid();
   h+=anCompareCard();
   h+=anAnnotationsCard();
   return '<div class="an-root">'+h+'</div>';
