@@ -554,15 +554,35 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .an-gp-pair span{font-size:10px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
 .an-gp-pair b{font-size:16px;color:var(--navy);font-weight:700}
 .an-gp-pct{margin-left:auto;font-size:26px;font-weight:800;letter-spacing:-1px}
-/* histórico por métrica (small multiples) */
-.an-hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-.an-hcell{background:var(--bg);border:1px solid rgba(11,34,57,.05);border-radius:var(--radius-xs);padding:12px 13px 8px}
-.an-hcell-hd{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:4px}
-.an-hcell-lbl{font-size:11px;color:var(--text-secondary);font-weight:600;line-height:1.25}
-.an-hcell-val{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+/* histórico por métrica (um gráfico grande por métrica) */
+.an-hcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(460px,1fr));gap:18px}
+.an-hchart{background:var(--bg);border:1px solid rgba(11,34,57,.05);border-radius:var(--radius-sm);padding:15px 17px 8px}
+.an-hchart-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
+.an-hchart-ttl{font-size:12px;color:var(--text-secondary);font-weight:600}
+.an-hchart-val{font-size:22px;font-weight:700;color:var(--navy);letter-spacing:-.5px;line-height:1.1;margin-top:2px}
+.an-hchart-hd .an-var{margin-left:0;flex-shrink:0}
+@media(max-width:900px){.an-hcharts{grid-template-columns:1fr}}
 /* badge de dia nas anotações */
 .an-note-day{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:var(--primary-dark);background:var(--primary-light);border-radius:6px;padding:3px 7px;flex-shrink:0}
 .an-note-day i{font-size:12px}
+/* origem da campanha */
+.an-camp-ctrl{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px 16px}
+.an-camp-ctrl-l,.an-camp-ctrl-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.an-camp-cl{font-size:11px;color:var(--text-secondary);font-weight:600}
+.an-rk{display:flex;align-items:center;gap:12px;padding:7px 0}
+.an-rk-name{width:150px;min-width:120px;font-size:12px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.an-rk-track{flex:1;height:14px;background:var(--bg);border-radius:8px;overflow:hidden;border:1px solid rgba(11,34,57,.05)}
+.an-rk-fill{height:100%;border-radius:8px;min-width:2px;transition:width .5s ease}
+.an-rk-val{width:128px;text-align:right;font-size:12.5px;font-weight:700;color:var(--navy)}
+.an-rk-share{color:var(--text-secondary);font-weight:600;font-size:11px}
+.an-camp-tblw{overflow-x:auto;margin:0 -2px}
+.an-camp-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.an-camp-tbl th,.an-camp-tbl td{padding:8px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid rgba(11,34,57,.05)}
+.an-camp-tbl th{font-size:10.5px;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:.2px;position:sticky;top:0;background:var(--card)}
+.an-camp-tbl tbody tr:hover{background:var(--bg)}
+.an-camp-tbl th.on,.an-camp-tbl td.on{background:var(--primary-light)}
+.an-camp-tbl td.on{color:var(--primary-dark);font-weight:700}
+@media(max-width:700px){.an-rk-name{width:100px;min-width:90px}.an-rk-val{width:92px}}
 </style>
 </head>
 <body>
@@ -2503,14 +2523,18 @@ var AN_SECTIONS={
       {k:'tempo_usuario', l:'Tempo Médio de Engaj./Usuário', fmt:'dur', al:['tempo médio de engajamento por usuário','tempo medio de engajamento por usuário','average engagement time per active user','tempo por usuá','tempo de engaj por usuá','tempo méd. por usuário']},
       {k:'sessoes_eng',   l:'Sessões Engaj./Usuário',        fmt:'dec', al:['sessões engajadas por usuário','sessoes engajadas por usuario','engaged sessions per','sessões engaj. por usuário','sessões engaj','sessoes engaj','engaged sessions']}
     ]},
-  camp:{l:'Origem da Campanha', ic:'ti-flag', head:'sessoes',
+  camp:{l:'Origem da Campanha', ic:'ti-flag', head:'sessoes', dim:'Origem da campanha',
     metrics:[
-      {k:'sessoes',        l:'Sessões',                       fmt:'int', al:['sessões','sessoes','sessions','total de sess']},
-      {k:'usuarios_ativos',l:'Usuários Ativos',               fmt:'int', al:['usuários ativos','usuarios ativos','active users','usuários ativo','total de usuá']},
-      {k:'sessoes_eng',    l:'Sessões Engajadas',             fmt:'int', al:['sessões engaj','sessoes engaj','engaged sessions','sessões com engaj']},
-      {k:'tx_eng',         l:'Taxa de Engajamento',           fmt:'pct', al:['taxa de engaj','engagement rate','taxa eng','% engaj','taxa de engajamento']},
-      {k:'tempo_sessao',   l:'Tempo Médio de Engaj./Sessão',  fmt:'dur', al:['tempo médio de engajamento por sess','tempo medio de engajamento por sess','average engagement time per session','tempo por sess','tempo de engajamento por sess']},
-      {k:'ev_sessao',      l:'Eventos por Sessão',            fmt:'dec', al:['eventos por sess','events per session','evento por sess','eventos/sess']}
+      {k:'usuarios_ativos', l:'Usuários Ativos',             fmt:'int',   al:['usuários ativos','usuarios ativos','active users','usuários ativo']},
+      {k:'sessoes',         l:'Sessões',                     fmt:'int',   al:['sessões','sessoes','sessions']},
+      {k:'sessoes_eng',     l:'Sessões Engajadas',           fmt:'int',   al:['sessões engajadas','sessoes engajadas','engaged sessions','sessões engaj']},
+      {k:'tempo_sessao',    l:'Tempo Médio de Engaj./Sessão',fmt:'dur',   al:['tempo médio de engajamento por sess','tempo medio de engajamento por sess','average engagement time per session','tempo por sess']},
+      {k:'sessoes_eng_user',l:'Sessões Engaj./Usuário',      fmt:'dec', w:'usuarios_ativos', al:['sessões engajadas por usuário','sessoes engajadas por usuario','engaged sessions per']},
+      {k:'ev_sessao',       l:'Eventos por Sessão',          fmt:'dec',   al:['eventos por sessão','eventos por sessao','events per session','evento por sess']},
+      {k:'tx_eng',          l:'Taxa de Engajamento',         fmt:'pct',   al:['taxa de engajamento','engagement rate','taxa de engaj']},
+      {k:'ev_principais',   l:'Eventos Principais',          fmt:'int',   al:['eventos principais','key events','principais events']},
+      {k:'contagem_eventos',l:'Contagem de Eventos',         fmt:'int',   al:['contagem de eventos','contagem de evento','event count']},
+      {k:'receita',         l:'Receita Total',               fmt:'money', al:['receita total','total revenue','receita']}
     ]}
 };
 
@@ -2524,6 +2548,12 @@ var _anInit=false, _anImp=null, _anDrawerMi=null;
 
 function anMeta(section,mk){return AN_SECTIONS[section].metrics.find(function(m){return m.k===mk;})||{fmt:'int',l:mk};}
 function propLabel(p){var x=AN_PROPS.find(function(z){return z.k===p;});return x?x.l:p;}
+/* matcher de coluna: rótulo exato vence; senão o alias MAIS específico (mais longo) vence — evita "Sessões engajadas por usuário" cair em "Sessões" */
+function anMatchCol(sec,label){label=(label==null?'':label).toString().toLowerCase().replace(/"/g,'').trim();if(!label)return null;
+  for(var i=0;i<sec.metrics.length;i++){var m=sec.metrics[i];if(label===m.l.toLowerCase()||label===m.k)return m.k;}
+  var best=null,bl=0;
+  for(var j=0;j<sec.metrics.length;j++){var mm=sec.metrics[j];(mm.al||[]).forEach(function(a){if(a&&label.indexOf(a)>=0&&a.length>bl){best=mm.k;bl=a.length;}});}
+  return best;}
 function anCurFocus(){var sec=AN_SECTIONS[anSection];if(!anFocusSel[anSection]||!sec.metrics.some(function(m){return m.k===anFocusSel[anSection];}))anFocusSel[anSection]=sec.head;return anFocusSel[anSection];}
 function anCurGoalMk(){var sec=AN_SECTIONS[anSection];var mk=anGoalSel[anSection];if(!mk||!sec.metrics.some(function(m){return m.k===mk;}))mk=sec.head;anGoalSel[anSection]=mk;return mk;}
 function anCurGoalMi(){var mi=anGoalMonth[anSection];if(mi==null||mi<0||mi>11)mi=anTargetMonth(anYear,anSection,anProp,anCurGoalMk());return mi;}
@@ -2532,7 +2562,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.ui)s.ui={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.ui)s.ui={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -2552,7 +2582,7 @@ function anSetCell(year,section,prop,mk,i,val){var d=anRaw(year,section,prop);d[
 function anSeries(year,section,prop,mk){return anData(year,section,prop)[mk]||Array(12).fill(null);}
 function anFilled(arr){return arr.map(function(v,i){return{v:v,i:i};}).filter(function(o){return o.v!=null&&o.v!=='';});}
 function anHasAny(year,section,prop){var d=anData(year,section,prop);return AN_SECTIONS[section].metrics.some(function(m){return(d[m.k]||[]).some(function(v){return v!=null&&v!=='';});});}
-function anYears(){var ys=new Set([String(new Date().getFullYear())]);var s=anStore();Object.keys(s.data).forEach(function(y){ys.add(y);});return Array.from(ys).sort();}
+function anYears(){var ys=new Set([String(new Date().getFullYear())]);var s=anStore();Object.keys(s.data).forEach(function(y){ys.add(y);});Object.keys(s.campsrc).forEach(function(y){ys.add(y);});return Array.from(ys).sort();}
 
 /* ── Anotações ── */
 /* ── Anotações (com data específica do dia) ── */
@@ -2577,11 +2607,13 @@ function anTargetMonth(year,section,prop,mk){var now=new Date();if(String(now.ge
 /* ── Formatação ── */
 function anFmt(v,fmt){if(v==null||v==='')return'—';v=Number(v);
   if(fmt==='dur'){var s=Math.round(v),mm=Math.floor(s/60),ss=s%60;return mm>0?(mm+'m '+String(ss).padStart(2,'0')+'s'):(ss+'s');}
+  if(fmt==='money')return 'R$ '+hFmt(v,'money');
   return hFmt(v,fmt);}
 function anShort(v,fmt){if(v==null||v==='')return'—';v=Number(v);
   if(fmt==='int')return fN(v);
   if(fmt==='pct')return v.toFixed(1)+'%';
   if(fmt==='dur'){var s=Math.round(v);return Math.floor(s/60)+'m'+String(s%60).padStart(2,'0');}
+  if(fmt==='money')return 'R$'+(Math.abs(v)>=1000?fN(v):v.toLocaleString('pt-BR',{maximumFractionDigits:2}));
   return v.toLocaleString('pt-BR',{maximumFractionDigits:1});}
 
 /* ── Estatísticas por métrica (atual / anterior / projeção / variação) ── */
@@ -2719,38 +2751,27 @@ function anMGoalEdit(mi){
 }
 
 /* ── Componente: histórico por métrica (small multiples) ── */
-function anMiniChart(arr,fmt,color){
-  var vals=arr.map(function(v){return v==null||v===''?null:Number(v);});
-  var mx=Math.max.apply(null,[1].concat(vals.map(function(v){return v||0;})));
-  var W=300,H=84,padB=14,plotH=H-padB-4,baseY=4+plotH,slot=W/12,bw=slot*0.56;
-  var out='';
-  for(var i=0;i<12;i++){var cx=slot*i+slot/2,x=cx-bw/2,v=vals[i],has=v!=null;
-    var bh=has?Math.max(2,Math.round((v||0)/mx*plotH)):0,y=baseY-bh;
-    var fill=has?color:'rgba(11,34,57,.06)';
-    out+='<rect x="'+x.toFixed(1)+'" y="'+(has?y:baseY-2).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(has?bh:2)+'" rx="2.5" fill="'+fill+'"><title>'+HMESES[i]+': '+anFmt(v,fmt)+'</title></rect>';
-    out+='<text class="an-axis" x="'+cx.toFixed(1)+'" y="'+(baseY+11)+'" text-anchor="middle" style="font-size:7px">'+HMESES[i].charAt(0)+'</text>';
+/* ── Componente: histórico por métrica (um gráfico grande por métrica) ── */
+function anHistoryCharts(){
+  if(!anHasAny(anYear,anSection,anProp)){
+    return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-timeline"></i> Histórico por métrica · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+'</div></div>'
+      +'<div class="an-empty"><i class="ti ti-chart-bar"></i><p>Sem dados para '+anYear+'</p><span>Use os botões acima para inserir manualmente ou importar um CSV do GA4</span></div></div>';
   }
-  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">'+out+'</svg>';
-}
-function anHistoryGrid(){
-  var anyData=anHasAny(anYear,anSection,anProp);
-  var cells=AN_SECTIONS[anSection].metrics.map(function(m){
-    var arr=anSeries(anYear,anSection,anProp,m.k),filled=anFilled(arr);
-    var last=filled.length?filled[filled.length-1]:null;
+  var blocks=AN_SECTIONS[anSection].metrics.map(function(m){
+    var arr=anSeries(anYear,anSection,anProp,m.k);
     var st=anStats(anYear,anSection,anProp,m.k),sem=anSemaphore(st.varp);
-    var varHtml=st.varp==null?'':'<span class="an-var '+sem+'" style="font-size:11px">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
-    return '<div class="an-hcell">'
-      +'<div class="an-hcell-hd"><span class="an-hcell-lbl">'+m.l+'</span><span class="an-dot" style="background:'+anSemColor(sem)+'"></span></div>'
-      +'<div class="an-hcell-val">'+(last?anFmt(last.v,m.fmt):'—')+' '+varHtml+'</div>'
-      +anMiniChart(arr,m.fmt,'var(--primary)')
-    +'</div>';
+    var varHtml=st.varp==null?'<span class="an-var flat">—</span>':'<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
+    var valTxt=st.cur==null?'—':anFmt(st.cur,m.fmt);
+    var body=anFilled(arr).length?anBarChart(arr,m.fmt):'<div class="an-empty"><i class="ti ti-chart-bar"></i><p>Sem dados</p></div>';
+    return '<div class="an-hchart">'
+      +'<div class="an-hchart-hd"><div><div class="an-hchart-ttl">'+m.l+' · '+anYear+'</div><div class="an-hchart-val">'+valTxt+'</div></div>'+varHtml+'</div>'
+      +body+'</div>';
   }).join('');
-  var body=anyData?'<div class="an-hgrid">'+cells+'</div>'
-    :'<div class="an-empty"><i class="ti ti-timeline"></i><p>Sem histórico para '+anYear+'</p><span>Importe ou insira os dados para ver a evolução de cada métrica</span></div>';
   return '<div class="an-card">'
-    +'<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-timeline"></i> Histórico por métrica · '+anYear+'</div>'
-    +'<div class="an-card-sub">'+propLabel(anProp)+'</div></div>'
-    +body+'</div>';
+    +'<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-timeline"></i> Histórico por métrica · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+'</div></div>'
+    +'<div class="an-hcharts">'+blocks+'</div>'
+    +'<div class="an-card-sub" style="margin-top:10px;text-align:center"><i class="ti ti-click" style="font-size:13px"></i> Clique em uma barra para ver valor, anotações e histórico do mês</div>'
+    +'</div>';
 }
 
 /* ── Componente: cards de métrica com semáforo ── */
@@ -3034,28 +3055,28 @@ function anParse(section,rows){
     return any;});
   var result={};
   // formato largo (modelo do sistema): métrica na 1ª coluna + ao menos 2 valores numéricos
-  var wideRows=clean.filter(function(cols){if(!hMatchMetric(sec,cols[0]))return false;
+  var wideRows=clean.filter(function(cols){if(!anMatchCol(sec,cols[0]))return false;
     var nn=0;for(var i=1;i<cols.length;i++){if(hNumParse(cols[i])!=null)nn++;}return nn>=2;});
   if(wideRows.length>=2){
-    wideRows.forEach(function(cols){var mk=hMatchMetric(sec,cols[0]);if(!mk||result[mk])return;
+    wideRows.forEach(function(cols){var mk=anMatchCol(sec,cols[0]);if(!mk||result[mk])return;
       var nums=[];for(var i=1;i<cols.length&&nums.length<12;i++)nums.push(hNumParse(cols[i]));while(nums.length<12)nums.push(null);result[mk]=nums;});
     return{mode:'wide',data:result,year:year,monthIdx:-1,defMode:'replace'};
   }
   // formato GA4: cabeçalho com métricas em colunas, dados por canal/linha
   var headerIdx=-1,colMap={};
   for(var r=0;r<clean.length;r++){var cols=clean[r];if(cols.length<2)continue;var map={},hits=0;
-    cols.forEach(function(c,ci){var mk=hMatchMetric(sec,c);if(mk&&map[mk]==null){map[mk]=ci;hits++;}});
+    cols.forEach(function(c,ci){var mk=anMatchCol(sec,c);if(mk&&map[mk]==null){map[mk]=ci;hits++;}});
     if(hits>=2){headerIdx=r;colMap=map;break;}}
   if(headerIdx>=0){
     var mi=monthIdx>=0?monthIdx:new Date().getMonth();
     var dataRows=clean.slice(headerIdx+1);
     var totalRow=dataRows.find(function(c){var f=String(c[0]||'').toLowerCase().trim();return f==='total'||f==='totais'||f==='all'||f.indexOf('total')===0;});
-    var wci=colMap[sec.head]; // coluna de contagem usada como peso (sessões / usuários)
     Object.keys(colMap).forEach(function(mk){var ci=colMap[mk],meta=anMeta(section,mk),val=null;
+      var wk=meta.w||sec.head,wci=colMap[wk]; // coluna de contagem usada como peso
       if(totalRow){val=hNumParse(totalRow[ci]);}
       else if(meta.fmt==='int'){var s=0,any=false;dataRows.forEach(function(c){var v=hNumParse(c[ci]);if(v!=null){s+=v;any=true;}});val=any?s:null;}
       else{ // taxa/tempo/média: média PONDERADA pela contagem (resultado correto a nível de propriedade)
-        if(wci!=null&&mk!==sec.head){var num=0,den=0;dataRows.forEach(function(c){var v=hNumParse(c[ci]),w=hNumParse(c[wci]);if(v!=null&&w!=null){num+=v*w;den+=w;}});if(den>0)val=num/den;}
+        if(wci!=null&&mk!==wk){var num=0,den=0;dataRows.forEach(function(c){var v=hNumParse(c[ci]),w=hNumParse(c[wci]);if(v!=null&&w!=null){num+=v*w;den+=w;}});if(den>0)val=num/den;}
         if(val==null){var nums=dataRows.map(function(c){return hNumParse(c[ci]);}).filter(function(v){return v!=null;});if(nums.length)val=nums.reduce(function(a,b){return a+b;},0)/nums.length;}
       }
       var arr=Array(12).fill(null);if(val!=null)arr[mi]=val;result[mk]=arr;});
@@ -3107,20 +3128,231 @@ function anApply(){
   toast(n+' métrica(s) importada(s) — '+ml+'.','ti-file-import');
 }
 
-/* ═══ OVERRIDE: render da aba Analytics ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   ORIGEM DA CAMPANHA — visão quebrada por origem (google, bing, …)
+   ═══════════════════════════════════════════════════════════════ */
+var anCampMi=null, anCampMetric=null;
+var AN_SRC_COLORS=['#16C79A','#3B82F6','#8B5CF6','#F59E0B','#EC4899','#06B6D4','#84CC16','#EF4444','#6366F1','#14B8A6'];
+function anSrcColor(i){return AN_SRC_COLORS[i%AN_SRC_COLORS.length];}
+
+/* dados por origem: ac.an.campsrc[year][prop][source][mk]=[12] */
+function anCampObj(year,prop){var s=anStore();s.campsrc[year]=s.campsrc[year]||{};s.campsrc[year][prop]=s.campsrc[year][prop]||{};return s.campsrc[year][prop];}
+function anCampArr(year,prop,name,mk){var o=anCampObj(year,prop);o[name]=o[name]||{};if(!Array.isArray(o[name][mk]))o[name][mk]=Array(12).fill(null);return o[name][mk];}
+function anCampSetCell(year,prop,name,mk,mi,val){var a=anCampArr(year,prop,name,mk);a[mi]=(val===''||val==null||isNaN(Number(val)))?null:Number(val);}
+function anCampSources(year,prop){return Object.keys(anCampObj(year,prop));}
+function anCampVal(year,prop,name,mk,mi){var o=anCampObj(year,prop);return(o[name]&&Array.isArray(o[name][mk]))?o[name][mk][mi]:null;}
+function anCampMonths(year,prop){var o=anCampObj(year,prop),set={};Object.keys(o).forEach(function(n){var sc=o[n];Object.keys(sc).forEach(function(mk){(sc[mk]||[]).forEach(function(v,i){if(v!=null&&v!=='')set[i]=1;});});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
+function anCampHasAny(year,prop){return anCampMonths(year,prop).length>0;}
+function anCampTotal(year,prop,mk,mi){var meta=anMeta('camp',mk),o=anCampObj(year,prop),names=Object.keys(o);
+  if(meta.fmt==='int'){var s=0,any=false;names.forEach(function(n){var v=anCampVal(year,prop,n,mk,mi);if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
+  var wk=meta.w||AN_SECTIONS.camp.head,num=0,den=0;
+  names.forEach(function(n){var v=anCampVal(year,prop,n,mk,mi),w=anCampVal(year,prop,n,wk,mi);if(v!=null&&w!=null){num+=Number(v)*Number(w);den+=Number(w);}});
+  if(den>0)return num/den;
+  var nums=names.map(function(n){return anCampVal(year,prop,n,mk,mi);}).filter(function(v){return v!=null;});
+  return nums.length?nums.reduce(function(a,b){return Number(a)+Number(b);},0)/nums.length:null;}
+function anCampSeriesByMonth(year,prop,name,mk){var arr=[];for(var i=0;i<12;i++)arr.push(anCampVal(year,prop,name,mk,i));return arr;}
+
+/* helpers de seleção */
+function anCampCurMi(){if(anCampMi!=null&&anCampMi>=0&&anCampMi<=11)return anCampMi;var ms=anCampMonths(anYear,anProp);if(ms.length)return ms[ms.length-1];var now=new Date();return String(now.getFullYear())===String(anYear)?now.getMonth():11;}
+function anCampCurMetric(){var ms=AN_SECTIONS.camp.metrics;if(!anCampMetric||!ms.some(function(m){return m.k===anCampMetric;}))anCampMetric='sessoes';return anCampMetric;}
+function anCampSetMi(v){anCampMi=parseInt(v,10);anR();}
+function anCampSetMetric(v){anCampMetric=v;anR();}
+
+/* ── Render: controles ── */
+function anCampControls(disabled){
+  var ms=AN_SECTIONS.camp.metrics,mi=anCampCurMi(),mk=anCampCurMetric(),years=anYears();
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var moSel='<select class="fsel" onchange="anCampSetMi(this.value)"'+(disabled?' disabled':'')+'>'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select>';
+  var mkSel='<select class="fsel" onchange="anCampSetMetric(this.value)"'+(disabled?' disabled':'')+'>'+ms.map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select>';
+  return '<div class="an-card an-camp-ctrl">'
+    +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'<span class="an-camp-cl">Ordenar por</span>'+mkSel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anCampManualOpen()"'+(disabled?' disabled':'')+'><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<button class="an-btn" onclick="anCampModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
+    +'<button class="an-btn prim" onclick="anCampImportOpen()"'+(disabled?' disabled':'')+'><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+}
+
+/* ── Render: resumo do mês (totais entre origens) ── */
+function anCampExec(mi){
+  var o=anCampObj(anYear,anProp),nSrc=Object.keys(o).filter(function(n){return AN_SECTIONS.camp.metrics.some(function(m){return anCampVal(anYear,anProp,n,m.k,mi)!=null;});}).length;
+  function card(ic,lbl,val,sub){return '<div class="an-exec-card"><div class="an-exec-ic"><i class="ti '+ic+'"></i></div><div class="an-exec-lbl">'+lbl+'</div><div class="an-exec-val">'+val+'</div>'+(sub?'<div class="an-exec-sub">'+sub+'</div>':'')+'</div>';}
+  var sess=anCampTotal(anYear,anProp,'sessoes',mi),us=anCampTotal(anYear,anProp,'usuarios_ativos',mi),eng=anCampTotal(anYear,anProp,'sessoes_eng',mi),tx=anCampTotal(anYear,anProp,'tx_eng',mi);
+  return '<div class="an-exec">'
+    +card('ti-flag','Origens ativas',String(nSrc),AN_MES_LONG[mi]+'/'+anYear)
+    +card('ti-click','Sessões',anFmt(sess,'int'))
+    +card('ti-users','Usuários Ativos',anFmt(us,'int'))
+    +card('ti-activity','Sessões Engajadas',anFmt(eng,'int'))
+    +card('ti-percentage','Taxa de Engajamento',anFmt(tx,'pct'))
+    +'</div>';
+}
+
+/* ── Render: ranking de origens pela métrica escolhida ── */
+function anCampRanking(mi,mk){
+  var meta=anMeta('camp',mk),o=anCampObj(anYear,anProp);
+  var rows=Object.keys(o).map(function(n){return{n:n,v:anCampVal(anYear,anProp,n,mk,mi)};}).filter(function(r){return r.v!=null;});
+  rows.sort(function(a,b){return Number(b.v)-Number(a.v);});
+  if(!rows.length)return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-chart-bar"></i> Origens por '+meta.l+' · '+AN_MES_LONG[mi]+'/'+anYear+'</div></div><div class="an-empty"><i class="ti ti-chart-bar"></i><p>Sem dados neste mês</p></div></div>';
+  var mx=Math.max.apply(null,rows.map(function(r){return Number(r.v);}));
+  var totalInt=meta.fmt==='int'?rows.reduce(function(s,r){return s+Number(r.v);},0):0;
+  var bars=rows.map(function(r,i){var w=mx>0?Math.max(2,Number(r.v)/mx*100):0;
+    var share=meta.fmt==='int'&&totalInt>0?(' · '+(Number(r.v)/totalInt*100).toFixed(1)+'%'):'';
+    return '<div class="an-rk"><div class="an-rk-name" title="'+anEsc(r.n)+'">'+anEsc(r.n)+'</div>'
+      +'<div class="an-rk-track"><div class="an-rk-fill" style="width:'+w.toFixed(1)+'%;background:'+anSrcColor(i)+'"></div></div>'
+      +'<div class="an-rk-val">'+anFmt(r.v,meta.fmt)+'<span class="an-rk-share">'+share+'</span></div></div>';
+  }).join('');
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-chart-bar"></i> Origens por '+meta.l+' · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+rows.length+' origens</div></div>'+bars+'</div>';
+}
+
+/* ── Render: tabela origens × métricas ── */
+function anCampTable(mi,mk){
+  var mets=AN_SECTIONS.camp.metrics,o=anCampObj(anYear,anProp);
+  var rows=Object.keys(o).map(function(n){return n;}).filter(function(n){return mets.some(function(m){return anCampVal(anYear,anProp,n,m.k,mi)!=null;});});
+  rows.sort(function(a,b){var va=anCampVal(anYear,anProp,a,mk,mi),vb=anCampVal(anYear,anProp,b,mk,mi);return(vb==null?-1:Number(vb))-(va==null?-1:Number(va));});
+  if(!rows.length)return '';
+  var head='<tr><th style="text-align:left">Origem</th>'+mets.map(function(m){return '<th'+(m.k===mk?' class="on"':'')+'>'+m.l+'</th>';}).join('')+'</tr>';
+  var body=rows.map(function(n){return '<tr><td style="text-align:left;font-weight:600">'+anEsc(n)+'</td>'+mets.map(function(m){var v=anCampVal(anYear,anProp,n,m.k,mi);return '<td'+(m.k===mk?' class="on"':'')+'>'+(v==null?'—':anShort(v,m.fmt))+'</td>';}).join('')+'</tr>';}).join('');
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> Detalhamento por origem · '+AN_MES_LONG[mi]+'/'+anYear+'</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div></div>';
+}
+
+/* ── Render: tendência da métrica por origem (top 6) ── */
+function anCampTrend(mk){
+  var meta=anMeta('camp',mk),mi=anCampCurMi(),o=anCampObj(anYear,anProp);
+  var ranked=Object.keys(o).map(function(n){return{n:n,v:anCampVal(anYear,anProp,n,mk,mi)};}).filter(function(r){return r.v!=null;}).sort(function(a,b){return Number(b.v)-Number(a.v);}).slice(0,6);
+  if(!ranked.length)return '';
+  var series=ranked.map(function(r,i){return{label:r.n,color:anSrcColor(i),vals:anCampSeriesByMonth(anYear,anProp,r.n,mk)};});
+  var legend='<div class="an-legend">'+series.map(function(s){return '<button class="an-leg on" style="cursor:default"><i style="background:'+s.color+'"></i>'+anEsc(s.label)+'</button>';}).join('')+'</div>';
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-chart-line"></i> Evolução por origem — '+meta.l+' · '+anYear+'</div><div class="an-card-sub">Top 6 origens</div></div>'+legend+anLineChart(series,meta.fmt)+'</div>';
+}
+
+/* ── Manual por origem (mês selecionado) ── */
+var _anCampMan=null;
+function anCampManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}_anCampMan={mi:anCampCurMi()};
+  var o=document.createElement('div');o.className='ov';o.id='an-cman-ov';
+  o.innerHTML='<div class="mx" style="width:860px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-cman-body"></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anCampMan=null;}});anCampManBody();}
+function anCampManBody(){
+  if(!_anCampMan)return;var mi=_anCampMan.mi,mets=AN_SECTIONS.camp.metrics,o=anCampObj(anYear,anProp),names=Object.keys(o);
+  var h='<h4 style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><i class="ti ti-flag" style="color:var(--primary)"></i> Origens — '+propLabel(anProp)
+    +'<select class="fsel" style="margin-left:auto" onchange="_anCampMan.mi=parseInt(this.value);anCampManBody()">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select></h4>';
+  h+='<p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px;line-height:1.5">Edite os valores de cada origem para '+AN_MES_LONG[mi]+'/'+anYear+'. Salva automaticamente no Supabase.</p>';
+  h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl an-cman-tbl"><thead><tr><th style="text-align:left">Origem</th>'+mets.map(function(m){return '<th>'+m.l+'</th>';}).join('')+'<th></th></tr></thead><tbody>';
+  names.forEach(function(n){h+='<tr><td style="text-align:left;font-weight:600">'+anEsc(n)+'</td>'+mets.map(function(m){var v=anCampVal(anYear,anProp,n,m.k,mi);
+    return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anCampSetCell(anYear,anProp,\''+anEsc(n).replace(/'/g,"\\'")+'\',\''+m.k+'\','+mi+',this.value);sv()"></td>';}).join('')
+    +'<td><button class="an-ic-btn del" title="Remover origem" onclick="anCampDelSource(\''+anEsc(n).replace(/'/g,"\\'")+'\')"><i class="ti ti-trash"></i></button></td></tr>';});
+  h+='</tbody></table></div>';
+  h+='<div class="mbb"><button onclick="anCampAddSource()"><i class="ti ti-plus" style="font-size:11px"></i> Adicionar origem</button>'
+    +'<button onclick="anCampImportOpen()"><i class="ti ti-upload" style="font-size:11px"></i> Importar CSV</button>'
+    +'<button class="pr" onclick="document.getElementById(\'an-cman-ov\').remove();_anCampMan=null;anR()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
+  document.getElementById('an-cman-body').innerHTML=h;
+}
+function anCampAddSource(){sM('Nome da origem (ex.: google, bing, newsletter)','',function(v){v=(v||'').trim();if(!v)return;anCampArr(anYear,anProp,v,'sessoes');sv();anCampManBody();},'text');}
+function anCampDelSource(name){cfm('Remover origem','Remover "'+name+'" e todos os seus dados deste ano/propriedade?','Remover','dgr',function(){var o=anCampObj(anYear,anProp);delete o[name];sv();anCampManBody();anR();toast('Origem removida.','ti-trash');});}
+
+/* ── Modelo CSV (origens) ── */
+function anCampModelDownload(){
+  var mets=AN_SECTIONS.camp.metrics;
+  var esc=function(s){return /[",;\n]/.test(s)?'"'+String(s).replace(/"/g,'""')+'"':s;};
+  var head=['Origem da campanha'].concat(mets.map(function(m){return m.l;})).map(esc).join(',');
+  var ex=['google'].concat(mets.map(function(){return '';})).map(esc).join(',');
+  var csv='\uFEFF'+head+'\n'+ex+'\n';
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='modelo_origem_campanha_'+anYear+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  toast('Modelo de origem da campanha baixado.','ti-download');
+}
+
+/* ── Import por origem ── */
+var _anCampImp=null;
+function anCampImportOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica para importar.','ti-info-circle');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''});anCampPreview(rows,f.name);}catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});anCampPreview(rows,f.name);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function anCampParse(rows){
+  var sec=AN_SECTIONS.camp,monthIdx=-1,year=anYear;
+  var flat=[];rows.forEach(function(r){(r||[]).forEach(function(c){flat.push(String(c==null?'':c));});});
+  for(var fi=0;fi<flat.length;fi++){var cell=flat[fi];var m=cell.match(/(20\d{2})(\d{2})\d{2}/);if(m){year=m[1];monthIdx=parseInt(m[2],10)-1;break;}m=cell.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/);if(m){year=m[3];monthIdx=parseInt(m[2],10)-1;break;}}
+  var clean=rows.filter(function(cols){if(!cols||!cols.length)return false;var first=String(cols[0]==null?'':cols[0]).trim();if(first.charAt(0)==='#')return false;return cols.some(function(c){return String(c==null?'':c).trim()!=='';});});
+  var headerIdx=-1,colMap={};
+  for(var r=0;r<clean.length;r++){var cols=clean[r];if(cols.length<2)continue;var map={},hits=0;cols.forEach(function(c,ci){var mk=anMatchCol(sec,c);if(mk&&map[mk]==null){map[mk]=ci;hits++;}});if(hits>=2){headerIdx=r;colMap=map;break;}}
+  if(headerIdx<0)return{mi:-1,year:year,sources:{},mk:[]};
+  var mi=monthIdx>=0?monthIdx:new Date().getMonth();
+  var sources={};
+  clean.slice(headerIdx+1).forEach(function(c){var name=String(c[0]||'').trim();if(!name)return;var low=name.toLowerCase();if(low==='total'||low==='totais'||low==='all'||low.indexOf('#')===0)return;
+    var rec={};Object.keys(colMap).forEach(function(mk){var v=hNumParse(c[colMap[mk]]);if(v!=null)rec[mk]=v;});
+    if(Object.keys(rec).length)sources[name]=rec;});
+  return{mi:mi,year:year,sources:sources,mk:Object.keys(colMap)};
+}
+function anCampPreview(rows,fname){
+  var parsed=anCampParse(rows);_anCampImp={parsed:parsed};
+  var names=Object.keys(parsed.sources);
+  if(parsed.mi<0||!names.length){toast('Não reconheci o formato de origem da campanha. Baixe o modelo para conferir as colunas.','ti-alert-circle');return;}
+  var metsLbl=parsed.mk.map(function(k){return anMeta('camp',k).l;}).join(', ');
+  var top=names.slice().sort(function(a,b){return(parsed.sources[b].sessoes||0)-(parsed.sources[a].sessoes||0);}).slice(0,8);
+  var prev=top.map(function(n){return '<tr><td style="text-align:left;font-weight:600">'+anEsc(n)+'</td><td>'+(parsed.sources[n].sessoes!=null?anFmt(parsed.sources[n].sessoes,'int'):'—')+'</td><td>'+(parsed.sources[n].usuarios_ativos!=null?anFmt(parsed.sources[n].usuarios_ativos,'int'):'—')+'</td></tr>';}).join('');
+  var o=document.createElement('div');o.className='ov';o.id='an-cimp-ov';
+  o.innerHTML='<div class="mx" style="width:620px;max-width:96vw;max-height:88vh;overflow:auto"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar origens — '+propLabel(anProp)+'</h4>'
+    +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br>Mês detectado: <strong style="color:var(--navy)">'+AN_MES_LONG[parsed.mi]+'/'+parsed.year+'</strong> · <strong>'+names.length+'</strong> origens · Métricas: '+anEsc(metsLbl)+'</p>'
+    +'<div class="hwrap"><table class="htbl"><thead><tr><th style="text-align:left">Origem</th><th>Sessões</th><th>Usuários</th></tr></thead><tbody>'+prev+'</tbody></table></div>'
+    +(names.length>8?'<p style="font-size:11px;color:var(--text-secondary);margin-top:6px">+ '+(names.length-8)+' outras origens</p>':'')
+    +'<div style="margin:12px 0 4px;font-size:12px;font-weight:600;color:var(--navy)">Modo de importação</div>'
+    +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;margin-bottom:6px;cursor:pointer"><input type="radio" name="cimode" value="update" checked> <span>Atualizar o mês — substitui os valores das origens enviadas neste mês (recomendado)</span></label>'
+    +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;cursor:pointer"><input type="radio" name="cimode" value="replace"> <span>Substituir o mês — apaga as origens deste mês não presentes no arquivo</span></label>'
+    +'<div class="mbb"><button onclick="document.getElementById(\'an-cimp-ov\').remove();_anCampImp=null">Cancelar</button><button class="pr" onclick="anCampApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anCampImp=null;}});
+}
+function anCampApply(){
+  if(!_anCampImp)return;var parsed=_anCampImp.parsed,mi=parsed.mi;
+  var mode=(document.querySelector('input[name="cimode"]:checked')||{}).value||'update';
+  var names=Object.keys(parsed.sources);
+  if(mode==='replace'){var o=anCampObj(anYear,anProp);Object.keys(o).forEach(function(n){if(names.indexOf(n)<0){AN_SECTIONS.camp.metrics.forEach(function(m){if(Array.isArray(o[n][m.k]))o[n][m.k][mi]=null;});}});}
+  var n=0;names.forEach(function(name){var rec=parsed.sources[name];AN_SECTIONS.camp.metrics.forEach(function(m){if(rec[m.k]!=null){anCampSetCell(anYear,anProp,name,m.k,mi,rec[m.k]);}});n++;});
+  sv();
+  document.getElementById('an-cimp-ov').remove();_anCampImp=null;
+  anCampMi=mi;anR();
+  toast(n+' origens importadas — '+AN_MES_LONG[mi]+'/'+parsed.year+'.','ti-file-import');
+}
+
+/* ── View principal da aba de campanha ── */
+function anCampView(){
+  var h='';
+  h+=anCampControls(anProp==='all');
+  if(anProp==='all'){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-flag"></i><p>Selecione uma propriedade</p><span>A visão por origem de campanha é exibida por propriedade. Escolha uma propriedade nos chips acima.</span></div></div>';
+    return h;
+  }
+  if(!anCampHasAny(anYear,anProp)){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-flag"></i><p>Sem dados de campanha para '+propLabel(anProp)+' em '+anYear+'</p><span>Importe um CSV de "Origem da campanha" do GA4 (ou use o modelo) — os dados aparecem quebrados por origem</span></div></div>';
+    return h;
+  }
+  var mi=anCampCurMi(),mk=anCampCurMetric();
+  h+=anCampExec(mi);
+  h+=anCampRanking(mi,mk);
+  h+=anCampTable(mi,mk);
+  h+=anCampTrend(mk);
+  h+=anAnnotationsCard();
+  return h;
+}
+
+
 function hGA(){
   anInit();
   var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
   var h=pageHeader('Analytics', AN_SECTIONS[anSection].l+' · '+propLabel(anProp));
   h+=anPropChips();
   h+=anSubNav();
+  if(anSection==='camp'){
+    h+=anCampView();
+    return '<div class="an-root">'+h+'</div>';
+  }
   h+=anFocusBar();
   h+=anExecRow();
   h+=anGoalProgress();
   h+=anMetricCards();
   h+=anEntryBar();
-  h+=anChartCard();
-  h+=anHistoryGrid();
+  h+=anHistoryCharts();
   h+=anCompareCard();
   h+=anAnnotationsCard();
   return '<div class="an-root">'+h+'</div>';
