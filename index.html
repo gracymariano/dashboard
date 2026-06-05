@@ -32,6 +32,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .sb-logo{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
 .sb-logo-row{display:flex;align-items:center;gap:10px}
 .sb-logo-ico{width:36px;height:36px;background:var(--grad);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sb-logo-mark{width:42px;height:42px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.04);border-radius:10px}
+.sb-logo-mark img{height:34px;width:auto;display:block}
 .sb-logo-name{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.3px}
 .sb-logo-tag{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px}
 .sb-nav{flex:1;padding:16px 12px}
@@ -582,6 +584,45 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .an-camp-tbl tbody tr:hover{background:var(--bg)}
 .an-camp-tbl th.on,.an-camp-tbl td.on{background:var(--primary-light)}
 .an-camp-tbl td.on{color:var(--primary-dark);font-weight:700}
+.an-camp-pivot td.stick,.an-camp-pivot th.stick{position:sticky;left:0;background:var(--card);z-index:1}
+.an-camp-pivot tbody tr:hover td.stick{background:var(--bg)}
+.an-camp-pivot .an-na{color:var(--text-secondary);opacity:.6}
+.an-camp-tot td{border-top:2px solid rgba(11,34,57,.12);font-weight:700;color:var(--navy)}
+.an-camp-tot td.stick{background:var(--card)}
+.an-sortable{cursor:pointer;user-select:none;white-space:nowrap}
+.an-ads-best{margin-top:10px;font-size:11px;color:var(--text-secondary);display:flex;align-items:center;gap:5px;border-top:1px solid rgba(11,34,57,.05);padding-top:9px}
+.an-ads-best i{color:var(--warning);font-size:13px}
+.an-ads-best b{color:var(--navy)}
+.an-hint{display:flex;align-items:flex-start;gap:8px;background:var(--primary-light);color:var(--primary-dark);border-radius:var(--radius-sm);padding:12px 15px;font-size:12.5px;line-height:1.5;margin-bottom:18px;font-weight:500}
+.an-hint i{font-size:16px;flex-shrink:0;margin-top:1px}
+.an-camp-tbl td.an-ads-bestcell{background:rgba(245,158,11,.1);color:var(--navy);font-weight:700}
+.an-rev-rpm td{background:var(--primary-light)!important;color:var(--primary-dark);font-weight:700}
+.an-dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+@media(max-width:900px){.an-dash-grid{grid-template-columns:1fr}}
+.an-alert-list{display:flex;flex-direction:column;gap:8px}
+.an-alert{display:flex;align-items:center;gap:11px;padding:10px 12px;background:var(--bg);border-radius:var(--radius-xs);border-left:3px solid var(--text-secondary)}
+.an-alert>i{font-size:19px;flex-shrink:0}
+.an-alert-tx{flex:1;min-width:0}
+.an-alert-tx b{font-size:13px;color:var(--navy)}
+.an-alert-sec{font-size:10px;color:var(--text-secondary);background:rgba(11,34,57,.06);padding:1px 6px;border-radius:6px;margin-left:6px}
+.an-alert-sub{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.an-alert-var{font-weight:800;font-size:14px;flex-shrink:0}
+.an-opp{display:flex;align-items:flex-start;gap:11px;padding:12px;border-bottom:1px solid rgba(11,34,57,.05)}
+.an-opp:last-child{border-bottom:none}
+.an-opp>i{font-size:19px;color:var(--primary);margin-top:1px;flex-shrink:0}
+.an-opp-tx{flex:1;font-size:12.5px;color:var(--text-primary);line-height:1.55}
+.an-opp-type{display:inline-block;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--primary-dark);background:var(--primary-light);padding:2px 7px;border-radius:6px;margin-right:6px;vertical-align:middle}
+.an-opp-btn{flex-shrink:0;padding:6px 9px}
+.an-meta-row{padding:11px 0;border-bottom:1px solid rgba(11,34,57,.05)}
+.an-meta-row:last-child{border-bottom:none}
+.an-meta-top{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--navy);margin-bottom:6px}
+.an-meta-sub{font-size:11px;color:var(--text-secondary);margin-top:4px}
+.an-meta-badge{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;border:1px solid;border-radius:6px;padding:1px 6px}
+.an-sortable:hover{color:var(--primary-dark)}
+.an-camp-tbl th.sorted{color:var(--primary-dark)}
+.T th.tp-sort{user-select:none}
+.T th.tp-sort:hover{color:var(--primary-dark)}
+.T th.tp-sort.on{color:var(--primary-dark)}
 @media(max-width:700px){.an-rk-name{width:100px;min-width:90px}.an-rk-val{width:92px}}
 </style>
 </head>
@@ -593,7 +634,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 <aside class="sidebar" id="sidebar">
   <div class="sb-logo">
     <div class="sb-logo-row">
-      <div class="sb-logo-ico">💰</div>
+      <div class="sb-logo-mark"><img src="data:image/png;base64,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" alt="Guardar Dinheiro"></div>
       <div>
         <div class="sb-logo-name">Guardar Dinheiro</div>
         <div class="sb-logo-tag">Hub de Performance</div>
@@ -606,9 +647,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <button class="nav-item active" data-id="hub" data-sec="visao-geral" onclick="navTo('hub','visao-geral')"><i class="ti ti-layout-dashboard"></i>Dashboard</button>
     <button class="nav-item" data-id="hub" data-sec="monetizacao" onclick="navTo('hub','monetizacao')"><i class="ti ti-coin"></i>Receitas</button>
     <button class="nav-item" data-id="hub" data-sec="analytics" onclick="navTo('hub','analytics')"><i class="ti ti-chart-line"></i>Analytics</button>
-    <button class="nav-item" data-id="hub" data-sec="monetizacao" onclick="navTo('hub','monetizacao')"><i class="ti ti-ad-2"></i>AdSense</button>
+    <button class="nav-item" data-id="hub" data-sec="app" onclick="navTo('hub','app')"><i class="ti ti-device-mobile"></i>App</button>
     <button class="nav-item" data-id="hub" data-sec="seo" onclick="navTo('hub','seo')"><i class="ti ti-search"></i>SEO</button>
-    <button class="nav-item" data-id="hub" data-sec="paginas" onclick="navTo('hub','paginas')"><i class="ti ti-world"></i>Top Páginas</button>
     <button class="nav-item" data-id="cora" data-sec="" onclick="navTo('cora','')"><i class="ti ti-pencil"></i>Conteúdo</button>
 
     <div class="sb-section">Insights</div>
@@ -1663,7 +1703,6 @@ var HUB_SECS=[
   {id:'visao-geral',l:'Dashboard',ic:'ti-layout-dashboard'},
   {id:'aquisicao',l:'Aquisição',ic:'ti-trending-up'},
   {id:'seo',l:'SEO',ic:'ti-search'},
-  {id:'paginas',l:'Top Páginas',ic:'ti-world'},
   {id:'monetizacao',l:'Receitas',ic:'ti-currency-dollar'},
   {id:'geral',l:'Métricas Gerais',ic:'ti-chart-bar'},
   {id:'analytics',l:'Analytics',ic:'ti-chart-line'},
@@ -1679,7 +1718,7 @@ var SIDEBAR_NAV = [
   {id:'hub',sec:'visao-geral',   l:'Dashboard',        ic:'ti-layout-dashboard', group:'main'},
   {id:'hub',sec:'monetizacao',   l:'Receitas',          ic:'ti-coin',              group:'main'},
   {id:'hub',sec:'analytics',     l:'Analytics',         ic:'ti-chart-line',        group:'main'},
-  {id:'hub',sec:'monetizacao',   l:'AdSense',           ic:'ti-ad',                group:'main'},
+  {id:'hub',sec:'adsense',       l:'AdSense',           ic:'ti-ad',                group:'main'},
   {id:'hub',sec:'seo',           l:'SEO',               ic:'ti-search',            group:'main'},
   {id:'cora',sec:'',             l:'Conteúdo',          ic:'ti-pencil',            group:'main'},
   {id:'hub',sec:'visao-geral',   l:'IA Insights',       ic:'ti-brain',             group:'main'},
@@ -1720,6 +1759,7 @@ function rHub(a){
   else if(hubSec==='conteudo')  sec=hCON();
   else if(hubSec==='dados')     sec=hDADOS();
   else if(hubSec==='paginas')  sec=hPAGINAS();
+  else if(hubSec==='adsense')  sec=hADSENSE();
   a.innerHTML=sec;
 }
 
@@ -1787,24 +1827,52 @@ function entryBarP(dsId){
 
 // ── VISÃO GERAL ──
 function hVG(){
-  var d=gDSData(hYear,'admgr');
-  var rec=(d['receita']||[]).reduce(function(s,v){return s+(Number(v)||0);},0);
-  var imp=(gDSData(hYear,'geral')['imp']||[]).reduce(function(s,v){return s+(Number(v)||0);},0);
-  var cli=(gDSData(hYear,'gsc')['cli']||[]).reduce(function(s,v){return s+(Number(v)||0);},0);
-  var aq=gDSData(hYear,'aquis');
-  var ses=HDS.find(function(d){return d.id==='aquis';}).metrics.reduce(function(s,m){return s+(aq[m.k]||[]).reduce(function(a,v){return a+(Number(v)||0);},0);},0);
-  var hasRec=rec>0, hasSes=ses>0, hasImp=imp>0, hasCli=cli>0;
-  var recSpark=(d['receita']||[]).map(function(v){return Number(v)||0;});
-  return pageHeader('Dashboard','Visão geral do ecossistema Guardar Dinheiro')
-    +'<div class="kpi-grid">'
-    +(hasRec?kpiCard('ti-currency-dollar','Receita Total','R$ '+fN(rec),'—',null,recSpark):kpiEmpty('ti-currency-dollar','Receita Total'))
-    +(hasSes?kpiCard('ti-users','Sessões Totais',fN(ses),'—',null,[]):kpiEmpty('ti-users','Sessões Totais'))
-    +(hasImp?kpiCard('ti-eye','Impressões',fN(imp),'—',null,[]):kpiEmpty('ti-eye','Impressões'))
-    +(hasCli?kpiCard('ti-pointer','Cliques SEO',fN(cli),'—',null,[]):kpiEmpty('ti-pointer','Cliques SEO'))
-    +'</div>'
-    +hSmartHome()
-    +hProximasEntregas()
-    +hCalendarioInsights(hasRec,rec,recSpark);
+  anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
+  var year=anYear,thresh=anDashThresh;
+  var stSes=anStats(year,'traf','all','sessoes_tot'),stUsr=anStats(year,'user','all','usuarios_tot'),stCli=anStats(year,'gsc','all','cliques');
+  var stRev=anDashRevStat(year),stRpm=anDashRpmStat(year);
+  var anyData=[stSes,stUsr,stCli,stRev,stRpm].some(function(s){return s.cur!=null;});
+  var kpis='<div class="an-metrics" style="margin-bottom:18px">'
+    +anDashKpiCard('Sessões','ti-users',stSes,'int',false,anDashYoY(year,'traf','sessoes_tot',stSes.idx,stSes.cur))
+    +anDashKpiCard('Usuários','ti-user',stUsr,'int',false,anDashYoY(year,'user','usuarios_tot',stUsr.idx,stUsr.cur))
+    +anDashKpiCard('Receita total','ti-currency-dollar',stRev,'money',false,anDashRevYoY(year,stRev.idx,stRev.cur))
+    +anDashKpiCard('RPM unificado','ti-bolt',stRpm,'money',false,null)
+    +anDashKpiCard('Cliques (busca)','ti-pointer',stCli,'int',false,anDashYoY(year,'gsc','cliques',stCli.idx,stCli.cur))
+    +'</div>';
+  var thr='<div class="an-card an-camp-ctrl" style="margin-bottom:18px"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'
+    +'<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===year?' selected':'')+'>'+y+'</option>';}).join('')+'</select>'
+    +'<span class="an-camp-cl">Sensibilidade padrão</span>'
+    +'<select class="fsel" onchange="anDashSetThresh(this.value)">'+[10,15,25].map(function(t){return '<option value="'+t+'"'+(t===thresh?' selected':'')+'>±'+t+'%</option>';}).join('')+'</select></div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anDashThrOpen()"><i class="ti ti-adjustments"></i> Limites por métrica</button></div></div>';
+  // Metas + ritmo
+  var metas=anDashMetas(year);
+  var metaRisk=metas.filter(function(m){return m.status==='risco'&&m.isCur;}).map(function(m){return {kind:'meta',label:m.label,sec:m.secL,fmt:m.fmt,goal:m.goal,proj:m.proj,mi:m.mi};});
+  // Alertas (metas em risco primeiro, depois variações)
+  var alerts=metaRisk.concat(anDashAlerts(year));
+  var alertsBody=alerts.length?'<div class="an-alert-list">'+alerts.slice(0,10).map(function(a){
+    if(a.kind==='meta'){var p=a.goal>0?Math.round(a.proj/a.goal*100):0;return '<div class="an-alert" style="border-left-color:var(--danger)"><i class="ti ti-flag-2" style="color:var(--danger)"></i><div class="an-alert-tx"><b>Meta em risco: '+a.label+'</b><span class="an-alert-sec">'+a.sec+'</span><div class="an-alert-sub">'+HMESES[a.mi]+': projeção '+anFmt(a.proj,a.fmt)+' / meta '+anFmt(a.goal,a.fmt)+'</div></div><div class="an-alert-var" style="color:var(--danger)">'+p+'%</div></div>';}
+    var c=a.good?'var(--success)':'var(--danger)',ic=a.good?'ti-trending-up':'ti-trending-down';
+    return '<div class="an-alert" style="border-left-color:'+c+'"><i class="ti '+ic+'" style="color:'+c+'"></i><div class="an-alert-tx"><b>'+a.label+'</b><span class="an-alert-sec">'+a.sec+'</span><div class="an-alert-sub">'+(a.mi!=null?HMESES[a.mi]+': ':'')+anFmt(a.cur,a.fmt)+'</div></div><div class="an-alert-var" style="color:'+c+'">'+(a.varp>=0?'+':'')+a.varp.toFixed(1)+'%</div></div>';
+  }).join('')+'</div>':'<div class="an-empty"><i class="ti ti-bell-off"></i><p>Sem alertas no momento</p><span>Variações além do limite e metas em risco aparecem aqui</span></div>';
+  var alertsCard='<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-bell-ringing"></i> Alertas</div><div class="an-card-sub">Variações vs mês anterior + metas em risco · semáforo considera "menos é melhor"</div></div>'+alertsBody+'</div>';
+  // Oportunidades
+  var opps=anDashOpps(year);
+  var oppsBody=opps.length?opps.map(function(o){return '<div class="an-opp"><i class="ti '+o.icon+'"></i><div class="an-opp-tx"><span class="an-opp-type">'+o.type+'</span>'+o.text+'</div>'+(o.act?'<button class="an-btn an-opp-btn" onclick="'+o.act+'"><i class="ti ti-arrow-right"></i></button>':'')+'</div>';}).join(''):'<div class="an-empty"><i class="ti ti-bulb"></i><p>Sem oportunidades detectadas ainda</p><span>Importe Search Console (SEO) e AdSense para o sistema sugerir ações</span></div>';
+  var oppsCard='<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-bulb"></i> Oportunidades</div><div class="an-card-sub">Ações sugeridas pelo sistema</div></div>'+oppsBody+'</div>';
+  // Metas (com badge de ritmo)
+  var metasBody=metas.length?metas.slice(0,10).map(function(m){var pct=m.goal>0?m.real/m.goal*100:0,pc=Math.max(0,Math.min(100,pct)),col=pct>=100?'var(--success)':pct>=60?'var(--warning)':'var(--danger)';
+    var stt=DASH_METASTAT[m.status]||{l:'',c:'var(--text-secondary)'};var badge='<span class="an-meta-badge" style="color:'+stt.c+';border-color:'+stt.c+'">'+stt.l+'</span>';
+    var projTxt=(m.isCur&&(m.fmt==='int'||m.fmt==='money'))?' · proj. '+anShort(m.proj,m.fmt):'';
+    return '<div class="an-meta-row"><div class="an-meta-top"><span><b>'+m.label+'</b> · '+m.secL+' · '+propLabel(m.pr)+' · '+HMESES[m.mi]+'</span><span style="display:flex;gap:8px;align-items:center">'+badge+'<b style="color:'+col+'">'+pct.toFixed(0)+'%</b></span></div><div class="an-gp-bar"><div class="an-gp-fill" style="width:'+pc.toFixed(1)+'%;background:'+col+'"></div></div><div class="an-meta-sub">'+anFmt(m.real,m.fmt)+' / '+anFmt(m.goal,m.fmt)+projTxt+'</div></div>';
+  }).join(''):'<div class="an-empty"><i class="ti ti-target"></i><p>Nenhuma meta definida</p><span>Defina metas em "Meta do mês" dentro das abas do Analytics</span></div>';
+  var metasCard='<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-target"></i> Metas do mês</div><div class="an-card-sub">Ritmo do mês corrente projetado · ordenadas por risco</div></div>'+metasBody+'</div>';
+  var body;
+  if(!anyData){
+    body='<div class="an-card"><div class="an-empty"><i class="ti ti-dashboard"></i><p>Seu painel está pronto, mas ainda sem dados</p><span>Preencha Analytics (Tráfego), SEO (Busca), App e Receitas. Conforme você lança, este Dashboard mostra KPIs, alertas, oportunidades e metas automaticamente.</span></div></div>';
+  }else{
+    body=kpis+'<div class="an-dash-grid">'+alertsCard+oppsCard+'</div>'+metasCard;
+  }
+  return '<div class="an-root">'+pageHeader('Dashboard','Visão geral — alertas, oportunidades e metas do ecossistema Guardar Dinheiro')+thr+body+'</div>';
 }
 
 
@@ -2170,15 +2238,32 @@ function hAQ(){
     +'<div class="area-wrap">'+areaBlock('aquis')+'</div>';
 }
 
+var seoTab='busca';
+function seoSetTab(t){seoTab=t;rHub(document.getElementById('app'));}
 function hSEO(){
-  return pageHeader('SEO','Desempenho no Google Search Console')
-    +entryBarP('gsc')
-    +'<div class="area-wrap">'+areaBlock('gsc')+'</div>';
+  anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
+  var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['vel','Velocidade','ti-gauge']];
+  var bar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(seoTab===t[0]?' active':'')+'" onclick="seoSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
+  if(seoTab==='busca'){
+    anSection='gsc';
+    return pageHeader('SEO','Busca · Search Console (cliques, impressões, CTR, posição) — por site/app')+'<div class="an-root">'+bar+anPropChips()+anSectionBody()+'</div>';
+  }
+  if(seoTab==='opp'){
+    return pageHeader('SEO','Oportunidades e decaimento · Search Console')+'<div class="an-root">'+bar+anPropChips()+anSeoView()+'</div>';
+  }
+  anSection='cwv';
+  return pageHeader('SEO','Velocidade · Core Web Vitals')+'<div class="an-root">'+bar+anPropChips()+anSectionBody()+'</div>';
 }
+var monTab='rede';
+function monSetTab(t){monTab=t;rHub(document.getElementById('app'));}
 function hMON(){
-  return pageHeader('Receitas','Ad Manager, AdSense e Afiliados')
-    +entryBarP('admgr')
-    +'<div class="area-wrap">'+areaBlock('admgr')+'</div>';
+  anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
+  var tabs=[['rede','Receita por rede','ti-cash'],['adsense','AdSense','ti-ad-2']];
+  var bar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(monTab===t[0]?' active':'')+'" onclick="monSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
+  if(monTab==='adsense'){
+    return pageHeader('Receitas','AdSense · monetização diária')+'<div class="an-root">'+bar+anAdsBody()+'</div>';
+  }
+  return pageHeader('Receitas','Receita por rede e RPM unificado · por propriedade')+'<div class="an-root">'+bar+anPropChips()+anRevView()+'</div>';
 }
 function hGeral(){
   return pageHeader('Métricas Gerais','Impressões, visualizações e cliques')
@@ -2213,10 +2298,12 @@ function hWA(){
 }
 
 function hAPP(){
-  var kpis=['Usuários','Novos','Ativos','Sessões','Tempo Médio','Instalações','Ret. D1','Ret. D30','Churn'];
-  return pageHeader('App Guardar Dinheiro','Métricas iOS e Android')
-    +`<div class="kpi-grid">${kpis.map(function(l){return kpiEmpty('ti-device-mobile',''+l);}).join('')}</div>
-    <div class="empty-state"><i class="ti ti-device-mobile ti-2x"></i><p>Insira dados em <b>Dados & Histórico</b></p></div>`;
+  anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
+  anSection='app';
+  var h=pageHeader('App','Instalações, usuários ativos, retenção, sessões, avaliação e estabilidade — iOS e Android');
+  h+=anPropChips();
+  h+=anSectionBody();
+  return '<div class="an-root">'+h+'</div>';
 }
 
 function hCON(){
@@ -2257,25 +2344,24 @@ function hPAGINAS(){
   h+='<div class="plat-tabs">';
   ['gd','blog','cora'].forEach(function(s){
     var active=s===site;
-    h+='<button class="plat-btn'+(active?' active':'')+'" onclick="cP=\'' +s+'\';hubSec=\'paginas\';rHub(document.getElementById(\'app\'))">'
+    h+='<button class="plat-btn'+(active?' active':'')+'" onclick="cP=\'' +s+'\';rHub(document.getElementById(\'app\'))">'
       +(s==='gd'?'GD Principal':s==='blog'?'Blog GD':'CoraCora News')+'</button>';
   });
   h+='</div>';
+  function tparr(by){return tpSort.by===by?(tpSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
+  function tpth(lbl,by,al){return '<th class="tp-sort'+(tpSort.by===by?' on':'')+'" style="cursor:pointer;text-align:'+(al||'right')+'" onclick="anTpSort(\''+by+'\')">'+lbl+tparr(by)+'</th>';}
   if(urls.length){
     h+='<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px">';
-    h+='<span style="font-size:11px;color:var(--text-secondary)">Ordenar por:</span>';
-    h+='<select class="fsel" onchange="tpSort.by=this.value;rHub(document.getElementById(\'app\'))">'
-      +sortOpts.map(function(o){return'<option value="'+o[0]+'"'+(tpSort.by===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select>';
-    h+='<button class="btn-ghost" onclick="tpSort.dir=tpSort.dir===\'asc\'?\'desc\':\'asc\';rHub(document.getElementById(\'app\'))">'
-      +(tpSort.dir==='asc'?'&#8593; Crescente':'&#8595; Decrescente')+'</button>';
+    h+='<span style="font-size:11px;color:var(--text-secondary)"><i class="ti ti-arrows-sort"></i> Clique no cabeçalho da coluna para ordenar</span>';
     h+='<button class="btn-danger-sm" style="margin-left:auto" onclick="delAllPages('+cM+',\''+site+'\',\''+siteLabels[site]+'\')"><i class="ti ti-trash"></i> Excluir todas</button>';
     h+='</div>';
   }
   h+='<div class="data-section"><div style="overflow-x:auto"><table class="T"><thead><tr>'
-    +'<th>P\u00e1gina</th><th style="text-align:right">M\u00eas ant.</th>'
-    +'<th style="text-align:right">'+m.n+' ('+dE+'d)</th>'
-    +'<th style="text-align:right">Proj 30d</th>'
-    +'<th style="text-align:right">Varia\u00e7\u00e3o</th><th></th>'
+    +tpth('P\u00e1gina','name','left')
+    +tpth('M\u00eas ant.','prev')
+    +tpth(m.n+' ('+dE+'d)','cur')
+    +tpth('Proj 30d','p30')
+    +tpth('Varia\u00e7\u00e3o','var')+'<th></th>'
     +'</tr></thead><tbody>';
   if(!urls.length){
     h+='<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-secondary)">'
@@ -2535,6 +2621,40 @@ var AN_SECTIONS={
       {k:'ev_principais',   l:'Eventos Principais',          fmt:'int',   al:['eventos principais','key events','principais events']},
       {k:'contagem_eventos',l:'Contagem de Eventos',         fmt:'int',   al:['contagem de eventos','contagem de evento','event count']},
       {k:'receita',         l:'Receita Total',               fmt:'money', al:['receita total','total revenue','receita']}
+    ]},
+  app:{l:'App', ic:'ti-device-mobile', head:'mau',
+    metrics:[
+      {k:'inst',   l:'Instalações',          fmt:'int', al:['instalações','instalacoes','installs','downloads','novas instalações','aquisições de usuários']},
+      {k:'desinst',l:'Desinstalações',       fmt:'int', inv:true, al:['desinstalações','desinstalacoes','uninstalls','remoções']},
+      {k:'mau',    l:'Usuários Ativos (MAU)', fmt:'int', al:['usuários ativos mensais','mau','monthly active','usuários ativos','active users']},
+      {k:'dau',    l:'DAU médio',            fmt:'int', al:['usuários ativos diários','dau','daily active','média diária']},
+      {k:'ret7',   l:'Retenção D7',          fmt:'pct', al:['retenção d7','retenção de 7','day 7 retention','retenção 7 dias','retention day 7']},
+      {k:'sespu',  l:'Sessões por Usuário',  fmt:'dec', w:'mau', al:['sessões por usuário','sessions per user','sessões/usuário']},
+      {k:'nota',   l:'Avaliação (nota)',     fmt:'dec', w:'mau', al:['avaliação','nota média','rating','average rating','nota da loja']},
+      {k:'crashes',l:'Usuários sem Crash %', fmt:'pct', al:['usuários sem crash','crash free','sem falhas','estabilidade','crash-free users']}
+    ]},
+  cwv:{l:'Velocidade', ic:'ti-gauge', head:'urls_boas',
+    metrics:[
+      {k:'lcp',      l:'LCP (s)',           fmt:'dec', inv:true, al:['lcp','largest contentful paint','maior conteúdo']},
+      {k:'inp',      l:'INP (ms)',          fmt:'int', inv:true, al:['inp','interaction to next paint','interação']},
+      {k:'cls',      l:'CLS',               fmt:'dec', inv:true, al:['cls','cumulative layout shift','deslocamento']},
+      {k:'urls_boas',l:'% URLs boas',       fmt:'pct', al:['urls boas','urls válidas','% boas','good urls','urls aprovadas']},
+      {k:'ttfb',     l:'TTFB (ms)',         fmt:'int', inv:true, al:['ttfb','time to first byte','primeiro byte']}
+    ]},
+  news:{l:'Newsletter', ic:'ti-mail', head:'assinantes',
+    metrics:[
+      {k:'assinantes', l:'Assinantes',       fmt:'int', al:['assinantes','inscritos','subscribers','total de inscritos','lista']},
+      {k:'novos',      l:'Novos Assinantes',  fmt:'int', al:['novos assinantes','novos inscritos','new subscribers','novos']},
+      {k:'descad',     l:'Descadastros',      fmt:'int', inv:true, al:['descadastros','cancelamentos','unsubscribes','saídas']},
+      {k:'tx_abertura',l:'Taxa de Abertura',  fmt:'pct', w:'assinantes', al:['taxa de abertura','open rate','abertura','% abertura']},
+      {k:'tx_clique',  l:'Taxa de Clique',    fmt:'pct', w:'assinantes', al:['taxa de clique','click rate','ctr','clique','% clique']}
+    ]},
+  gsc:{l:'Busca (Search Console)', ic:'ti-brand-google', head:'impressoes',
+    metrics:[
+      {k:'cliques',    l:'Cliques',        fmt:'int', al:['cliques','clicks','clique']},
+      {k:'impressoes', l:'Impressões',     fmt:'int', al:['impressões','impressoes','impressions','impress']},
+      {k:'ctr',        l:'CTR',            fmt:'pct', w:'impressoes', al:['ctr','taxa de cliques','taxa de clique']},
+      {k:'posicao',    l:'Posição Média',  fmt:'dec', inv:true, w:'impressoes', al:['posição média','posicao media','posição','posicao','position','average position']}
     ]}
 };
 
@@ -2562,7 +2682,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.ui)s.ui={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.ui)s.ui={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -2582,7 +2702,7 @@ function anSetCell(year,section,prop,mk,i,val){var d=anRaw(year,section,prop);d[
 function anSeries(year,section,prop,mk){return anData(year,section,prop)[mk]||Array(12).fill(null);}
 function anFilled(arr){return arr.map(function(v,i){return{v:v,i:i};}).filter(function(o){return o.v!=null&&o.v!=='';});}
 function anHasAny(year,section,prop){var d=anData(year,section,prop);return AN_SECTIONS[section].metrics.some(function(m){return(d[m.k]||[]).some(function(v){return v!=null&&v!=='';});});}
-function anYears(){var ys=new Set([String(new Date().getFullYear())]);var s=anStore();Object.keys(s.data).forEach(function(y){ys.add(y);});Object.keys(s.campsrc).forEach(function(y){ys.add(y);});return Array.from(ys).sort();}
+function anYears(){var ys=new Set([String(new Date().getFullYear())]);var s=anStore();['data','campsrc','pages','seo','ret','rev'].forEach(function(b){Object.keys(s[b]||{}).forEach(function(y){ys.add(y);});});return Array.from(ys).sort();}
 
 /* ── Anotações ── */
 /* ── Anotações (com data específica do dia) ── */
@@ -2651,7 +2771,7 @@ function anExec(year,section,prop,mk){
 /* ── Ações de UI ── */
 function anR(){rHub(document.getElementById('app'));}
 function anPersistUI(){var s=anStore();s.ui={prop:anProp,section:anSection};sv();}
-function anInit(){if(_anInit)return;_anInit=true;var s=anStore();if(s.ui){if(s.ui.prop&&AN_PROPS.some(function(p){return p.k===s.ui.prop;}))anProp=s.ui.prop;if(s.ui.section&&AN_SECTIONS[s.ui.section])anSection=s.ui.section;if(s.ui.goalSel&&typeof s.ui.goalSel==='object')anGoalSel=s.ui.goalSel;}}
+function anInit(){if(_anInit)return;_anInit=true;var s=anStore();if(s.ui){if(s.ui.prop&&AN_PROPS.some(function(p){return p.k===s.ui.prop;}))anProp=s.ui.prop;if(s.ui.section&&(AN_SECTIONS[s.ui.section]||s.ui.section==='pages'||s.ui.section==='seo'||s.ui.section==='ret'))anSection=s.ui.section;if(s.ui.goalSel&&typeof s.ui.goalSel==='object')anGoalSel=s.ui.goalSel;if(s.ui.dashThresh)anDashThresh=Number(s.ui.dashThresh)||15;}}
 function anSetProp(p){anProp=p;anPersistUI();anR();}
 function anSetSection(sec){anSection=sec;anPersistUI();anR();}
 function anSetYear(v){anYear=v;anR();}
@@ -2669,9 +2789,13 @@ function anPropChips(){
 
 /* ── Componente: sub-navegação ── */
 function anSubNav(){
-  return '<div class="an-seg">'+Object.keys(AN_SECTIONS).map(function(k){var s=AN_SECTIONS[k];
+  var skip={app:1,cwv:1,gsc:1};
+  var segs=Object.keys(AN_SECTIONS).filter(function(k){return !skip[k];}).map(function(k){var s=AN_SECTIONS[k];
     return '<button class="an-seg-btn'+(anSection===k?' active':'')+'" onclick="anSetSection(\''+k+'\')"><i class="ti '+s.ic+'"></i>'+s.l+'</button>';
-  }).join('')+'</div>';
+  }).join('');
+  segs+='<button class="an-seg-btn'+(anSection==='pages'?' active':'')+'" onclick="anSetSection(\'pages\')"><i class="ti ti-world"></i>Top Páginas</button>';
+  segs+='<button class="an-seg-btn'+(anSection==='ret'?' active':'')+'" onclick="anSetSection(\'ret\')"><i class="ti ti-repeat"></i>Retenção</button>';
+  return '<div class="an-seg">'+segs+'</div>';
 }
 
 /* ── Componente: seletor de métrica em foco ── */
@@ -2759,7 +2883,7 @@ function anHistoryCharts(){
   }
   var blocks=AN_SECTIONS[anSection].metrics.map(function(m){
     var arr=anSeries(anYear,anSection,anProp,m.k);
-    var st=anStats(anYear,anSection,anProp,m.k),sem=anSemaphore(st.varp);
+    var st=anStats(anYear,anSection,anProp,m.k),sem=anSemaphore(m.inv?-st.varp:st.varp);
     var varHtml=st.varp==null?'<span class="an-var flat">—</span>':'<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
     var valTxt=st.cur==null?'—':anFmt(st.cur,m.fmt);
     var body=anFilled(arr).length?anBarChart(arr,m.fmt):'<div class="an-empty"><i class="ti ti-chart-bar"></i><p>Sem dados</p></div>';
@@ -2777,7 +2901,7 @@ function anHistoryCharts(){
 /* ── Componente: cards de métrica com semáforo ── */
 function anMetricCards(){
   var cards=AN_SECTIONS[anSection].metrics.map(function(m){
-    var st=anStats(anYear,anSection,anProp,m.k),sem=anSemaphore(st.varp);
+    var st=anStats(anYear,anSection,anProp,m.k),sem=anSemaphore(m.inv?-st.varp:st.varp);
     var varHtml='';
     if(st.varp==null)varHtml='<span class="an-var flat">—</span>';
     else varHtml='<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
@@ -3132,6 +3256,9 @@ function anApply(){
    ORIGEM DA CAMPANHA — visão quebrada por origem (google, bing, …)
    ═══════════════════════════════════════════════════════════════ */
 var anCampMi=null, anCampMetric=null;
+var anCampSort={by:'agg',dir:'desc'};
+function anCampSortSet(by){if(anCampSort.by===by)anCampSort.dir=anCampSort.dir==='asc'?'desc':'asc';else{anCampSort.by=by;anCampSort.dir=(by==='name'?'asc':'desc');}anR();}
+function anTpSort(by){if(tpSort.by===by)tpSort.dir=tpSort.dir==='asc'?'desc':'asc';else{tpSort.by=by;tpSort.dir=(by==='name'?'asc':'desc');}rHub(document.getElementById('app'));}
 var AN_SRC_COLORS=['#16C79A','#3B82F6','#8B5CF6','#F59E0B','#EC4899','#06B6D4','#84CC16','#EF4444','#6366F1','#14B8A6'];
 function anSrcColor(i){return AN_SRC_COLORS[i%AN_SRC_COLORS.length];}
 
@@ -3165,10 +3292,10 @@ function anCampControls(disabled){
   var moSel='<select class="fsel" onchange="anCampSetMi(this.value)"'+(disabled?' disabled':'')+'>'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select>';
   var mkSel='<select class="fsel" onchange="anCampSetMetric(this.value)"'+(disabled?' disabled':'')+'>'+ms.map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select>';
   return '<div class="an-card an-camp-ctrl">'
-    +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'<span class="an-camp-cl">Ordenar por</span>'+mkSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anCampManualOpen()"'+(disabled?' disabled':'')+'><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Métrica</span>'+mkSel+'<span class="an-camp-cl">Mês (detalhe)</span>'+moSel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anCampManualOpen()"><i class="ti ti-pencil"></i> Inserir manual</button>'
     +'<button class="an-btn" onclick="anCampModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
-    +'<button class="an-btn prim" onclick="anCampImportOpen()"'+(disabled?' disabled':'')+'><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<button class="an-btn prim" onclick="anCampImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
 }
 
 /* ── Render: resumo do mês (totais entre origens) ── */
@@ -3315,6 +3442,41 @@ function anCampApply(){
   toast(n+' origens importadas — '+AN_MES_LONG[mi]+'/'+parsed.year+'.','ti-file-import');
 }
 
+/* ── Render: tabela dinâmica origem × meses (estilo Top Páginas) ── */
+function anCampAggOrigin(name,mk,months){var meta=anMeta('camp',mk);
+  if(meta.fmt==='int'){var s=0,any=false;months.forEach(function(mi){var v=anCampVal(anYear,anProp,name,mk,mi);if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
+  var wk=meta.w||AN_SECTIONS.camp.head,num=0,den=0;months.forEach(function(mi){var v=anCampVal(anYear,anProp,name,mk,mi),w=anCampVal(anYear,anProp,name,wk,mi);if(v!=null&&w!=null){num+=Number(v)*Number(w);den+=Number(w);}});
+  if(den>0)return num/den;var nums=months.map(function(mi){return anCampVal(anYear,anProp,name,mk,mi);}).filter(function(v){return v!=null;});return nums.length?nums.reduce(function(a,b){return Number(a)+Number(b);},0)/nums.length:null;}
+function anCampAggAll(mk,months){var meta=anMeta('camp',mk);
+  if(meta.fmt==='int')return months.reduce(function(s,mi){var v=anCampTotal(anYear,anProp,mk,mi);return s+(v||0);},0);
+  var wk=meta.w||AN_SECTIONS.camp.head,num=0,den=0;months.forEach(function(mi){var v=anCampTotal(anYear,anProp,mk,mi),w=anCampTotal(anYear,anProp,wk,mi);if(v!=null&&w!=null){num+=Number(v)*Number(w);den+=Number(w);}});return den>0?num/den:null;}
+function anCampPivot(mk){
+  var meta=anMeta('camp',mk),o=anCampObj(anYear,anProp);
+  var months=[0,1,2,3,4,5,6,7,8,9,10,11];
+  var hasMonths=anCampMonths(anYear,anProp);
+  if(!hasMonths.length)return '';
+  var names=Object.keys(o).filter(function(n){return months.some(function(mi){return anCampVal(anYear,anProp,n,mk,mi)!=null;});});
+  function sortKey(n){if(anCampSort.by==='name')return(n||'').toLowerCase();if(anCampSort.by==='agg'){var a=anCampAggOrigin(n,mk,months);return a==null?-Infinity:Number(a);}var v=anCampVal(anYear,anProp,n,mk,anCampSort.by);return v==null?-Infinity:Number(v);}
+  names.sort(function(a,b){var ka=sortKey(a),kb=sortKey(b);if(typeof ka==='string')return anCampSort.dir==='asc'?ka.localeCompare(kb):kb.localeCompare(ka);return anCampSort.dir==='asc'?ka-kb:kb-ka;});
+  var aggLbl=meta.fmt==='int'?'Total':'Média';
+  function arr(by){return anCampSort.by===by?(anCampSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
+  function th(lbl,by,cls,style){return '<th class="an-sortable'+(cls?' '+cls:'')+(anCampSort.by===by?' sorted':'')+'"'+(style?' style="'+style+'"':'')+' onclick="anCampSortSet(\''+by+'\')">'+lbl+arr(by)+'</th>';}
+  var head='<tr>'+th('Origem','name','stick','text-align:left')
+    +months.map(function(mi){return th(HMESES[mi]+'/'+anYear.slice(2),String(mi),(String(mi)===anCampSort.by?'on':''));}).join('')
+    +th(aggLbl,'agg','on')+'</tr>';
+  var body=names.map(function(n){
+    return '<tr><td class="stick" style="text-align:left;font-weight:600">'+anEsc(n)+'</td>'
+      +months.map(function(mi){var v=anCampVal(anYear,anProp,n,mk,mi);return '<td'+(String(mi)===anCampSort.by?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
+      +'<td class="on">'+anShort(anCampAggOrigin(n,mk,months),meta.fmt)+'</td></tr>';
+  }).join('');
+  var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">Total</td>'
+    +months.map(function(mi){var v=anCampTotal(anYear,anProp,mk,mi);return '<td'+(String(mi)===anCampSort.by?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
+    +'<td class="on">'+anShort(anCampAggAll(mk,months),meta.fmt)+'</td></tr>';
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por origem e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' origens</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div>'
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Clique no cabeçalho para ordenar · troque a métrica no seletor acima · '+(meta.fmt==='int'?'coluna Total soma os meses':'coluna Média pondera pelos volumes')+'</div></div>';
+}
+
 /* ── View principal da aba de campanha ── */
 function anCampView(){
   var h='';
@@ -3328,18 +3490,771 @@ function anCampView(){
     return h;
   }
   var mi=anCampCurMi(),mk=anCampCurMetric();
-  h+=anCampExec(mi);
-  h+=anCampRanking(mi,mk);
+  h+=anCampPivot(mk);
   h+=anCampTable(mi,mk);
-  h+=anCampTrend(mk);
-  h+=anAnnotationsCard();
   return h;
 }
 
 
+/* ═══════════════════════════════════════════════════════════════
+   RECEITA POR REDE — entrada manual · RPM unificado (todas as redes ÷ sessões)
+   ═══════════════════════════════════════════════════════════════ */
+var AN_REV_DEFAULT=['AdSense','Ad Manager','UOL Afiliados','Indoleads','DGMax','Cofrinho'];
+var anRevSort={by:null,dir:'desc'}, _anRevMan=null, _anRevImp=null;
+function anRevObj(year,prop){var s=anStore();s.rev[year]=s.rev[year]||{};s.rev[year][prop]=s.rev[year][prop]||{};return s.rev[year][prop];}
+function anRevArr(year,prop,net){var o=anRevObj(year,prop);if(!Array.isArray(o[net]))o[net]=Array(12).fill(null);return o[net];}
+function anRevSet(year,prop,net,mi,val){var a=anRevArr(year,prop,net);a[mi]=(val===''||val==null||isNaN(Number(val)))?null:Number(val);}
+function anRevVal(year,prop,net,mi){var o=anRevObj(year,prop);return Array.isArray(o[net])?o[net][mi]:null;}
+function anRevNetworks(year,prop){return Object.keys(anRevObj(year,prop));}
+function anRevNetworksAll(year,prop){var set={};AN_REV_DEFAULT.forEach(function(n){set[n]=1;});anRevNetworks(year,prop).forEach(function(n){set[n]=1;});return Object.keys(set);}
+function anRevMonths(year,prop){var o=anRevObj(year,prop),set={};Object.keys(o).forEach(function(n){(o[n]||[]).forEach(function(v,i){if(v!=null)set[i]=1;});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
+function anRevHasAny(year,prop){return anRevMonths(year,prop).length>0;}
+function anRevLastCol(){var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();var ms=anRevMonths(anYear,anProp);return ms.length?ms[ms.length-1]:11;}
+function anRevTotal(year,prop,mi){var o=anRevObj(year,prop),s=0,any=false;Object.keys(o).forEach(function(n){var v=anRevVal(year,prop,n,mi);if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
+function anRevSessions(year,prop,mi){
+  if(prop==='all'){var t=0,any=false;AN_REAL.forEach(function(pr){var a=anSeries(year,'traf',pr,'sessoes_tot');if(a[mi]!=null){t+=Number(a[mi]);any=true;}});return any?t:null;}
+  var arr=anSeries(year,'traf',prop,'sessoes_tot');return arr[mi]!=null?Number(arr[mi]):null;
+}
+function anRevRPM(year,prop,mi){var rec=anRevTotal(year,prop,mi),ses=anRevSessions(year,prop,mi);return(rec!=null&&ses!=null&&ses>0)?rec/ses*1000:null;}
+function anRevSortSet(by){if(anRevSort.by===by)anRevSort.dir=anRevSort.dir==='asc'?'desc':'asc';else{anRevSort.by=by;anRevSort.dir=(by==='name'?'asc':'desc');}anR();}
+function anRevView(){
+  var h='',years=anYears();
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anRevManualOpen()"><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<button class="an-btn" onclick="anRevModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
+    +'<button class="an-btn prim" onclick="anRevImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+  h+='<div class="an-card">'+anRevPivot()+'</div>';
+  return h;
+}
+function anRevPivot(){
+  var lastCol=anRevLastCol(),months=[];for(var i=0;i<=lastCol;i++)months.push(i);
+  var nets=anRevNetworks(anYear,anProp).filter(function(n){return months.some(function(mi){return anRevVal(anYear,anProp,n,mi)!=null;});});
+  if(!nets.length)return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-cash"></i> Receita por rede · '+anYear+'</div></div><div class="an-empty"><i class="ti ti-cash"></i><p>Sem receita lançada para '+propLabel(anProp)+' em '+anYear+'</p><span>Clique em "Inserir manual" e preencha AdSense, Ad Manager, UOL, Indoleads, DGMax, Cofrinho… O RPM unificado é calculado com as sessões do Tráfego.</span></div>';
+  var effBy=anRevSort.by===null?String(lastCol):anRevSort.by;
+  function sortKey(n){if(effBy==='name')return(n||'').toLowerCase();var mv=anRevVal(anYear,anProp,n,Number(effBy));return mv==null?-Infinity:Number(mv);}
+  nets.sort(function(a,b){var ka=sortKey(a),kb=sortKey(b);if(typeof ka==='string')return anRevSort.dir==='asc'?ka.localeCompare(kb):kb.localeCompare(ka);return anRevSort.dir==='asc'?ka-kb:kb-ka;});
+  function arr(by){var on=(anRevSort.by===by)||(anRevSort.by===null&&by===String(lastCol));return on?(anRevSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
+  function th(lbl,by,cls,style){var on=(anRevSort.by===by)||(anRevSort.by===null&&by===String(lastCol));return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'"'+(style?' style="'+style+'"':'')+' onclick="anRevSortSet(\''+by+'\')">'+lbl+arr(by)+'</th>';}
+  var head='<tr>'+th('Rede','name','stick','text-align:left')+months.map(function(mi){return th(HMESES[mi]+'/'+anYear.slice(2),String(mi),(mi===lastCol?'on':''));}).join('')+'<th>Total ano</th></tr>';
+  var body=nets.map(function(n){var tot=0;
+    var tds=months.map(function(mi){var v=anRevVal(anYear,anProp,n,mi);if(v!=null)tot+=Number(v);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,'money'))+'</td>';}).join('');
+    return '<tr><td class="stick" style="text-align:left;font-weight:600">'+anEsc(n)+'</td>'+tds+'<td style="font-weight:700">'+anShort(tot,'money')+'</td></tr>';
+  }).join('');
+  var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">Total redes</td>'+months.map(function(mi){var v=anRevTotal(anYear,anProp,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,'money'))+'</td>';}).join('')+'<td style="font-weight:700">'+anShort((function(){var t=0;months.forEach(function(mi){var v=anRevTotal(anYear,anProp,mi);if(v!=null)t+=v;});return t;})(),'money')+'</td></tr>';
+  var rpmRow='<tr class="an-camp-tot an-rev-rpm"><td class="stick" style="text-align:left"><i class="ti ti-bolt" style="font-size:12px"></i> RPM unificado</td>'+months.map(function(mi){var v=anRevRPM(anYear,anProp,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anFmt(v,'money'))+'</td>';}).join('')+'<td></td></tr>';
+  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-cash"></i> Receita por rede · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+nets.length+' redes · RPM unificado = (todas as redes ÷ sessões) × 1000</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+rpmRow+'</tbody></table></div>'
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:12px"></i> Sessões vêm da aba Tráfego. Preencha o Tráfego do mesmo mês/propriedade para o RPM aparecer.</div>';
+}
+function anRevManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}_anRevMan={};
+  var o=document.createElement('div');o.className='ov';o.id='an-revman-ov';
+  o.innerHTML='<div class="mx" style="width:900px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-revman-body"></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anRevMan=null;}});anRevManBody();}
+function anRevManBody(){
+  var nets=anRevNetworksAll(anYear,anProp),lastCol=anRevLastCol(),months=[];for(var i=0;i<=lastCol;i++)months.push(i);
+  var h='<h4 style="display:flex;align-items:center;gap:7px"><i class="ti ti-cash" style="color:var(--primary)"></i> Receita por rede — '+propLabel(anProp)+' · '+anYear+'</h4>';
+  h+='<p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px;line-height:1.5">Valores mensais (R$) por rede. AdSense, Ad Manager e afiliados (UOL, Indoleads, DGMax, Cofrinho) — adicione outras se precisar. Salva no Supabase.</p>';
+  h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl"><thead><tr><th style="text-align:left">Rede</th>'+months.map(function(mi){return '<th>'+HMESES[mi]+'</th>';}).join('')+'<th></th></tr></thead><tbody>';
+  nets.forEach(function(n){var ne=anEsc(n).replace(/'/g,"\\'");h+='<tr><td style="text-align:left;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(n)+'">'+anEsc(n)+'</td>'+months.map(function(mi){var v=anRevVal(anYear,anProp,n,mi);return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anRevSet(anYear,anProp,\''+ne+'\','+mi+',this.value);sv()"></td>';}).join('')+'<td><button class="an-ic-btn del" title="Remover" onclick="anRevDelNet(\''+ne+'\')"><i class="ti ti-trash"></i></button></td></tr>';});
+  h+='</tbody></table></div><div class="mbb"><button onclick="anRevAddNet()"><i class="ti ti-plus" style="font-size:11px"></i> Adicionar rede</button>'
+    +'<button class="pr" onclick="document.getElementById(\'an-revman-ov\').remove();_anRevMan=null;anR()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
+  document.getElementById('an-revman-body').innerHTML=h;
+}
+function anRevAddNet(){sM('Nome da rede (ex.: Amazon Afiliados)','',function(v){v=(v||'').trim();if(!v)return;anRevArr(anYear,anProp,v);sv();anRevManBody();},'text');}
+function anRevDelNet(net){cfm('Remover rede','Remover "'+net+'" e seus valores deste ano/propriedade?','Remover','dgr',function(){var o=anRevObj(anYear,anProp);delete o[net];sv();anRevManBody();anR();toast('Rede removida.','ti-trash');});}
+function anRevModelDownload(){
+  var esc=function(s){return /[",;\n]/.test(s)?'"'+String(s).replace(/"/g,'""')+'"':s;};
+  var head=['Rede'].concat(HMESES).map(esc).join(',');
+  var ex=AN_REV_DEFAULT.map(function(n){return [n].concat(Array(12).fill('')).map(esc).join(',');}).join('\n');
+  var csv='\uFEFF'+head+'\n'+ex+'\n';var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='modelo_receita_redes_'+anYear+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  toast('Modelo de receita por rede baixado.','ti-download');
+}
+function anRevImportOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});anRevApply(rows);}catch(err){toast('Falha: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});anRevApply(rows);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function anRevApply(rows){
+  var clean=rows.filter(function(c){return c&&c.some(function(x){return String(x==null?'':x).trim()!=='';});});
+  var n=0;clean.forEach(function(c,idx){var name=String(c[0]||'').trim();if(!name)return;var low=name.toLowerCase();if(low==='rede'||low==='total'||low==='total redes'||name.charAt(0)==='#')return;for(var mi=0;mi<12;mi++){var v=hNumParse(c[mi+1]);if(v!=null){anRevSet(anYear,anProp,name,mi,v);n++;}}});
+  if(!n){toast('Não reconheci o arquivo. Use o modelo (Rede, Jan, Fev, …).','ti-alert-circle');return;}
+  sv();anR();toast('Receita por rede importada.','ti-file-import');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SEO OPORTUNIDADE — Search Console: oportunidade (pos 4–20) + decaimento
+   ═══════════════════════════════════════════════════════════════ */
+var anSeoMi=null, anSeoTab='opp', _anSeoImp=null;
+function anSeoObj(year,prop){var s=anStore();s.seo[year]=s.seo[year]||{};s.seo[year][prop]=s.seo[year][prop]||{};return s.seo[year][prop];}
+function anSeoMonths(year,prop){var o=anSeoObj(year,prop);return Object.keys(o).map(Number).sort(function(a,b){return a-b;});}
+function anSeoCurMi(){if(anSeoMi!=null&&anSeoMi>=0&&anSeoMi<=11)return anSeoMi;var ms=anSeoMonths(anYear,anProp);if(ms.length)return ms[ms.length-1];var now=new Date();return String(now.getFullYear())===String(anYear)?now.getMonth():0;}
+function anSeoRows(year,prop,mi){var o=anSeoObj(year,prop);return o[mi]||[];}
+function anSeoHasAny(year,prop){return anSeoMonths(year,prop).length>0;}
+function anSeoSetMi(v){anSeoMi=parseInt(v,10);anR();}
+function anSeoSetTab(t){anSeoTab=t;anR();}
+function anSeoMatch(label,keys){label=(label==null?'':label).toString().toLowerCase().replace(/"/g,'').trim();return keys.some(function(k){return label.indexOf(k)>=0;});}
+function anSeoParse(rows){
+  var clean=rows.filter(function(c){if(!c||!c.length)return false;var f=String(c[0]==null?'':c[0]).trim();if(f.charAt(0)==='#')return false;return c.some(function(x){return String(x==null?'':x).trim()!=='';});});
+  var hi=-1,dimC=0,cliC=-1,impC=-1,posC=-1,dimLbl='Consulta';
+  for(var r=0;r<clean.length;r++){var cols=clean[r];if(cols.length<2)continue;var cc=-1,ic=-1,pc=-1,dc=-1;
+    cols.forEach(function(c,ci){if(cc<0&&anSeoMatch(c,['clique','clicks']))cc=ci;if(ic<0&&anSeoMatch(c,['impress']))ic=ci;if(pc<0&&anSeoMatch(c,['posição','posicao','position']))pc=ci;if(dc<0&&anSeoMatch(c,['consulta','query','página','pagina','page','palavra','keyword']))dc=ci;});
+    if(cc>=0&&ic>=0){hi=r;cliC=cc;impC=ic;posC=pc;dimC=dc>=0?dc:0;dimLbl=String(cols[dimC]).replace(/"/g,'').trim()||'Consulta';break;}}
+  if(hi<0)return{rows:[],dimLbl:dimLbl};
+  var out=[];
+  clean.slice(hi+1).forEach(function(c){var q=String(c[dimC]||'').trim();if(!q||q.toLowerCase().indexOf('#')===0)return;var cl=hNumParse(c[cliC]),im=hNumParse(c[impC]),po=posC>=0?hNumParse(c[posC]):null;if(cl==null&&im==null)return;
+    out.push({q:q,c:cl||0,i:im||0,p:po});});
+  out.sort(function(a,b){return b.i-a.i;});if(out.length>500)out=out.slice(0,500);
+  return{rows:out,dimLbl:dimLbl};
+}
+function anSeoImportOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica para importar.','ti-info-circle');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});anSeoPreview(rows,f.name);}catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});anSeoPreview(rows,f.name);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function anSeoPreview(rows,fname){
+  var p=anSeoParse(rows);if(!p.rows.length){toast('Não reconheci o arquivo. Use o export "Desempenho" (Consultas ou Páginas) do Search Console.','ti-alert-circle');return;}
+  _anSeoImp={parsed:p};var mi=anSeoCurMi();
+  var msel='<select class="fsel" id="an-seo-mi">';for(var i=0;i<12;i++)msel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';msel+='</select>';
+  var o=document.createElement('div');o.className='ov';o.id='an-seoimp-ov';
+  o.innerHTML='<div class="mx" style="width:560px;max-width:96vw"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar Search Console — '+propLabel(anProp)+'</h4>'
+    +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br><strong>'+p.rows.length+'</strong> '+anEsc(p.dimLbl.toLowerCase())+'s com cliques, impressões e posição.</p>'
+    +'<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Mês de referência</div>'+msel
+    +'<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'an-seoimp-ov\').remove();_anSeoImp=null">Cancelar</button><button class="pr" onclick="anSeoApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anSeoImp=null;}});
+}
+function anSeoApply(){
+  if(!_anSeoImp)return;var mi=parseInt(document.getElementById('an-seo-mi').value);var o=anSeoObj(anYear,anProp);o[mi]=_anSeoImp.parsed.rows;
+  sv();document.getElementById('an-seoimp-ov').remove();_anSeoImp=null;anSeoMi=mi;anR();
+  toast('Search Console importado — '+AN_MES_LONG[mi]+'/'+anYear+'.','ti-file-import');
+}
+function anSeoView(){
+  var h='';var mi=anSeoCurMi();
+  var years=anYears();
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var moSel='<select class="fsel" onchange="anSeoSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
+  h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel
+    +'<span class="an-seg" style="margin-left:6px"><button class="an-seg-btn'+(anSeoTab==='opp'?' active':'')+'" onclick="anSeoSetTab(\'opp\')"><i class="ti ti-target-arrow"></i>Oportunidade</button><button class="an-seg-btn'+(anSeoTab==='decay'?' active':'')+'" onclick="anSeoSetTab(\'decay\')"><i class="ti ti-trending-down"></i>Decaimento</button></span></div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anSeoImportOpen()"><i class="ti ti-upload"></i> Importar Search Console</button></div></div>';
+  if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Selecione uma propriedade</p><span>O SEO é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
+  if(!anSeoHasAny(anYear,anProp)){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Sem dados de Search Console</p><span>Exporte o relatório "Desempenho" (Consultas ou Páginas) do Google Search Console e importe — um arquivo por mês</span></div></div>';return h;}
+  if(anSeoTab==='opp')h+=anSeoOpp(mi);else h+=anSeoDecay(mi);
+  return h;
+}
+function anSeoOpp(mi){
+  var rows=anSeoRows(anYear,anProp,mi).filter(function(r){return r.p!=null&&r.p>=3.5&&r.p<=20;}).sort(function(a,b){return b.i-a.i;}).slice(0,60);
+  if(!rows.length)return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-target-arrow"></i> Oportunidades · '+AN_MES_LONG[mi]+'/'+anYear+'</div></div><div class="an-empty"><i class="ti ti-target-arrow"></i><p>Nenhum termo na posição 4–20 neste mês</p><span>Importe um mês com dados de posição</span></div></div>';
+  var body=rows.map(function(r){var ctr=r.i>0?(r.c/r.i*100):0;
+    return '<tr><td class="stick" style="text-align:left;max-width:360px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.q)+'">'+anEsc(r.q)+'</td>'
+      +'<td>'+anFmt(r.c,'int')+'</td><td>'+anFmt(r.i,'int')+'</td><td>'+ctr.toFixed(1)+'%</td><td class="on">'+r.p.toFixed(1)+'</td></tr>';
+  }).join('');
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-target-arrow"></i> Oportunidades de SEO · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · termos na posição 4–20 (quase página 1) ordenados por impressões</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Consulta / Página</th><th>Cliques</th><th>Impressões</th><th>CTR</th><th class="on">Posição</th></tr></thead><tbody>'+body+'</tbody></table></div>'
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-bulb" style="font-size:12px"></i> Foque nesses: pequenas melhorias de conteúdo/links podem levá-los à página 1 e multiplicar os cliques.</div></div>';
+}
+function anSeoDecay(mi){
+  if(mi<1||!anSeoRows(anYear,anProp,mi-1).length)return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-trending-down"></i> Decaimento</div></div><div class="an-empty"><i class="ti ti-trending-down"></i><p>Preciso de dois meses para comparar</p><span>Importe '+(mi>0?AN_MES_LONG[mi-1]:'o mês anterior')+' e '+AN_MES_LONG[mi]+' para ver quem perdeu cliques</span></div></div>';
+  var cur=anSeoRows(anYear,anProp,mi),prev=anSeoRows(anYear,anProp,mi-1),pm={};prev.forEach(function(r){pm[r.q]=r;});
+  var rows=cur.map(function(r){var pr=pm[r.q];if(!pr)return null;return{q:r.q,c:r.c,pc:pr.c,d:r.c-pr.c,p:r.p,pp:pr.p};}).filter(function(x){return x&&x.d<0;}).sort(function(a,b){return a.d-b.d;}).slice(0,60);
+  if(!rows.length)return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-trending-down"></i> Decaimento · '+AN_MES_LONG[mi]+' vs '+AN_MES_LONG[mi-1]+'</div></div><div class="an-empty"><i class="ti ti-mood-happy"></i><p>Nenhuma queda relevante de cliques</p><span>Nenhum termo presente nos dois meses perdeu cliques</span></div></div>';
+  var body=rows.map(function(r){var pomove=(r.p!=null&&r.pp!=null)?(r.p-r.pp):null;
+    return '<tr><td class="stick" style="text-align:left;max-width:340px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.q)+'">'+anEsc(r.q)+'</td>'
+      +'<td>'+anFmt(r.c,'int')+'</td><td>'+anFmt(r.pc,'int')+'</td><td class="on" style="color:var(--danger);font-weight:700">'+r.d+'</td>'
+      +'<td>'+(r.p!=null?r.p.toFixed(1):'—')+(pomove!=null?' <span style="font-size:10px;color:'+(pomove>0?'var(--danger)':'var(--success)')+'">('+(pomove>0?'+':'')+pomove.toFixed(1)+')</span>':'')+'</td></tr>';
+  }).join('');
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-trending-down"></i> Conteúdo em decaimento · '+AN_MES_LONG[mi]+' vs '+AN_MES_LONG[mi-1]+'</div><div class="an-card-sub">'+propLabel(anProp)+' · maiores quedas de cliques (candidatos a atualização)</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Consulta / Página</th><th>Cliques ('+HMESES[mi]+')</th><th>Cliques ('+HMESES[mi-1]+')</th><th class="on">Δ</th><th>Posição</th></tr></thead><tbody>'+body+'</tbody></table></div>'
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-refresh" style="font-size:12px"></i> Atualize/reotimize esses conteúdos: perderam tráfego e costumam ter o melhor retorno por esforço.</div></div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RETENÇÃO — matriz de coortes (mês de aquisição × meses depois)
+   ═══════════════════════════════════════════════════════════════ */
+var _anRetMan=null;
+function anRetObj(year,prop){var s=anStore();s.ret[year]=s.ret[year]||{};s.ret[year][prop]=s.ret[year][prop]||{};return s.ret[year][prop];}
+function anRetArr(year,prop,ci){var o=anRetObj(year,prop);if(!Array.isArray(o[ci]))o[ci]=Array(12).fill(null);return o[ci];}
+function anRetSet(year,prop,ci,off,val){var a=anRetArr(year,prop,ci);a[off]=(val===''||val==null||isNaN(Number(val)))?null:Number(val);}
+function anRetVal(year,prop,ci,off){var o=anRetObj(year,prop);return Array.isArray(o[ci])?o[ci][off]:null;}
+function anRetHasAny(year,prop){var o=anRetObj(year,prop);return Object.keys(o).some(function(ci){return(o[ci]||[]).some(function(v){return v!=null;});});}
+function anRetLastCol(){var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();return 11;}
+function anRetColor(v){if(v==null)return 'transparent';var t=Math.max(0,Math.min(100,Number(v)))/100;return 'rgba(22,199,154,'+(0.12+t*0.78).toFixed(2)+')';}
+function anRetView(){
+  var h='';var years=anYears();
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anRetManualOpen()"><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<button class="an-btn" onclick="anRetModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
+    +'<button class="an-btn prim" onclick="anRetImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+  if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-repeat"></i><p>Selecione uma propriedade</p><span>A retenção é exibida por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
+  if(!anRetHasAny(anYear,anProp)){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-repeat"></i><p>Sem dados de retenção</p><span>Use o relatório de Coorte do GA4 (Explorar → Coorte) e importe, ou preencha manualmente o % de usuários que voltaram</span></div></div>';return h;}
+  h+='<div class="an-card">'+anRetMatrix()+'</div>';
+  return h;
+}
+function anRetMatrix(){
+  var lastCol=anRetLastCol(),maxOff=lastCol;
+  var rows='';
+  for(var ci=0;ci<=lastCol;ci++){
+    var maxo=lastCol-ci;
+    var cells='';
+    for(var off=0;off<=maxOff;off++){
+      if(off>maxo){cells+='<td style="background:rgba(11,34,57,.02)"></td>';continue;}
+      var v=anRetVal(anYear,anProp,ci,off);
+      cells+='<td style="background:'+anRetColor(v)+';font-weight:'+(off===0?'700':'600')+'">'+(v==null?'<span class="an-na">—</span>':v.toFixed(0)+'%')+'</td>';
+    }
+    rows+='<tr><td class="stick" style="text-align:left;font-weight:600">'+HMESES[ci]+'/'+anYear.slice(2)+'</td>'+cells+'</tr>';
+  }
+  var head='<tr><th class="stick" style="text-align:left">Coorte</th>';for(var o=0;o<=maxOff;o++)head+='<th>M'+o+'</th>';head+='</tr>';
+  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-repeat"></i> Retenção por coorte · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · % de usuários do mês de aquisição que voltaram nos meses seguintes (M0 = mês de entrada)</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot an-ret-tbl"><thead>'+head+'</thead><tbody>'+rows+'</tbody></table></div>'
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:12px"></i> Verde mais forte = melhor retenção. Compare as linhas para ver se as coortes recentes retêm melhor que as antigas.</div>';
+}
+function anRetModelDownload(){
+  var esc=function(s){return /[",;\n]/.test(s)?'"'+String(s).replace(/"/g,'""')+'"':s;};
+  var cols=['Coorte'];for(var o=0;o<12;o++)cols.push('M'+o);
+  var head=cols.map(esc).join(',');var ex=['Janeiro','100','','','','','','','','','','',''].map(esc).join(',');
+  var csv='\uFEFF'+head+'\n'+ex+'\n';var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='modelo_retencao_'+anYear+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  toast('Modelo de retenção baixado.','ti-download');
+}
+function anRetImportOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});anRetApply(rows);}catch(err){toast('Falha: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});anRetApply(rows);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function anRetMonthIdx(label){label=(label==null?'':label).toString().toLowerCase().trim();for(var i=0;i<AN_MES_LONG.length;i++){if(label.indexOf(AN_MES_LONG[i].toLowerCase())>=0||label.indexOf(HMESES[i].toLowerCase())>=0)return i;}var m=label.match(/(\d{1,2})/);if(m){var n=parseInt(m[1],10);if(n>=1&&n<=12)return n-1;}return -1;}
+function anRetApply(rows){
+  var clean=rows.filter(function(c){return c&&c.some(function(x){return String(x==null?'':x).trim()!=='';});});
+  var n=0;clean.forEach(function(c,idx){var ci=anRetMonthIdx(c[0]);if(ci<0)return;if(idx===0&&!/\d/.test(String(c[1]||'')))return;for(var off=0;off<12;off++){var v=hNumParse(c[off+1]);if(v!=null){anRetSet(anYear,anProp,ci,off,v);n++;}}});
+  if(!n){toast('Não reconheci o arquivo. Use o modelo (Coorte, M0, M1, …).','ti-alert-circle');return;}
+  sv();anR();toast('Retenção importada.','ti-file-import');
+}
+function anRetManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}_anRetMan={};
+  var o=document.createElement('div');o.className='ov';o.id='an-retman-ov';
+  o.innerHTML='<div class="mx" style="width:900px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-retman-body"></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anRetMan=null;}});anRetManBody();}
+function anRetManBody(){
+  var lastCol=anRetLastCol();
+  var h='<h4 style="display:flex;align-items:center;gap:7px"><i class="ti ti-repeat" style="color:var(--primary)"></i> Retenção por coorte — '+propLabel(anProp)+' · '+anYear+'</h4>';
+  h+='<p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px;line-height:1.5">% de usuários do mês de aquisição que voltaram. M0 normalmente é 100%. Salva no Supabase.</p>';
+  h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl"><thead><tr><th style="text-align:left">Coorte</th>';for(var o=0;o<=lastCol;o++)h+='<th>M'+o+'</th>';h+='</tr></thead><tbody>';
+  for(var ci=0;ci<=lastCol;ci++){h+='<tr><td style="text-align:left;font-weight:600">'+HMESES[ci]+'</td>';for(var off=0;off<=lastCol;off++){if(ci+off>lastCol){h+='<td></td>';continue;}var v=anRetVal(anYear,anProp,ci,off);h+='<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anRetSet(anYear,anProp,'+ci+','+off+',this.value);sv()"></td>';}for(var z=lastCol+1;z<=lastCol;z++){}h+='</tr>';}
+  h+='</tbody></table></div><div class="mbb"><button onclick="anRetImportOpen()"><i class="ti ti-upload" style="font-size:11px"></i> Importar CSV</button><button class="pr" onclick="document.getElementById(\'an-retman-ov\').remove();_anRetMan=null;anR()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
+  document.getElementById('an-retman-body').innerHTML=h;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADSENSE — dados diários (a partir de Março) · estética do Analytics
+   Métricas: Impressões, Cliques, CTR, eCPM, Receita, Visibilidade
+   ═══════════════════════════════════════════════════════════════ */
+var ADS_METRICS=[
+  {k:'imp', l:'Impressões',    fmt:'int',   kind:'sum'},
+  {k:'cli', l:'Cliques',       fmt:'int',   kind:'sum'},
+  {k:'ctr', l:'CTR',           fmt:'pct',   kind:'rate', num:'cli', den:'imp', mult:100},
+  {k:'ecpm',l:'eCPM',          fmt:'money', kind:'rate', num:'rec', den:'imp', mult:1000},
+  {k:'rec', l:'Receita',       fmt:'money', kind:'sum'},
+  {k:'vis', l:'Visibilidade',  fmt:'pct',   kind:'wavg', w:'imp'}
+];
+var anAdsYear=String(new Date().getFullYear());
+var anAdsMi=null, anAdsFocus='rec';
+var _anAdsImp=null,_anAdsMan=null;
+function anAdsMeta(mk){return ADS_METRICS.find(function(m){return m.k===mk;})||{fmt:'int',l:mk,kind:'sum'};}
+function anAdsObj(year,mi){var s=anStore();s.ads[year]=s.ads[year]||{};s.ads[year][mi]=s.ads[year][mi]||{};return s.ads[year][mi];}
+function anAdsArr(year,mi,mk){var o=anAdsObj(year,mi);if(!Array.isArray(o[mk]))o[mk]=Array(31).fill(null);return o[mk];}
+function anAdsSet(year,mi,mk,di,val){var a=anAdsArr(year,mi,mk);a[di]=(val===''||val==null||isNaN(Number(val)))?null:Number(val);}
+function anAdsValD(year,mi,mk,di){var o=anAdsObj(year,mi);return Array.isArray(o[mk])?o[mk][di]:null;}
+function anAdsDaysWith(year,mi){var o=anAdsObj(year,mi),set={};ADS_METRICS.forEach(function(m){(o[m.k]||[]).forEach(function(v,i){if(v!=null&&v!=='')set[i]=1;});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
+function anAdsHasAny(year,mi){return anAdsDaysWith(year,mi).length>0;}
+function anAdsSumD(year,mi,mk){var a=anAdsArr(year,mi,mk),s=0,any=false;a.forEach(function(v){if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
+function anAdsMonthTotal(year,mi,mk){var meta=anAdsMeta(mk);
+  if(meta.kind==='sum')return anAdsSumD(year,mi,mk);
+  if(meta.kind==='rate'){var den=anAdsSumD(year,mi,meta.den),num=anAdsSumD(year,mi,meta.num);if(den&&den>0&&num!=null)return num/den*meta.mult;
+    var a=anAdsArr(year,mi,mk).filter(function(v){return v!=null;});return a.length?a.reduce(function(x,y){return x+y;},0)/a.length:null;}
+  // wavg (visibilidade) ponderada por impressões
+  var arr=anAdsArr(year,mi,mk),wa=anAdsArr(year,mi,meta.w),num2=0,den2=0;arr.forEach(function(v,i){var w=wa[i];if(v!=null&&w!=null){num2+=Number(v)*Number(w);den2+=Number(w);}});if(den2>0)return num2/den2;
+  var f=arr.filter(function(v){return v!=null;});return f.length?f.reduce(function(x,y){return x+y;},0)/f.length:null;}
+function anAdsBestDay(year,mi,mk){var a=anAdsArr(year,mi,mk),bi=-1,bv=-Infinity;a.forEach(function(v,i){if(v!=null&&Number(v)>bv){bv=Number(v);bi=i;}});return bi<0?null:{d:bi,v:bv};}
+function anAdsStats(year,mi,mk){var meta=anAdsMeta(mk);
+  var cur=anAdsMonthTotal(year,mi,mk),prev=mi>0?anAdsMonthTotal(year,mi-1,mk):null;
+  var varp=(prev!=null&&prev!==0&&cur!=null)?((cur-prev)/Math.abs(prev)*100):null;
+  var proj=cur,now=new Date(),isCur=String(now.getFullYear())===String(year)&&now.getMonth()===mi;
+  if(isCur&&cur!=null){var dE=dElapsed(Number(year),mi),tD=dIM(Number(year),mi);
+    if(meta.kind==='sum'&&dE>0)proj=Math.round(cur/dE*tD);else proj=cur;}
+  return{cur:cur,prev:prev,proj:proj,varp:varp,fmt:meta.fmt};}
+function anAdsCurMi(){if(anAdsMi!=null&&anAdsMi>=0&&anAdsMi<=11)return anAdsMi;var now=new Date();if(String(now.getFullYear())===String(anAdsYear)&&now.getMonth()>=2)return now.getMonth();var ds=[];for(var i=2;i<12;i++)if(anAdsHasAny(anAdsYear,i))ds.push(i);return ds.length?ds[ds.length-1]:2;}
+function anAdsSetYear(v){anAdsYear=String(v);R();}
+function anAdsSetMi(v){anAdsMi=parseInt(v,10);R();}
+function anAdsSetFocus(mk){anAdsFocus=mk;R();}
+function anAdsYears(){var ys=new Set([String(new Date().getFullYear())]);var s=anStore();Object.keys(s.ads).forEach(function(y){ys.add(y);});return Array.from(ys).sort();}
+
+/* ── Cards mensais (com melhor dia) ── */
+function anAdsCards(mi){
+  var cards=ADS_METRICS.map(function(m){
+    var st=anAdsStats(anAdsYear,mi,m.k),sem=anSemaphore(st.varp),best=anAdsBestDay(anAdsYear,mi,m.k);
+    var varHtml=st.varp==null?'<span class="an-var flat">—</span>':'<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
+    var bestHtml=best?'<div class="an-ads-best"><i class="ti ti-star-filled"></i> Melhor dia: <b>'+(best.d+1)+'/'+HMESES[mi]+'</b> · '+anFmt(best.v,m.fmt)+'</div>':'<div class="an-ads-best" style="opacity:.5"><i class="ti ti-star"></i> Melhor dia: —</div>';
+    return '<div class="an-mcard">'
+      +'<div class="an-mcard-top"><div class="an-mcard-lbl">'+m.l+'</div><span class="an-dot" style="background:'+anSemColor(sem)+'" title="'+(sem==='up'?'Crescimento':sem==='down'?'Queda':'Estabilidade')+'"></span></div>'
+      +'<div class="an-mcard-valrow"><span class="an-mcard-val">'+(st.cur==null?'—':anFmt(st.cur,m.fmt))+'</span>'+varHtml+'</div>'
+      +'<div class="an-mcard-foot"><span class="an-pill">Mês ant.: <b>'+(st.prev==null?'—':anShort(st.prev,m.fmt))+'</b></span><span class="an-pill">Projeção: <b>'+(st.proj==null?'—':anShort(st.proj,m.fmt))+'</b></span></div>'
+      +bestHtml
+    +'</div>';
+  }).join('');
+  return '<div class="an-metrics">'+cards+'</div>';
+}
+
+/* ── Gráfico diário por métrica (um SVG por métrica) ── */
+function anAdsDaySvg(mi,mk){
+  var meta=anAdsMeta(mk),tD=dIM(Number(anAdsYear),mi),best=anAdsBestDay(anAdsYear,mi,mk);
+  var vals=[];for(var d=0;d<tD;d++)vals.push(anAdsValD(anAdsYear,mi,mk,d));
+  if(!vals.some(function(v){return v!=null;}))return '<div class="an-empty" style="padding:22px 0"><i class="ti ti-chart-bar"></i><p>Sem dados</p></div>';
+  var mx=Math.max.apply(null,[1].concat(vals.map(function(v){return v||0;})));
+  var W=520,H=180,padL=6,padR=6,padT=22,padB=20,plotH=H-padT-padB,baseY=padT+plotH,slot=(W-padL-padR)/tD,bw=Math.min(15,slot*0.62);
+  var out='';
+  for(var i=0;i<tD;i++){var cx=padL+slot*i+slot/2,x=cx-bw/2,v=vals[i],has=v!=null;
+    var bh=has?Math.max(3,Math.round((v||0)/mx*plotH)):0,y=baseY-bh;var isBest=best&&best.d===i;
+    if(has){out+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+bh+'" rx="3.5" fill="'+(isBest?'var(--warning)':'var(--primary)')+'"><title>Dia '+(i+1)+': '+anFmt(v,meta.fmt)+(isBest?' (melhor dia)':'')+'</title></rect>';
+      if(isBest)out+='<text x="'+cx.toFixed(1)+'" y="'+(y-5).toFixed(1)+'" text-anchor="middle" style="font-size:9px;font-weight:700;fill:var(--warning)">'+anShort(v,meta.fmt)+'</text>';}
+    else{out+='<rect x="'+x.toFixed(1)+'" y="'+(baseY-2)+'" width="'+bw.toFixed(1)+'" height="2" rx="1" fill="rgba(11,34,57,.07)"></rect>';}
+    if((i+1)%5===0||i===0||i===tD-1)out+='<text class="an-axis" x="'+cx.toFixed(1)+'" y="'+(baseY+14)+'" text-anchor="middle" style="font-size:8px">'+(i+1)+'</text>';
+  }
+  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">'+out+'</svg>';
+}
+function anAdsCharts(mi){
+  var blocks=ADS_METRICS.map(function(m){
+    var st=anAdsStats(anAdsYear,mi,m.k),sem=anSemaphore(st.varp),best=anAdsBestDay(anAdsYear,mi,m.k);
+    var varHtml=st.varp==null?'<span class="an-var flat" style="font-size:11px">—</span>':'<span class="an-var '+sem+'" style="font-size:11px">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
+    var valTxt=st.cur==null?'—':anFmt(st.cur,m.fmt);
+    var bestLine=best?'<div class="an-card-sub" style="margin-top:6px"><i class="ti ti-star-filled" style="color:var(--warning);font-size:11px"></i> Melhor dia: <b>'+(best.d+1)+'/'+HMESES[mi]+'</b> · '+anFmt(best.v,m.fmt)+'</div>':'';
+    return '<div class="an-hchart">'
+      +'<div class="an-hchart-hd"><div><div class="an-hchart-ttl">'+m.l+'</div><div class="an-hchart-val">'+valTxt+'</div></div>'+varHtml+'</div>'
+      +anAdsDaySvg(mi,m.k)+bestLine+'</div>';
+  }).join('');
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-chart-bar"></i> Gráficos diários por métrica · '+HMESES[mi]+'/'+anAdsYear+'</div><div class="an-card-sub">⭐ destaca o melhor dia de cada métrica</div></div>'
+    +'<div class="an-hcharts">'+blocks+'</div></div>';
+}
+
+/* ── Tabela diária ── */
+function anAdsTable(mi){
+  var days=anAdsDaysWith(anAdsYear,mi);
+  if(!days.length)return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> Dados diários · '+HMESES[mi]+'/'+anAdsYear+'</div></div><div class="an-empty"><i class="ti ti-table"></i><p>Nenhum dia preenchido</p><span>Importe o relatório do AdSense ou use "Inserir manual"</span></div></div>';
+  var best={};ADS_METRICS.forEach(function(m){var b=anAdsBestDay(anAdsYear,mi,m.k);best[m.k]=b?b.d:-1;});
+  var head='<tr><th class="stick" style="text-align:left">Dia</th>'+ADS_METRICS.map(function(m){return '<th>'+m.l+'</th>';}).join('')+'</tr>';
+  var body=days.map(function(di){
+    return '<tr><td class="stick" style="text-align:left;font-weight:600">'+(di+1)+'/'+HMESES[mi]+'</td>'
+      +ADS_METRICS.map(function(m){var v=anAdsValD(anAdsYear,mi,m.k,di);var isBest=best[m.k]===di&&v!=null;
+        return '<td'+(isBest?' class="an-ads-bestcell"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,m.fmt))+(isBest?' <i class="ti ti-star-filled" style="font-size:10px;color:var(--warning)"></i>':'')+'</td>';}).join('')
+    +'</tr>';
+  }).join('');
+  var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">Total / Mês</td>'+ADS_METRICS.map(function(m){return '<td>'+anShort(anAdsMonthTotal(anAdsYear,mi,m.k),m.fmt)+'</td>';}).join('')+'</tr>';
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> Dados diários · '+HMESES[mi]+'/'+anAdsYear+'</div><div class="an-card-sub">'+days.length+' dias · ⭐ melhor dia de cada métrica</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div></div>';
+}
+
+/* ── Controles ── */
+function anAdsControls(mi){
+  var years=anAdsYears();
+  var ySel='<select class="fsel" onchange="anAdsSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anAdsYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var months='';for(var i=2;i<12;i++){months+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anAdsYear+'</option>';}
+  var moSel='<select class="fsel" onchange="anAdsSetMi(this.value)">'+months+'</select>';
+  return '<div class="an-card an-camp-ctrl">'
+    +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anAdsManualOpen()"><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<button class="an-btn" onclick="anAdsModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
+    +'<button class="an-btn prim" onclick="anAdsImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+}
+
+/* ── Modelo CSV ── */
+function anAdsModelDownload(){
+  var esc=function(s){return /[",;\n]/.test(s)?'"'+String(s).replace(/"/g,'""')+'"':s;};
+  var head=['Data','Impressões','Cliques','CTR','eCPM','Receita','Visibilidade'].map(esc).join(',');
+  var ex=[anAdsYear+'-03-01','','','','','',''].map(esc).join(',');
+  var csv='\uFEFF'+head+'\n'+ex+'\n';
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='modelo_adsense_diario.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  toast('Modelo de AdSense baixado.','ti-download');
+}
+
+/* ── Import diário (AdSense / Ad Manager) ── */
+var ADS_COL=[['imp',['impress']],['cli',['clique','clicks','click']],['ctr',['ctr']],['ecpm',['ecpm','rpm','cpm']],['rec',['receita','estimated earnings','ganhos','rendiment','valor estimado','revenue','faturament']],['vis',['visib','viewab','active view','visíve','visive']]];
+function anAdsMatchCol(label){label=(label==null?'':label).toString().toLowerCase().replace(/"/g,'').trim();for(var i=0;i<ADS_COL.length;i++){for(var k=0;k<ADS_COL[i][1].length;k++){if(label.indexOf(ADS_COL[i][1][k])>=0)return ADS_COL[i][0];}}return null;}
+function anAdsIsDateCol(label){label=(label==null?'':label).toString().toLowerCase();return label.indexOf('dia')>=0||label.indexOf('data')>=0||label.indexOf('date')>=0;}
+function anAdsParseDate(s){s=String(s||'').trim();var m=s.match(/(20\d{2})-(\d{1,2})-(\d{1,2})/);if(m)return{y:m[1],mi:parseInt(m[2],10)-1,d:parseInt(m[3],10)-1};m=s.match(/(\d{1,2})\/(\d{1,2})\/(20\d{2})/);if(m)return{y:m[3],mi:parseInt(m[2],10)-1,d:parseInt(m[1],10)-1};m=s.match(/(20\d{2})(\d{2})(\d{2})/);if(m)return{y:m[1],mi:parseInt(m[2],10)-1,d:parseInt(m[3],10)-1};return null;}
+function anAdsImportOpen(){
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});anAdsPreview(rows,f.name);}catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});anAdsPreview(rows,f.name);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function anAdsParse(rows){
+  var clean=rows.filter(function(cols){if(!cols||!cols.length)return false;var first=String(cols[0]==null?'':cols[0]).trim();if(first.charAt(0)==='#')return false;return cols.some(function(c){return String(c==null?'':c).trim()!=='';});});
+  var headerIdx=-1,dateCol=-1,colMap={};
+  for(var r=0;r<clean.length;r++){var cols=clean[r];if(cols.length<2)continue;var map={},dc=-1,hits=0;
+    cols.forEach(function(c,ci){if(anAdsIsDateCol(c)&&dc<0)dc=ci;var mk=anAdsMatchCol(c);if(mk&&map[mk]==null){map[mk]=ci;hits++;}});
+    if(hits>=2&&dc>=0){headerIdx=r;dateCol=dc;colMap=map;break;}}
+  if(headerIdx<0)return{rows:[],months:{}};
+  var out=[],months={};
+  clean.slice(headerIdx+1).forEach(function(c){var dt=anAdsParseDate(c[dateCol]);if(!dt)return;var rec={y:dt.y,mi:dt.mi,d:dt.d,vals:{}};
+    Object.keys(colMap).forEach(function(mk){var v=hNumParse(c[colMap[mk]]);if(v!=null)rec.vals[mk]=v;});
+    if(Object.keys(rec.vals).length){out.push(rec);months[dt.y+'-'+dt.mi]=(months[dt.y+'-'+dt.mi]||0)+1;}});
+  return{rows:out,months:months,cols:Object.keys(colMap)};
+}
+function anAdsPreview(rows,fname){
+  var p=anAdsParse(rows);_anAdsImp={parsed:p};
+  if(!p.rows.length){toast('Não reconheci o relatório. Use o export diário do AdSense (com coluna de Data).','ti-alert-circle');return;}
+  var mks=Object.keys(p.months).sort();
+  var mlist=mks.map(function(k){var pa=k.split('-');return AN_MES_LONG[parseInt(pa[1],10)]+'/'+pa[0]+' ('+p.months[k]+'d)';}).join(', ');
+  var colsLbl=p.cols.map(function(k){return anAdsMeta(k).l;}).join(', ');
+  var o=document.createElement('div');o.className='ov';o.id='an-adsimp-ov';
+  o.innerHTML='<div class="mx" style="width:560px;max-width:96vw"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar AdSense diário</h4>'
+    +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 12px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br><strong>'+p.rows.length+'</strong> dias · Meses: <strong style="color:var(--navy)">'+anEsc(mlist)+'</strong><br>Métricas: '+anEsc(colsLbl)+'</p>'
+    +'<div class="mbb"><button onclick="document.getElementById(\'an-adsimp-ov\').remove();_anAdsImp=null">Cancelar</button><button class="pr" onclick="anAdsApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anAdsImp=null;}});
+}
+function anAdsApply(){
+  if(!_anAdsImp)return;var p=_anAdsImp.parsed,n=0,firstMi=null;
+  p.rows.forEach(function(rec){if(rec.d<0||rec.d>30)return;Object.keys(rec.vals).forEach(function(mk){anAdsSet(rec.y,rec.mi,mk,rec.d,rec.vals[mk]);});if(firstMi===null){firstMi=rec.mi;anAdsYear=String(rec.y);}n++;});
+  sv();document.getElementById('an-adsimp-ov').remove();_anAdsImp=null;
+  if(firstMi!==null)anAdsMi=firstMi;R();
+  toast(n+' dias importados.','ti-file-import');
+}
+
+/* ── Manual (dia × métricas) ── */
+function anAdsManualOpen(){_anAdsMan={mi:anAdsCurMi()};
+  var o=document.createElement('div');o.className='ov';o.id='an-adsman-ov';
+  o.innerHTML='<div class="mx" style="width:900px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-adsman-body"></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anAdsMan=null;}});anAdsManBody();}
+function anAdsManBody(){
+  var mi=_anAdsMan.mi,tD=dIM(Number(anAdsYear),mi);
+  var h='<h4 style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><i class="ti ti-ad-2" style="color:var(--primary)"></i> AdSense diário'
+    +'<select class="fsel" style="margin-left:auto" onchange="_anAdsMan.mi=parseInt(this.value);anAdsManBody()">';
+  for(var i=2;i<12;i++)h+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anAdsYear+'</option>';
+  h+='</select></h4><p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px">Preencha os dias de '+AN_MES_LONG[mi]+'. Salva automaticamente no Supabase.</p>';
+  h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl"><thead><tr><th>Dia</th>'+ADS_METRICS.map(function(m){return '<th>'+m.l+'</th>';}).join('')+'</tr></thead><tbody>';
+  for(var d=0;d<tD;d++){h+='<tr><td style="font-weight:600">'+(d+1)+'</td>'+ADS_METRICS.map(function(m){var v=anAdsValD(anAdsYear,mi,m.k,d);return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anAdsSet(anAdsYear,'+mi+',\''+m.k+'\','+d+',this.value);sv()"></td>';}).join('')+'</tr>';}
+  h+='</tbody></table></div><div class="mbb"><button onclick="anAdsImportOpen()"><i class="ti ti-upload" style="font-size:11px"></i> Importar CSV</button><button class="pr" onclick="document.getElementById(\'an-adsman-ov\').remove();_anAdsMan=null;R()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
+  document.getElementById('an-adsman-body').innerHTML=h;
+}
+
+/* ── Página AdSense ── */
+function anAdsBody(){
+  var years=anAdsYears();if(!years.includes(anAdsYear))anAdsYear=years[years.length-1];
+  var mi=anAdsCurMi();
+  var h=anAdsControls(mi);
+  if(!anAdsHasAny(anAdsYear,mi)){
+    h+='<div class="an-hint"><i class="ti ti-info-circle"></i> Sem dados de AdSense em '+AN_MES_LONG[mi]+'/'+anAdsYear+' ainda. Importe o relatório diário do AdSense (com coluna de Data) ou use "Inserir manual" — os dados começam em Março. Os cards e o gráfico abaixo se preenchem automaticamente.</div>';
+  }
+  h+=anAdsCards(mi);
+  h+=anAdsCharts(mi);
+  h+=anAdsTable(mi);
+  return h;
+}
+function hADSENSE(){
+  return '<div class="an-root">'+pageHeader('AdSense','Monetização diária — impressões, cliques, CTR, eCPM, receita e visibilidade')+anAdsBody()+'</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOP PÁGINAS — pivot página × meses (até o mês atual) + variação
+   Mesmas propriedades das demais abas · dados em ac.an.pages
+   ═══════════════════════════════════════════════════════════════ */
+var anPgSort={by:null,dir:'desc'};
+var anPgMetric='ses';
+var _anPgImp=null,_anPgMan=null;
+var PG_METRICS=[{k:'ses',l:'Sessões',fmt:'int'},{k:'rec',l:'Receita',fmt:'money'},{k:'rpm',l:'RPM (R$/1k sessões)',fmt:'money',derived:true}];
+var AN_PG_VAL=[['sessões','sessoes','sessions'],['visualizações','visualizacoes','exibições','exibicoes','views','screen page views','screenpageviews','page views','visualizações de página'],['usuários ativos','usuarios ativos','active users','usuários','usuarios','users']];
+var AN_PG_REV=['receita total de anúncios','receita de anúncios do editor','publisher ad revenue','total ad revenue','receita de anúncios','receita de anuncios','ad revenue','receita total','receita','earnings'];
+function anPgMeta(mk){return PG_METRICS.find(function(m){return m.k===mk;})||{k:mk,l:mk,fmt:'int'};}
+function anPgCurMetric(){if(!PG_METRICS.some(function(m){return m.k===anPgMetric;}))anPgMetric='ses';return anPgMetric;}
+function anPgSetMetric(mk){anPgMetric=mk;anR();}
+function anPgObj(year,prop){var s=anStore();s.pages[year]=s.pages[year]||{};s.pages[year][prop]=s.pages[year][prop]||{};return s.pages[year][prop];}
+function anPgRec(year,prop,name){var o=anPgObj(year,prop),r=o[name];if(Array.isArray(r)){r={ses:r};o[name]=r;}else if(!r||typeof r!=='object'){r={};o[name]=r;}return r;}
+function anPgArr(year,prop,name,mk){var r=anPgRec(year,prop,name);if(!Array.isArray(r[mk]))r[mk]=Array(12).fill(null);return r[mk];}
+function anPgSetCell(year,prop,name,mk,mi,val){var a=anPgArr(year,prop,name,mk);a[mi]=(val===''||val==null||isNaN(Number(val)))?null:Number(val);}
+function anPgVal(year,prop,name,mk,mi){if(mk==='rpm'){var rec=anPgVal(year,prop,name,'rec',mi),ses=anPgVal(year,prop,name,'ses',mi);return(rec!=null&&ses!=null&&Number(ses)>0)?Number(rec)/Number(ses)*1000:null;}var r=anPgRec(year,prop,name);return Array.isArray(r[mk])?r[mk][mi]:null;}
+function anPgPages(year,prop){return Object.keys(anPgObj(year,prop));}
+function anPgMonths(year,prop){var o=anPgObj(year,prop),set={};Object.keys(o).forEach(function(n){var r=anPgRec(year,prop,n);['ses','rec'].forEach(function(mk){(r[mk]||[]).forEach(function(v,i){if(v!=null&&v!=='')set[i]=1;});});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
+function anPgHasAny(year,prop){return anPgMonths(year,prop).length>0;}
+function anPgLastCol(){var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();var ms=anPgMonths(anYear,anProp);return ms.length?ms[ms.length-1]:11;}
+function anPgTotal(year,prop,mk,mi){if(mk==='rpm'){var rec=anPgTotal(year,prop,'rec',mi),ses=anPgTotal(year,prop,'ses',mi);return(rec!=null&&ses!=null&&ses>0)?rec/ses*1000:null;}var o=anPgObj(year,prop),s=0,any=false;Object.keys(o).forEach(function(n){var v=anPgVal(year,prop,n,mk,mi);if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
+function anPgVarp(year,prop,name,mk,lastCol){var cur=anPgVal(year,prop,name,mk,lastCol),prev=lastCol>0?anPgVal(year,prop,name,mk,lastCol-1):null;if(cur==null||prev==null||Number(prev)===0)return null;return(Number(cur)-Number(prev))/Math.abs(Number(prev))*100;}
+function anPgVarCell(varp){if(varp==null)return '<span class="an-na">—</span>';var c=varp>=5?'var(--success)':varp>=-5?'var(--warning)':'var(--danger)';var a=varp>=0?'▲':'▼';return '<span style="color:'+c+';font-weight:700">'+(varp>=0?'+':'')+varp.toFixed(0)+'% '+a+'</span>';}
+function anPgSortSet(by){if(anPgSort.by===by)anPgSort.dir=anPgSort.dir==='asc'?'desc':'asc';else{anPgSort.by=by;anPgSort.dir=(by==='name'?'asc':'desc');}anR();}
+
+/* ── Pivot página × meses ── */
+function anPgPivot(){
+  var o=anPgObj(anYear,anProp),lastCol=anPgLastCol();
+  var months=[];for(var i=0;i<=lastCol;i++)months.push(i);
+  var mk=anPgCurMetric(),meta=anPgMeta(mk);
+  var names=Object.keys(o).filter(function(n){return months.some(function(mi){return anPgVal(anYear,anProp,n,mk,mi)!=null;});});
+  if(!names.length)return '<div class="an-empty"><i class="ti ti-file-text"></i><p>Sem '+meta.l+' para '+propLabel(anProp)+' em '+anYear+'</p><span>Importe um CSV de "Páginas e telas" do GA4 (com Sessões e Receita de anúncios), ou use o modelo</span></div>';
+  var effBy=anPgSort.by===null?'var':anPgSort.by;
+  function sortKey(n){if(effBy==='name')return(n||'').toLowerCase();if(effBy==='var'){var v=anPgVarp(anYear,anProp,n,mk,lastCol);return v==null?-Infinity:v;}var mv=anPgVal(anYear,anProp,n,mk,Number(effBy));return mv==null?-Infinity:Number(mv);}
+  function sortKey2(n){if(anPgSort.by!==null)return sortKey(n);var mv=anPgVal(anYear,anProp,n,mk,lastCol);return mv==null?-Infinity:Number(mv);}
+  names.sort(function(a,b){var ka=sortKey2(a),kb=sortKey2(b);if(typeof ka==='string')return anPgSort.dir==='asc'?ka.localeCompare(kb):kb.localeCompare(ka);return anPgSort.dir==='asc'?ka-kb:kb-ka;});
+  function arr(by){var on=(anPgSort.by===by)||(anPgSort.by===null&&by===String(lastCol));return on?(anPgSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
+  function th(lbl,by,cls,style){var on=(anPgSort.by===by)||(anPgSort.by===null&&by===String(lastCol));return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'"'+(style?' style="'+style+'"':'')+' onclick="anPgSortSet(\''+by+'\')">'+lbl+arr(by)+'</th>';}
+  var head='<tr>'+th('Página','name','stick','text-align:left')
+    +months.map(function(mi){return th(HMESES[mi]+'/'+anYear.slice(2),String(mi),(mi===lastCol?'on':''));}).join('')
+    +th('Variação','var','on')+'</tr>';
+  var body=names.map(function(n){
+    return '<tr><td class="stick" style="text-align:left;font-weight:600;max-width:340px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(n)+'">'+anEsc(n)+'</td>'
+      +months.map(function(mi){var v=anPgVal(anYear,anProp,n,mk,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
+      +'<td class="on">'+anPgVarCell(anPgVarp(anYear,anProp,n,mk,lastCol))+'</td></tr>';
+  }).join('');
+  var totVar=(function(){var cur=anPgTotal(anYear,anProp,mk,lastCol),prev=lastCol>0?anPgTotal(anYear,anProp,mk,lastCol-1):null;if(cur==null||prev==null||prev===0)return null;return(cur-prev)/Math.abs(prev)*100;})();
+  var totLbl=mk==='rpm'?'RPM (geral)':'Total';
+  var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">'+totLbl+'</td>'
+    +months.map(function(mi){var v=anPgTotal(anYear,anProp,mk,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
+    +'<td class="on">'+anPgVarCell(totVar)+'</td></tr>';
+  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por página e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' páginas · variação = '+HMESES[lastCol]+' vs '+(lastCol>0?HMESES[lastCol-1]:'—')+'</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div>'
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Clique no cabeçalho para ordenar (inclusive por Variação) · RPM = receita ÷ sessões × 1000</div>';
+}
+function anPgControls(){
+  var years=anYears(),mk=anPgCurMetric();
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var mSel=PG_METRICS.map(function(m){return '<button class="an-mtab'+(mk===m.k?' active':'')+'" onclick="anPgSetMetric(\''+m.k+'\')">'+m.l+'</button>';}).join('');
+  return '<div class="an-card an-camp-ctrl">'
+    +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Métrica</span>'+mSel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anPgManualOpen()"><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<button class="an-btn" onclick="anPgModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
+    +'<button class="an-btn prim" onclick="anPgImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+}
+function anPgView(){
+  var h=anPgControls();
+  if(anProp==='all'){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-world"></i><p>Selecione uma propriedade</p><span>Top Páginas é exibido por propriedade (Guardar Dinheiro, Blog, App, Cora Cora News, Receitascom). Escolha uma nos chips acima.</span></div></div>';
+    return h;
+  }
+  h+='<div class="an-card">'+anPgPivot()+'</div>';
+  return h;
+}
+
+/* ── Modelo CSV (largo: Página + meses) ── */
+function anPgModelDownload(){
+  var mk=anPgCurMetric()==='rpm'?'ses':anPgCurMetric(),meta=anPgMeta(mk);
+  var esc=function(s){return /[",;\n]/.test(s)?'"'+String(s).replace(/"/g,'""')+'"':s;};
+  var head=['Página'].concat(HMESES).map(esc).join(',');
+  var ex=['/exemplo-de-pagina'].concat(Array(12).fill('')).map(esc).join(',');
+  var csv='\uFEFF'+head+'\n'+ex+'\n';
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='modelo_top_paginas_'+meta.l.toLowerCase().replace(/[^a-z]/g,'')+'_'+anYear+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  toast('Modelo baixado — preenche a métrica "'+meta.l+'".','ti-download');
+}
+
+/* ── Import (GA4 "Páginas e telas" com Sessões e Receita de anúncios) ── */
+function anPgImportOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica para importar.','ti-info-circle');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''});anPgPreview(rows,f.name);}catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});anPgPreview(rows,f.name);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function anPgMatchVal(label){label=(label==null?'':label).toString().toLowerCase().replace(/"/g,'').trim();for(var g=0;g<AN_PG_VAL.length;g++){for(var k=0;k<AN_PG_VAL[g].length;k++){if(label.indexOf(AN_PG_VAL[g][k])>=0)return{group:g,label:AN_PG_VAL[g][k]};}}return null;}
+function anPgMatchRev(label){label=(label==null?'':label).toString().toLowerCase().replace(/"/g,'').trim();for(var i=0;i<AN_PG_REV.length;i++){if(label.indexOf(AN_PG_REV[i])>=0)return true;}return false;}
+function anPgIsPageDim(label){label=(label==null?'':label).toString().toLowerCase();return['página','pagina','page','caminho','título','titulo','url','tela','landing'].some(function(a){return label.indexOf(a)>=0;});}
+function anPgParse(rows){
+  var monthIdx=-1,year=anYear;
+  var flat=[];rows.forEach(function(r){(r||[]).forEach(function(c){flat.push(String(c==null?'':c));});});
+  for(var fi=0;fi<flat.length;fi++){var cell=flat[fi];var m=cell.match(/(20\d{2})(\d{2})\d{2}/);if(m){year=m[1];monthIdx=parseInt(m[2],10)-1;break;}m=cell.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/);if(m){year=m[3];monthIdx=parseInt(m[2],10)-1;break;}}
+  var clean=rows.filter(function(cols){if(!cols||!cols.length)return false;var first=String(cols[0]==null?'':cols[0]).trim();if(first.charAt(0)==='#')return false;return cols.some(function(c){return String(c==null?'':c).trim()!=='';});});
+  var headerIdx=-1,sesCol=-1,recCol=-1,seslabel='Sessões';
+  for(var r=0;r<clean.length;r++){var cols=clean[r];if(cols.length<2)continue;var fs=-1,fg=99,fr=-1;
+    cols.forEach(function(c,ci){if(ci===0)return;var mt=anPgMatchVal(c);if(mt&&mt.group<fg){fg=mt.group;fs=ci;}if(fr<0&&anPgMatchRev(c)&&!(mt))fr=ci;});
+    if((fs>=0||fr>=0)&&anPgIsPageDim(cols[0])){headerIdx=r;sesCol=fs;recCol=fr;if(fs>=0)seslabel=String(cols[fs]).replace(/"/g,'').trim();break;}
+    if((fs>=0||fr>=0)&&headerIdx<0){headerIdx=r;sesCol=fs;recCol=fr;if(fs>=0)seslabel=String(cols[fs]).replace(/"/g,'').trim();}
+  }
+  if(headerIdx>=0&&(sesCol>=0||recCol>=0)){
+    var mi=monthIdx>=0?monthIdx:new Date().getMonth(),pages={};
+    clean.slice(headerIdx+1).forEach(function(c){var name=String(c[0]||'').trim();if(!name)return;var low=name.toLowerCase();if(low==='total'||low==='totais'||low.indexOf('#')===0)return;
+      var sv=sesCol>=0?hNumParse(c[sesCol]):null,rv=recCol>=0?hNumParse(c[recCol]):null;if(sv==null&&rv==null)return;
+      if(!pages[name])pages[name]={};if(sv!=null)pages[name].ses=(pages[name].ses||0)+sv;if(rv!=null)pages[name].rec=(pages[name].rec||0)+rv;});
+    if(Object.keys(pages).length)return{mode:'month',mi:mi,year:year,pages:pages,seslabel:seslabel,hasSes:sesCol>=0,hasRec:recCol>=0};
+  }
+  // formato largo: Página + colunas de meses (preenche a métrica selecionada)
+  var hi=-1;for(var r2=0;r2<clean.length;r2++){if(anPgIsPageDim(clean[r2][0])){hi=r2;break;}}
+  if(hi>=0){var wide={};clean.slice(hi+1).forEach(function(c){var name=String(c[0]||'').trim();if(!name||name.charAt(0)==='#')return;var a=Array(12).fill(null);for(var i=1;i<c.length&&i<=12;i++){a[i-1]=hNumParse(c[i]);}wide[name]=a;});
+    if(Object.keys(wide).length)return{mode:'wide',year:year,pages:wide};}
+  return{mode:'none'};
+}
+function anPgPreview(rows,fname){
+  var p=anPgParse(rows);_anPgImp={parsed:p};
+  if(p.mode==='none'){toast('Não reconheci o arquivo. Use o export "Páginas e telas" do GA4 ou o modelo.','ti-alert-circle');return;}
+  var names=Object.keys(p.pages),info,headCols,prev;
+  if(p.mode==='month'){
+    var parts=[];if(p.hasSes)parts.push('Sessões');if(p.hasRec)parts.push('Receita de anúncios');
+    info='Mês detectado: <strong style="color:var(--navy)">'+AN_MES_LONG[p.mi]+'/'+p.year+'</strong> · <strong>'+names.length+'</strong> páginas · '+parts.join(' + ');
+    var top=names.slice().sort(function(a,b){return((p.pages[b].ses||p.pages[b].rec||0))-((p.pages[a].ses||p.pages[a].rec||0));}).slice(0,8);
+    headCols='<th>Sessões</th><th>Receita</th>';
+    prev=top.map(function(n){var r=p.pages[n];return '<tr><td style="text-align:left">'+anEsc(n)+'</td><td>'+(r.ses!=null?anFmt(r.ses,'int'):'—')+'</td><td>'+(r.rec!=null?anFmt(r.rec,'money'):'—')+'</td></tr>';}).join('');
+  }else{
+    info='Formato anual (modelo) · <strong>'+names.length+'</strong> páginas · preenche a métrica <strong>'+anPgMeta(anPgCurMetric()==='rpm'?'ses':anPgCurMetric()).l+'</strong>';
+    headCols='<th>Total ano</th>';
+    prev=names.slice(0,8).map(function(n){var t=p.pages[n].reduce(function(s,v){return s+(v||0);},0);return '<tr><td style="text-align:left">'+anEsc(n)+'</td><td>'+anFmt(t,'int')+'</td></tr>';}).join('');
+  }
+  var o=document.createElement('div');o.className='ov';o.id='an-pgimp-ov';
+  o.innerHTML='<div class="mx" style="width:600px;max-width:96vw;max-height:88vh;overflow:auto"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar páginas — '+propLabel(anProp)+'</h4>'
+    +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br>'+info+'</p>'
+    +'<div class="hwrap"><table class="htbl"><thead><tr><th style="text-align:left">Página</th>'+headCols+'</tr></thead><tbody>'+prev+'</tbody></table></div>'
+    +(names.length>8?'<p style="font-size:11px;color:var(--text-secondary);margin-top:6px">+ '+(names.length-8)+' outras páginas</p>':'')
+    +(p.mode==='month'?'<div style="margin:12px 0 4px;font-size:12px;font-weight:600;color:var(--navy)">Modo</div>'
+      +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;margin-bottom:6px;cursor:pointer"><input type="radio" name="pgmode" value="update" checked> <span>Atualizar o mês — substitui as páginas enviadas neste mês (recomendado)</span></label>'
+      +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;cursor:pointer"><input type="radio" name="pgmode" value="replace"> <span>Substituir o mês — apaga as páginas deste mês ausentes no arquivo</span></label>':'')
+    +'<div class="mbb"><button onclick="document.getElementById(\'an-pgimp-ov\').remove();_anPgImp=null">Cancelar</button><button class="pr" onclick="anPgApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anPgImp=null;}});
+}
+function anPgApply(){
+  if(!_anPgImp)return;var p=_anPgImp.parsed;
+  if(p.mode==='wide'){var wmk=anPgCurMetric()==='rpm'?'ses':anPgCurMetric();Object.keys(p.pages).forEach(function(n){var arr=p.pages[n];for(var i=0;i<12;i++)anPgSetCell(anYear,anProp,n,wmk,i,arr[i]);});sv();document.getElementById('an-pgimp-ov').remove();_anPgImp=null;anR();toast(Object.keys(p.pages).length+' páginas importadas em "'+anPgMeta(wmk).l+'".','ti-file-import');return;}
+  var mi=p.mi,names=Object.keys(p.pages),mode=(document.querySelector('input[name="pgmode"]:checked')||{}).value||'update';
+  if(mode==='replace'){var o=anPgObj(anYear,anProp);Object.keys(o).forEach(function(n){if(names.indexOf(n)<0){var r=anPgRec(anYear,anProp,n);['ses','rec'].forEach(function(mk){if(Array.isArray(r[mk]))r[mk][mi]=null;});}});}
+  names.forEach(function(n){var rec=p.pages[n];if(rec.ses!=null)anPgSetCell(anYear,anProp,n,'ses',mi,rec.ses);if(rec.rec!=null)anPgSetCell(anYear,anProp,n,'rec',mi,rec.rec);});
+  sv();document.getElementById('an-pgimp-ov').remove();_anPgImp=null;anR();
+  toast(names.length+' páginas — '+(p.hasRec&&p.hasSes?'sessões + receita':p.hasRec?'receita':'sessões')+' — '+AN_MES_LONG[mi]+'/'+p.year+'.','ti-file-import');
+}
+
+/* ── Manual (página × meses, métrica selecionada) ── */
+function anPgManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}_anPgMan={};
+  var o=document.createElement('div');o.className='ov';o.id='an-pgman-ov';
+  o.innerHTML='<div class="mx" style="width:880px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-pgman-body"></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anPgMan=null;}});anPgManBody();}
+function anPgManBody(){
+  var o=anPgObj(anYear,anProp),names=Object.keys(o),lastCol=anPgLastCol(),months=[];for(var i=0;i<=lastCol;i++)months.push(i);
+  var mk=anPgCurMetric()==='rpm'?'ses':anPgCurMetric(),meta=anPgMeta(mk);
+  var h='<h4 style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><i class="ti ti-world" style="color:var(--primary)"></i> Páginas — '+propLabel(anProp)+' · '+anYear
+    +'<select class="fsel" style="margin-left:auto" onchange="anPgSetMetric(this.value);anPgManBody()">'+PG_METRICS.filter(function(m){return !m.derived;}).map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select></h4>';
+  h+='<p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px;line-height:1.5">Editando <b>'+meta.l+'</b> por página (Jan até '+HMESES[lastCol]+'). O RPM é calculado automaticamente. Salva no Supabase.</p>';
+  h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl"><thead><tr><th style="text-align:left">Página</th>'+months.map(function(mi){return '<th>'+HMESES[mi]+'</th>';}).join('')+'<th></th></tr></thead><tbody>';
+  names.forEach(function(n){var ne=anEsc(n).replace(/'/g,"\\'");h+='<tr><td style="text-align:left;font-weight:600;max-width:240px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(n)+'">'+anEsc(n)+'</td>'+months.map(function(mi){var v=anPgVal(anYear,anProp,n,mk,mi);return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anPgSetCell(anYear,anProp,\''+ne+'\',\''+mk+'\','+mi+',this.value);sv()"></td>';}).join('')+'<td><button class="an-ic-btn del" title="Remover" onclick="anPgDelPage(\''+ne+'\')"><i class="ti ti-trash"></i></button></td></tr>';});
+  h+='</tbody></table></div>';
+  h+='<div class="mbb"><button onclick="anPgAddPage()"><i class="ti ti-plus" style="font-size:11px"></i> Adicionar página</button>'
+    +'<button onclick="anPgImportOpen()"><i class="ti ti-upload" style="font-size:11px"></i> Importar CSV</button>'
+    +'<button class="pr" onclick="document.getElementById(\'an-pgman-ov\').remove();_anPgMan=null;anR()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
+  document.getElementById('an-pgman-body').innerHTML=h;
+}
+function anPgAddPage(){sM('Caminho/título da página (ex.: /calculadora)','',function(v){v=(v||'').trim();if(!v)return;anPgRec(anYear,anProp,v);sv();anPgManBody();},'text');}
+function anPgDelPage(name){cfm('Remover página','Remover "'+name+'" e todos os seus dados deste ano/propriedade?','Remover','dgr',function(){var o=anPgObj(anYear,anProp);delete o[name];sv();anPgManBody();anR();toast('Página removida.','ti-trash');});}
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD — KPIs + Alertas de variação + Oportunidades + Metas
+   (derivado dos módulos de Analytics / SEO / App / Receita)
+   ═══════════════════════════════════════════════════════════════ */
+var anDashThresh=15;
+var DASH_WATCH=[
+  {sec:'traf',k:'sessoes_tot'},{sec:'traf',k:'tx_eng'},
+  {sec:'user',k:'usuarios_tot'},
+  {sec:'gsc',k:'cliques'},{sec:'gsc',k:'posicao'},
+  {sec:'app',k:'mau'},{sec:'app',k:'crashes'},{sec:'app',k:'nota'},
+  {sec:'cwv',k:'lcp'},{sec:'cwv',k:'urls_boas'},
+  {sec:'news',k:'assinantes'},{sec:'news',k:'tx_abertura'}
+];
+function anDashSetThresh(v){anDashThresh=Number(v)||15;var s=anStore();s.ui.dashThresh=anDashThresh;sv();R();}
+function anDashThrFor(key){var s=anStore();if(s.ui.dashThr&&s.ui.dashThr[key]!=null)return Number(s.ui.dashThr[key]);return anDashThresh;}
+function anDashThrSet(key,v){var s=anStore();s.ui.dashThr=s.ui.dashThr||{};if(v===''||v==null||isNaN(Number(v)))delete s.ui.dashThr[key];else s.ui.dashThr[key]=Number(v);sv();}
+function anDashThrItems(){var its=DASH_WATCH.map(function(w){return{key:w.sec+'.'+w.k,l:anMeta(w.sec,w.k).l,sec:AN_SECTIONS[w.sec]?AN_SECTIONS[w.sec].l:w.sec};});its.push({key:'rev.total',l:'Receita total',sec:'Receitas'});its.push({key:'rev.rpm',l:'RPM unificado',sec:'Receitas'});return its;}
+function anDashThrOpen(){
+  var o=document.createElement('div');o.className='ov';o.id='an-thr-ov';
+  o.innerHTML='<div class="mx" style="width:560px;max-width:96vw;max-height:88vh;overflow:auto"><div id="an-thr-body"></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o)o.remove();});anDashThrBody();
+}
+function anDashThrBody(){
+  var its=anDashThrItems(),s=anStore();
+  var rows=its.map(function(it){var cur=(s.ui.dashThr&&s.ui.dashThr[it.key]!=null)?s.ui.dashThr[it.key]:'';
+    return '<tr><td style="text-align:left;font-weight:600">'+it.l+'<div style="font-size:10px;color:var(--text-secondary);font-weight:400">'+it.sec+'</div></td><td style="width:120px"><div style="display:flex;align-items:center;gap:4px"><input class="hin" type="number" step="1" min="1" inputmode="numeric" value="'+cur+'" placeholder="'+anDashThresh+'" onchange="anDashThrSet(\''+it.key+'\',this.value)"><span style="font-size:12px;color:var(--text-secondary)">%</span></div></td></tr>';}).join('');
+  document.getElementById('an-thr-body').innerHTML='<h4 style="display:flex;align-items:center;gap:7px"><i class="ti ti-adjustments" style="color:var(--primary)"></i> Limites de alerta por métrica</h4>'
+    +'<p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 12px;line-height:1.5">Defina a variação mínima (vs mês anterior) para disparar o alerta de cada métrica. Em branco usa o padrão (<b>±'+anDashThresh+'%</b>).</p>'
+    +'<div class="hwrap"><table class="htbl"><thead><tr><th style="text-align:left">Métrica</th><th>Limite</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+    +'<div class="mbb"><button class="pr" onclick="document.getElementById(\'an-thr-ov\').remove();R()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
+}
+function anDashYoY(year,sec,k,idx,cur){if(idx==null||cur==null)return null;var py=anSeries(String(Number(year)-1),sec,'all',k)[idx];if(py==null||Number(py)===0)return null;return(cur-Number(py))/Math.abs(Number(py))*100;}
+function anDashRevYoY(year,idx,cur){if(idx==null||cur==null)return null;var py=0,any=false;AN_REAL.forEach(function(pr){var v=anRevTotal(String(Number(year)-1),pr,idx);if(v!=null){py+=v;any=true;}});if(!any||py===0)return null;return(cur-py)/Math.abs(py)*100;}
+function anGoSeo(tab){seoTab=tab||'opp';navTo('hub','seo');}
+function anGoAds(){monTab='adsense';navTo('hub','monetizacao');}
+function anDashSeriesStat(series){var f=[];series.forEach(function(v,i){if(v!=null)f.push({v:Number(v),i:i});});if(!f.length)return{cur:null,prev:null,varp:null,idx:null};var last=f[f.length-1],prev=f.length>1?f[f.length-2]:null;var varp=(prev&&prev.v!==0)?((last.v-prev.v)/Math.abs(prev.v)*100):null;return{cur:last.v,prev:prev?prev.v:null,varp:varp,idx:last.i};}
+function anDashRevStat(year){var s=[];for(var mi=0;mi<12;mi++){var t=0,any=false;AN_REAL.forEach(function(pr){var v=anRevTotal(year,pr,mi);if(v!=null){t+=v;any=true;}});s.push(any?t:null);}return anDashSeriesStat(s);}
+function anDashRpmStat(year){var s=[];for(var mi=0;mi<12;mi++){var rt=0,any=false;AN_REAL.forEach(function(pr){var v=anRevTotal(year,pr,mi);if(v!=null){rt+=v;any=true;}});var ses=anRevSessions(year,'all',mi);s.push((any&&ses&&ses>0)?rt/ses*1000:null);}return anDashSeriesStat(s);}
+function anDashKpiCard(label,icon,st,fmt,inv,yoy){
+  var sem=anSemaphore(st.varp==null?null:(inv?-st.varp:st.varp));
+  var vh=st.varp==null?'<span class="an-var flat">—</span>':'<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
+  var yoyH='';
+  if(yoy!=null){var ysem=anSemaphore(inv?-yoy:yoy),yc=anSemColor(ysem);yoyH='<span class="an-pill" title="vs mesmo mês do ano anterior">YoY: <b style="color:'+yc+'">'+(yoy>=0?'+':'')+yoy.toFixed(0)+'%</b></span>';}
+  return '<div class="an-mcard"><div class="an-mcard-top"><div class="an-mcard-lbl"><i class="ti '+icon+'" style="font-size:13px;color:var(--primary);margin-right:5px"></i>'+label+'</div><span class="an-dot" style="background:'+anSemColor(sem)+'"></span></div>'
+    +'<div class="an-mcard-valrow"><span class="an-mcard-val">'+(st.cur==null?'—':anFmt(st.cur,fmt))+'</span>'+vh+'</div>'
+    +'<div class="an-mcard-foot"><span class="an-pill">Mês ant.: <b>'+(st.prev==null?'—':anShort(st.prev,fmt))+'</b></span>'+yoyH+(st.idx!=null?'<span class="an-pill">'+HMESES[st.idx]+'/'+String(anYear).slice(2)+'</span>':'')+'</div></div>';
+}
+function anDashAlerts(year){
+  var out=[];
+  DASH_WATCH.forEach(function(w){if(!AN_SECTIONS[w.sec])return;var st=anStats(year,w.sec,'all',w.k);if(st.varp==null)return;var th=anDashThrFor(w.sec+'.'+w.k);if(Math.abs(st.varp)<th)return;var meta=anMeta(w.sec,w.k);out.push({kind:'var',label:meta.l,sec:AN_SECTIONS[w.sec].l,varp:st.varp,good:meta.inv?st.varp<0:st.varp>0,fmt:meta.fmt,cur:st.cur,mi:st.idx});});
+  var rv=anDashRevStat(year);if(rv.varp!=null&&Math.abs(rv.varp)>=anDashThrFor('rev.total'))out.push({kind:'var',label:'Receita total',sec:'Receitas',varp:rv.varp,good:rv.varp>0,fmt:'money',cur:rv.cur,mi:rv.idx});
+  var rp=anDashRpmStat(year);if(rp.varp!=null&&Math.abs(rp.varp)>=anDashThrFor('rev.rpm'))out.push({kind:'var',label:'RPM unificado',sec:'Receitas',varp:rp.varp,good:rp.varp>0,fmt:'money',cur:rp.cur,mi:rp.idx});
+  out.sort(function(a,b){return Math.abs(b.varp)-Math.abs(a.varp);});
+  return out;
+}
+function anDashOpps(year){
+  var out=[];
+  var oppCount=0,oppTop=[];
+  AN_REAL.forEach(function(pr){var ms=anSeoMonths(year,pr);if(!ms.length)return;var mi=ms[ms.length-1];anSeoRows(year,pr,mi).forEach(function(r){if(r.p!=null&&r.p>=3.5&&r.p<=20){oppCount++;oppTop.push({q:r.q,pr:pr,i:r.i,p:r.p});}});});
+  oppTop.sort(function(a,b){return b.i-a.i;});
+  if(oppCount>0)out.push({icon:'ti-target-arrow',type:'SEO',text:'<b>'+oppCount+'</b> termos na posição 4–20 (quase página 1). Destaque: <b>'+anEsc(oppTop[0].q)+'</b> · '+propLabel(oppTop[0].pr)+' · '+anFmt(oppTop[0].i,'int')+' impressões, posição '+oppTop[0].p.toFixed(1)+'.',act:"anGoSeo('opp')"});
+  var decay=[];AN_REAL.forEach(function(pr){var ms=anSeoMonths(year,pr);if(ms.length<2)return;var mi=ms[ms.length-1],pmi=ms[ms.length-2],pm={};anSeoRows(year,pr,pmi).forEach(function(r){pm[r.q]=r;});anSeoRows(year,pr,mi).forEach(function(r){var p=pm[r.q];if(p&&r.c<p.c)decay.push({q:r.q,pr:pr,d:r.c-p.c});});});
+  decay.sort(function(a,b){return a.d-b.d;});
+  if(decay.length)out.push({icon:'ti-trending-down',type:'Decaimento',text:'<b>'+decay.length+'</b> conteúdos perderam cliques. Maior queda: <b>'+anEsc(decay[0].q)+'</b> · '+propLabel(decay[0].pr)+' ('+decay[0].d+' cliques). Reotimizar costuma ter ótimo retorno.',act:"anGoSeo('opp')"});
+  var amY=String(new Date().getFullYear());if(anStore().ads[amY]){var amI=anAdsCurMi(),bd=anAdsBestDay(anAdsYear,amI,'rec');if(bd)out.push({icon:'ti-star-filled',type:'AdSense',text:'Melhor dia de receita em '+AN_MES_LONG[amI]+': <b>dia '+(bd.d+1)+'</b> ('+anFmt(bd.v,'money')+'). Veja o que aconteceu nesse dia e replique.',act:'anGoAds()'});}
+  return out;
+}
+function anDashMetas(year){
+  var s=anStore(),out=[],g=s.mgoals[year]||{};
+  var now=new Date(),curY=String(now.getFullYear())===String(year),curMi=now.getMonth();
+  Object.keys(g).forEach(function(sec){Object.keys(g[sec]).forEach(function(pr){Object.keys(g[sec][pr]).forEach(function(mk){Object.keys(g[sec][pr][mk]).forEach(function(mik){var goal=g[sec][pr][mk][mik];if(!goal||goal<=0)return;var mi=Number(mik);var real=anSeries(year,sec,pr,mk)[mi];var realN=(real==null||real==='')?0:Number(real);var meta=anMeta(sec,mk);
+    var isCur=curY&&mi===curMi,proj=realN,status;
+    if(isCur){var el=dElapsed(Number(year),mi),tot=dIM(Number(year),mi);
+      if(meta.fmt==='int'||meta.fmt==='money'){proj=el>0?realN/el*tot:realN;}else{proj=realN;}
+      status=proj>=goal*0.97?'ritmo':(proj<goal*0.9?'risco':'atencao');}
+    else{status=realN>=goal?'batida':'naobatida';proj=realN;}
+    out.push({sec:sec,pr:pr,mk:mk,mi:mi,goal:goal,real:realN,proj:proj,isCur:isCur,status:status,fmt:meta.fmt,label:meta.l,secL:(AN_SECTIONS[sec]?AN_SECTIONS[sec].l:sec)});});});});});
+  out.sort(function(a,b){var ra={risco:0,atencao:1,naobatida:2,ritmo:3,batida:4};var ka=ra[a.status],kb=ra[b.status];if(ka!==kb)return ka-kb;return(a.real/a.goal)-(b.real/b.goal);});
+  return out;
+}
+var DASH_METASTAT={risco:{l:'Em risco',c:'var(--danger)'},atencao:{l:'Atenção',c:'var(--warning)'},ritmo:{l:'No ritmo',c:'var(--success)'},batida:{l:'Batida',c:'var(--success)'},naobatida:{l:'Não batida',c:'var(--danger)'}};
+
+function anSectionBody(){
+  var h='';
+  h+=anFocusBar();
+  h+=anExecRow();
+  h+=anGoalProgress();
+  h+=anMetricCards();
+  h+=anEntryBar();
+  h+=anHistoryCharts();
+  h+=anAnnotationsCard();
+  return h;
+}
 function hGA(){
   anInit();
+  if(anSection==='app'||anSection==='cwv'||anSection==='seo'||anSection==='gsc')anSection='traf';
   var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
+  if(anSection==='pages'){
+    var hp=pageHeader('Analytics','Top Páginas · '+propLabel(anProp));
+    hp+=anPropChips();
+    hp+=anSubNav();
+    hp+=anPgView();
+    return '<div class="an-root">'+hp+'</div>';
+  }
+  if(anSection==='ret'){
+    var hr=pageHeader('Analytics','Retenção (coortes) · '+propLabel(anProp));
+    hr+=anPropChips();hr+=anSubNav();hr+=anRetView();
+    return '<div class="an-root">'+hr+'</div>';
+  }
   var h=pageHeader('Analytics', AN_SECTIONS[anSection].l+' · '+propLabel(anProp));
   h+=anPropChips();
   h+=anSubNav();
@@ -3347,14 +4262,7 @@ function hGA(){
     h+=anCampView();
     return '<div class="an-root">'+h+'</div>';
   }
-  h+=anFocusBar();
-  h+=anExecRow();
-  h+=anGoalProgress();
-  h+=anMetricCards();
-  h+=anEntryBar();
-  h+=anHistoryCharts();
-  h+=anCompareCard();
-  h+=anAnnotationsCard();
+  h+=anSectionBody();
   return '<div class="an-root">'+h+'</div>';
 }
 </script>
