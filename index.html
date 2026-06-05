@@ -676,7 +676,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
     <div class="sb-section">Planejamento</div>
     <button class="nav-item" data-id="hub" data-sec="tempo" onclick="navTo('hub','tempo')"><i class="ti ti-calendar-time"></i>Gestão do tempo</button>
-    <button class="nav-item" data-id="road" data-sec="" onclick="navTo('road','')"><i class="ti ti-calendar-event"></i>Raio-X 2026</button>
+    <button class="nav-item" data-id="road" data-sec="" onclick="navTo('road','')"><i class="ti ti-calendar-event"></i>Plano de Execução</button>
   </nav>
 
   <div class="ze-card">
@@ -932,7 +932,7 @@ function togAll(m,d){const tk=gTk(m,d);if(!tk.length)return;const ad=tk.every((_
 // ===== RENDER =====
 function R(){
   try{document.getElementById('tabs').innerHTML='';}catch(e){}
-  const tabs=[{id:'dash',i:'ti-chart-bar',l:'Dashboard'},{id:'hist',i:'ti-history',l:'Histórico'},{id:'road',i:'ti-calendar',l:'Projetos'},{id:'edit',i:'ti-notebook',l:'Calendário editorial'},{id:'cora',i:'ti-heart',l:'Cora Cora News'}];
+  const tabs=[{id:'dash',i:'ti-chart-bar',l:'Dashboard'},{id:'hist',i:'ti-history',l:'Histórico'},{id:'road',i:'ti-calendar',l:'Plano de Execução'},{id:'edit',i:'ti-notebook',l:'Calendário editorial'},{id:'cora',i:'ti-heart',l:'Cora Cora News'}];
   document.getElementById('tabs').innerHTML=tabs.map(t=>`<button class="tb ${aT===t.id?'a':''}" onclick="aT='${t.id}';R()"><i class="ti ${t.i}" style="font-size:12px;margin-right:2px"></i>${t.l}</button>`).join('');
   const a=document.getElementById('app');
   if(aT==='hub')rHub(a);else if(aT==='road'){rR(a);initDashCharts();}else if(aT==='cora')rCC(a);else rE(a);
@@ -1741,7 +1741,7 @@ var SIDEBAR_NAV = [
   {id:'hub',sec:'seo',           l:'SEO',               ic:'ti-search',            group:'main'},
   {id:'cora',sec:'',             l:'Conteúdo',          ic:'ti-pencil',            group:'main'},
   {id:'hub',sec:'tempo',         l:'Gestão do tempo',   ic:'ti-calendar-time',     group:'main'},
-  {id:'road',sec:'',             l:'Raio-X 2026',       ic:'ti-calendar-event',    group:'main'},
+  {id:'road',sec:'',             l:'Plano de Execução',       ic:'ti-calendar-event',    group:'main'},
 ];
 
 function navTo(id, sec){
@@ -1918,7 +1918,7 @@ function hMetaCircle(){
         <div class="meta-sub">da meta</div>
       </div>
     </div>
-    <p class="empty-hint">Configure metas em Raio-X 2026</p>
+    <p class="empty-hint">Configure metas em Plano de Execução</p>
   </div>`;
 }
 
@@ -1962,7 +1962,7 @@ function hCalendarioInsights(hasRec,rec,recSpark){
       <div class="insight-list">
         <div class="insight-item green"><i class="ti ti-trending-up"></i><span>Importe dados para receber insights personalizados</span></div>
         <div class="insight-item blue"><i class="ti ti-bulb"></i><span>Conecte o Search Console para análise de SEO</span></div>
-        <div class="insight-item amber"><i class="ti ti-target"></i><span>Defina suas metas mensais na aba Raio-X 2026</span></div>
+        <div class="insight-item amber"><i class="ti ti-target"></i><span>Defina suas metas mensais na aba Plano de Execução</span></div>
       </div>
       <button class="btn-insight">Ver mais insights →</button>
     </div>
@@ -2331,7 +2331,7 @@ function hAPP(){
 
 function hCON(){
   return pageHeader('Conteúdo','Ranking e performance dos conteúdos')
-    +`<div class="empty-state large"><i class="ti ti-pencil ti-2x"></i><p>Sem conteúdos cadastrados</p><span>Registre conteúdos produzidos na aba Raio-X 2026</span></div>`;
+    +`<div class="empty-state large"><i class="ti ti-pencil ti-2x"></i><p>Sem conteúdos cadastrados</p><span>Registre conteúdos produzidos na aba Plano de Execução</span></div>`;
 }
 
 function clearAllHDS(){
