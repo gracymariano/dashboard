@@ -42,6 +42,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9)}
 .nav-item.active{background:var(--grad);color:#fff;font-weight:600;box-shadow:0 4px 16px rgba(22,199,154,.3)}
 .nav-item i{font-size:17px;flex-shrink:0}
+.nav-item svg{width:18px;height:18px;flex-shrink:0}
 .sb-footer{padding:16px 12px;border-top:1px solid rgba(255,255,255,.06)}
 .sb-user{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--radius-xs);background:rgba(255,255,255,.04)}
 .sb-avatar{width:34px;height:34px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
@@ -667,22 +668,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
   <nav class="sb-nav">
     <div class="sb-section">Principal</div>
-    <button class="nav-item active" data-id="hub" data-sec="visao-geral" onclick="navTo('hub','visao-geral')"><i class="ti ti-layout-dashboard"></i>Dashboard</button>
-    <button class="nav-item" data-id="hub" data-sec="monetizacao" onclick="navTo('hub','monetizacao')"><i class="ti ti-coin"></i>Receitas</button>
-    <button class="nav-item" data-id="hub" data-sec="analytics" onclick="navTo('hub','analytics')"><i class="ti ti-chart-line"></i>Analytics</button>
-    <button class="nav-item" data-id="hub" data-sec="app" onclick="navTo('hub','app')"><i class="ti ti-device-mobile"></i>App</button>
-    <button class="nav-item" data-id="hub" data-sec="seo" onclick="navTo('hub','seo')"><i class="ti ti-search"></i>SEO</button>
-    <button class="nav-item" data-id="cora" data-sec="" onclick="navTo('cora','')"><i class="ti ti-pencil"></i>Conteúdo</button>
+    <button class="nav-item active" data-id="hub" data-sec="visao-geral" onclick="navTo('hub','visao-geral')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Dashboard</button>
+    <button class="nav-item" data-id="hub" data-sec="monetizacao" onclick="navTo('hub','monetizacao')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 14.5c.4 1 1.4 1.5 2.5 1.5 1.4 0 2.3-.7 2.3-1.8 0-2.6-4.8-1.3-4.8-3.7 0-1 .9-1.8 2.3-1.8 1 0 1.9.4 2.4 1.3"/><path d="M12 7v10"/></svg>Receitas</button>
+    <button class="nav-item" data-id="hub" data-sec="analytics" onclick="navTo('hub','analytics')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M7 14l3-4 3 2 4-6"/></svg>Analytics</button>
+    <button class="nav-item" data-id="hub" data-sec="app" onclick="navTo('hub','app')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg>App</button>
+    <button class="nav-item" data-id="hub" data-sec="seo" onclick="navTo('hub','seo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>SEO</button>
+    <button class="nav-item" data-id="cora" data-sec="" onclick="navTo('cora','')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M13.5 6.5l3 3"/></svg>Conteúdo</button>
 
     <div class="sb-section">Planejamento</div>
-    <button class="nav-item" data-id="hub" data-sec="tempo" onclick="navTo('hub','tempo')"><i class="ti ti-calendar-time"></i>Gestão do tempo</button>
-    <button class="nav-item" data-id="road" data-sec="" onclick="navTo('road','')"><i class="ti ti-calendar-event"></i>Plano de Execução</button>
+    <button class="nav-item" data-id="hub" data-sec="tempo" onclick="navTo('hub','tempo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/></svg>Gestão do tempo</button>
+    <button class="nav-item" data-id="road" data-sec="" onclick="navTo('road','')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M9 13l2 2 4-4"/></svg>Plano de Execução</button>
   </nav>
 
-  <div class="ze-card">
-    <div class="ze-card-title"><span>🐷</span> Zé Dinheirinho</div>
-    <div class="ze-card-text">Seu assistente financeiro inteligente. Insights personalizados sobre receita e crescimento.</div>
-  </div>
 
   <div class="sb-footer">
     <div class="sb-user">
