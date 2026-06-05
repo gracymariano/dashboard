@@ -618,6 +618,29 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .an-meta-top{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--navy);margin-bottom:6px}
 .an-meta-sub{font-size:11px;color:var(--text-secondary);margin-top:4px}
 .an-meta-badge{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;border:1px solid;border-radius:6px;padding:1px 6px}
+.tm-wrap{display:grid;grid-template-columns:330px 1fr;gap:18px}
+@media(max-width:920px){.tm-wrap{grid-template-columns:1fr}}
+.tm-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.tm-cal .wd{font-size:10px;font-weight:700;color:var(--text-secondary);text-align:center;padding:2px 0}
+.tm-day{aspect-ratio:1;border:1px solid rgba(11,34,57,.08);border-radius:10px;background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--navy);position:relative}
+.tm-day:hover{border-color:var(--primary)}
+.tm-day.sel{background:var(--primary);color:#fff;border-color:var(--primary)}
+.tm-day.today{border-width:2px;border-color:var(--primary-dark)}
+.tm-day .cnt{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--primary)}
+.tm-day.sel .cnt{background:#fff}
+.tm-day.empty{border:none;background:transparent;cursor:default}
+.tm-sched{display:flex;flex-direction:column;gap:3px}
+.tm-row{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:8px;border-left:3px solid transparent;background:var(--bg)}
+.tm-hr{font-size:11px;font-weight:700;color:var(--text-secondary);width:44px;flex-shrink:0}
+.tm-row input{flex:1;min-width:0;border:1px solid rgba(11,34,57,.1);border-radius:8px;padding:6px 9px;font-size:13px;font-family:inherit;background:var(--card);color:var(--text-primary)}
+.tm-row input:focus{outline:none;border-color:var(--primary)}
+.tm-clsbtns{display:flex;gap:3px;flex-shrink:0}
+.tm-cls{width:24px;height:24px;border:1.5px solid;border-radius:7px;background:var(--card);font-size:11px;font-weight:800;cursor:pointer;padding:0}
+.tm-legend{display:flex;flex-direction:column;gap:8px}
+.tm-leg{display:flex;align-items:flex-start;gap:9px;font-size:12px;line-height:1.4;color:var(--text-secondary)}
+.tm-leg b{width:22px;height:22px;border-radius:6px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.tm-sum{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tm-sumc{font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;color:#fff}
 .an-sortable:hover{color:var(--primary-dark)}
 .an-camp-tbl th.sorted{color:var(--primary-dark)}
 .T th.tp-sort{user-select:none}
@@ -651,13 +674,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <button class="nav-item" data-id="hub" data-sec="seo" onclick="navTo('hub','seo')"><i class="ti ti-search"></i>SEO</button>
     <button class="nav-item" data-id="cora" data-sec="" onclick="navTo('cora','')"><i class="ti ti-pencil"></i>Conteúdo</button>
 
-    <div class="sb-section">Insights</div>
-    <button class="nav-item" data-id="hub" data-sec="visao-geral" onclick="navTo('hub','visao-geral')"><i class="ti ti-brain"></i>IA Insights</button>
+    <div class="sb-section">Planejamento</div>
+    <button class="nav-item" data-id="hub" data-sec="tempo" onclick="navTo('hub','tempo')"><i class="ti ti-calendar-time"></i>Gestão do tempo</button>
     <button class="nav-item" data-id="road" data-sec="" onclick="navTo('road','')"><i class="ti ti-calendar-event"></i>Raio-X 2026</button>
-
-    <div class="sb-section">Gestão</div>
-    <button class="nav-item" data-id="hub" data-sec="dados" onclick="navTo('hub','dados')"><i class="ti ti-report"></i>Relatórios</button>
-    <button class="nav-item" data-id="hub" data-sec="dados" onclick="navTo('hub','dados')"><i class="ti ti-settings"></i>Configurações</button>
   </nav>
 
   <div class="ze-card">
@@ -1718,13 +1737,11 @@ var SIDEBAR_NAV = [
   {id:'hub',sec:'visao-geral',   l:'Dashboard',        ic:'ti-layout-dashboard', group:'main'},
   {id:'hub',sec:'monetizacao',   l:'Receitas',          ic:'ti-coin',              group:'main'},
   {id:'hub',sec:'analytics',     l:'Analytics',         ic:'ti-chart-line',        group:'main'},
-  {id:'hub',sec:'adsense',       l:'AdSense',           ic:'ti-ad',                group:'main'},
+  {id:'hub',sec:'app',           l:'App',               ic:'ti-device-mobile',     group:'main'},
   {id:'hub',sec:'seo',           l:'SEO',               ic:'ti-search',            group:'main'},
   {id:'cora',sec:'',             l:'Conteúdo',          ic:'ti-pencil',            group:'main'},
-  {id:'hub',sec:'visao-geral',   l:'IA Insights',       ic:'ti-brain',             group:'main'},
+  {id:'hub',sec:'tempo',         l:'Gestão do tempo',   ic:'ti-calendar-time',     group:'main'},
   {id:'road',sec:'',             l:'Raio-X 2026',       ic:'ti-calendar-event',    group:'main'},
-  {id:'hub',sec:'dados',         l:'Relatórios',        ic:'ti-report',            group:'main'},
-  {id:'hub',sec:'dados',         l:'Configurações',     ic:'ti-settings',          group:'bottom'},
 ];
 
 function navTo(id, sec){
@@ -1752,6 +1769,7 @@ function rHub(a){
   else if(hubSec==='seo')       sec=hSEO();
   else if(hubSec==='monetizacao')sec=hMON();
   else if(hubSec==='geral')     sec=hGeral();
+  else if(hubSec==='tempo')     sec=hTime();
   else if(hubSec==='analytics') sec=hGA();
   else if(hubSec==='redes')     sec=hRED();
   else if(hubSec==='whatsapp')  sec=hWA();
@@ -2258,10 +2276,15 @@ var monTab='rede';
 function monSetTab(t){monTab=t;rHub(document.getElementById('app'));}
 function hMON(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
-  var tabs=[['rede','Receita por rede','ti-cash'],['adsense','AdSense','ti-ad-2']];
+  var tabs=[['rede','Receita por rede','ti-cash'],['admanager','Ad Manager','ti-ad'],['adsense','AdSense','ti-ad-2']];
   var bar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(monTab===t[0]?' active':'')+'" onclick="monSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
   if(monTab==='adsense'){
+    anAdsSrc='adm';anAdsLbl='AdSense';
     return pageHeader('Receitas','AdSense · monetização diária')+'<div class="an-root">'+bar+anAdsBody()+'</div>';
+  }
+  if(monTab==='admanager'){
+    anAdsSrc='ads';anAdsLbl='Ad Manager';
+    return pageHeader('Receitas','Ad Manager · monetização diária')+'<div class="an-root">'+bar+anAdsBody()+'</div>';
   }
   return pageHeader('Receitas','Receita por rede e RPM unificado · por propriedade')+'<div class="an-root">'+bar+anPropChips()+anRevView()+'</div>';
 }
@@ -2586,10 +2609,11 @@ var AN_PROPS=[
   {k:'blog',l:'Blog Guardar Dinheiro',   ic:'ti-article'},
   {k:'app', l:'App Guardar Dinheiro',    ic:'ti-device-mobile'},
   {k:'cora',l:'Cora Cora News',          ic:'ti-news'},
-  {k:'rec', l:'Receitascom',             ic:'ti-tools-kitchen-2'}
+  {k:'rec', l:'Receitascom',             ic:'ti-tools-kitchen-2'},
+  {k:'save',l:'SaveMoney',               ic:'ti-pig-money'}
 ];
-var AN_REAL=['gd','blog','app','cora','rec'];
-var AN_COLORS={gd:'#16C79A',blog:'#3B82F6',app:'#8B5CF6',cora:'#F59E0B',rec:'#EC4899'};
+var AN_REAL=['gd','blog','app','cora','rec','save'];
+var AN_COLORS={gd:'#16C79A',blog:'#3B82F6',app:'#8B5CF6',cora:'#F59E0B',rec:'#EC4899',save:'#0EA5E9'};
 var AN_MES_LONG=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 var AN_SECTIONS={
@@ -2682,7 +2706,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.ui)s.ui={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.ui)s.ui={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -3767,8 +3791,10 @@ var ADS_METRICS=[
 var anAdsYear=String(new Date().getFullYear());
 var anAdsMi=null, anAdsFocus='rec';
 var _anAdsImp=null,_anAdsMan=null;
+var anAdsSrc='ads', anAdsLbl='AdSense';
+function anAdsLabel(){return anAdsLbl;}
 function anAdsMeta(mk){return ADS_METRICS.find(function(m){return m.k===mk;})||{fmt:'int',l:mk,kind:'sum'};}
-function anAdsObj(year,mi){var s=anStore();s.ads[year]=s.ads[year]||{};s.ads[year][mi]=s.ads[year][mi]||{};return s.ads[year][mi];}
+function anAdsObj(year,mi){var s=anStore();var b=anAdsSrc==='adm'?s.adm:s.ads;b[year]=b[year]||{};b[year][mi]=b[year][mi]||{};return b[year][mi];}
 function anAdsArr(year,mi,mk){var o=anAdsObj(year,mi);if(!Array.isArray(o[mk]))o[mk]=Array(31).fill(null);return o[mk];}
 function anAdsSet(year,mi,mk,di,val){var a=anAdsArr(year,mi,mk);a[di]=(val===''||val==null||isNaN(Number(val)))?null:Number(val);}
 function anAdsValD(year,mi,mk,di){var o=anAdsObj(year,mi);return Array.isArray(o[mk])?o[mk][di]:null;}
@@ -3794,7 +3820,7 @@ function anAdsCurMi(){if(anAdsMi!=null&&anAdsMi>=0&&anAdsMi<=11)return anAdsMi;v
 function anAdsSetYear(v){anAdsYear=String(v);R();}
 function anAdsSetMi(v){anAdsMi=parseInt(v,10);R();}
 function anAdsSetFocus(mk){anAdsFocus=mk;R();}
-function anAdsYears(){var ys=new Set([String(new Date().getFullYear())]);var s=anStore();Object.keys(s.ads).forEach(function(y){ys.add(y);});return Array.from(ys).sort();}
+function anAdsYears(){var ys=new Set([String(new Date().getFullYear())]);var s=anStore();var b=anAdsSrc==='adm'?s.adm:s.ads;Object.keys(b).forEach(function(y){ys.add(y);});return Array.from(ys).sort();}
 
 /* ── Cards mensais (com melhor dia) ── */
 function anAdsCards(mi){
@@ -3880,8 +3906,8 @@ function anAdsModelDownload(){
   var ex=[anAdsYear+'-03-01','','','','','',''].map(esc).join(',');
   var csv='\uFEFF'+head+'\n'+ex+'\n';
   var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-  a.href=url;a.download='modelo_adsense_diario.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
-  toast('Modelo de AdSense baixado.','ti-download');
+  a.href=url;a.download='modelo_'+anAdsLbl.toLowerCase().replace(/[^a-z]/g,'')+'_diario.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  toast('Modelo de '+anAdsLabel()+' baixado.','ti-download');
 }
 
 /* ── Import diário (AdSense / Ad Manager) ── */
@@ -3932,11 +3958,11 @@ function anAdsApply(){
 /* ── Manual (dia × métricas) ── */
 function anAdsManualOpen(){_anAdsMan={mi:anAdsCurMi()};
   var o=document.createElement('div');o.className='ov';o.id='an-adsman-ov';
-  o.innerHTML='<div class="mx" style="width:900px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-adsman-body"></div></div>';
-  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anAdsMan=null;}});anAdsManBody();}
+  o.innerHTML='<div class="mx" style="width:900px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-adsman-body" style="overflow:auto;flex:1;min-height:0"></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){_anAdsMan=null;o.remove();}});anAdsManBody();}
 function anAdsManBody(){
   var mi=_anAdsMan.mi,tD=dIM(Number(anAdsYear),mi);
-  var h='<h4 style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><i class="ti ti-ad-2" style="color:var(--primary)"></i> AdSense diário'
+  var h='<h4 style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><i class="ti ti-ad-2" style="color:var(--primary)"></i> '+anAdsLabel()+' diário'
     +'<select class="fsel" style="margin-left:auto" onchange="_anAdsMan.mi=parseInt(this.value);anAdsManBody()">';
   for(var i=2;i<12;i++)h+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anAdsYear+'</option>';
   h+='</select></h4><p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px">Preencha os dias de '+AN_MES_LONG[mi]+'. Salva automaticamente no Supabase.</p>';
@@ -3952,7 +3978,7 @@ function anAdsBody(){
   var mi=anAdsCurMi();
   var h=anAdsControls(mi);
   if(!anAdsHasAny(anAdsYear,mi)){
-    h+='<div class="an-hint"><i class="ti ti-info-circle"></i> Sem dados de AdSense em '+AN_MES_LONG[mi]+'/'+anAdsYear+' ainda. Importe o relatório diário do AdSense (com coluna de Data) ou use "Inserir manual" — os dados começam em Março. Os cards e o gráfico abaixo se preenchem automaticamente.</div>';
+    h+='<div class="an-hint"><i class="ti ti-info-circle"></i> Sem dados de '+anAdsLabel()+' em '+AN_MES_LONG[mi]+'/'+anAdsYear+' ainda. Importe o relatório diário do '+anAdsLabel()+' (com coluna de Data) ou use "Inserir manual" — os dados começam em Março. Os cards e o gráfico abaixo se preenchem automaticamente.</div>';
   }
   h+=anAdsCards(mi);
   h+=anAdsCharts(mi);
@@ -3960,7 +3986,8 @@ function anAdsBody(){
   return h;
 }
 function hADSENSE(){
-  return '<div class="an-root">'+pageHeader('AdSense','Monetização diária — impressões, cliques, CTR, eCPM, receita e visibilidade')+anAdsBody()+'</div>';
+  anAdsSrc='ads';anAdsLbl='Ad Manager';
+  return '<div class="an-root">'+pageHeader('Ad Manager','Monetização diária — impressões, cliques, CTR, eCPM, receita e visibilidade')+anAdsBody()+'</div>';
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -4145,6 +4172,56 @@ function anPgManBody(){
 }
 function anPgAddPage(){sM('Caminho/título da página (ex.: /calculadora)','',function(v){v=(v||'').trim();if(!v)return;anPgRec(anYear,anProp,v);sv();anPgManBody();},'text');}
 function anPgDelPage(name){cfm('Remover página','Remover "'+name+'" e todos os seus dados deste ano/propriedade?','Remover','dgr',function(){var o=anPgObj(anYear,anProp);delete o[name];sv();anPgManBody();anR();toast('Página removida.','ti-trash');});}
+
+/* ═══════════════════════════════════════════════════════════════
+   GESTÃO DO TEMPO — calendário (jun–dez) + planejamento 24h · classes A–E
+   ═══════════════════════════════════════════════════════════════ */
+var TM_CLS=[
+  {k:'A',l:'Alto impacto (amor)', d:'Levam a conquistar seus objetivos', c:'#16C79A'},
+  {k:'B',l:'Médio impacto',        d:'Importantes e não urgentes',        c:'#3B82F6'},
+  {k:'C',l:'Baixo impacto',        d:'Precisa ser feito, mas não te aproxima dos objetivos', c:'#F59E0B'},
+  {k:'D',l:'Delegável',            d:'Pode ser passado para outra pessoa', c:'#9CA3AF'},
+  {k:'E',l:'Eliminável',           d:'Pode ser eliminado',                c:'#EF4444'}
+];
+function tmClsObj(k){return TM_CLS.find(function(x){return x.k===k;})||{c:'transparent',l:''};}
+var tmYearV=String(new Date().getFullYear());
+var tmMonth=Math.max(5,Math.min(11,new Date().getMonth()));
+var tmDay=(function(){var n=new Date();return(n.getMonth()===tmMonth&&String(n.getFullYear())===tmYearV)?n.getDate():1;})();
+function tmKey(d){return tmYearV+'-'+tmMonth+'-'+d;}
+function tmSetMonth(m){tmMonth=Number(m);var n=new Date();tmDay=(n.getMonth()===tmMonth&&String(n.getFullYear())===tmYearV)?n.getDate():1;R();}
+function tmSetDay(d){tmDay=Number(d);R();}
+function anTimeObj(key){var s=anStore();s.time=s.time||{};s.time[key]=s.time[key]||{};return s.time[key];}
+function anTimeSet(key,h,field,val){var o=anTimeObj(key);o[h]=o[h]||{t:'',c:''};o[h][field]=val;if((!o[h].t||!String(o[h].t).trim())&&!o[h].c)delete o[h];sv();}
+function anTimeCount(key){var o=anTimeObj(key);return Object.keys(o).filter(function(h){var e=o[h];return e&&((e.t&&String(e.t).trim())||e.c);}).length;}
+function tmCalendar(){
+  var y=Number(tmYearV),first=new Date(y,tmMonth,1).getDay(),dim=dIM(y,tmMonth);
+  var todayD=(new Date().getMonth()===tmMonth&&String(new Date().getFullYear())===tmYearV)?new Date().getDate():-1;
+  var wd=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  var cells=wd.map(function(w){return '<div class="wd">'+w+'</div>';}).join('');
+  for(var b=0;b<first;b++)cells+='<div class="tm-day empty"></div>';
+  for(var d=1;d<=dim;d++){var cnt=anTimeCount(tmKey(d));cells+='<div class="tm-day'+(d===tmDay?' sel':'')+(d===todayD?' today':'')+'" onclick="tmSetDay('+d+')">'+d+(cnt>0?'<span class="cnt"></span>':'')+'</div>';}
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-calendar"></i> '+AN_MES_LONG[tmMonth]+' '+y+'</div><div class="an-card-sub">Clique num dia para planejar</div></div><div class="tm-cal">'+cells+'</div></div>';
+}
+function tmSchedule(){
+  var key=tmKey(tmDay),o=anTimeObj(key),counts={A:0,B:0,C:0,D:0,E:0};
+  Object.keys(o).forEach(function(hh){var c=o[hh]&&o[hh].c;if(counts[c]!=null)counts[c]++;});
+  var sum='<div class="tm-sum">'+TM_CLS.map(function(x){return '<span class="tm-sumc" style="background:'+x.c+'">'+x.k+': '+counts[x.k]+'h</span>';}).join('')+'</div>';
+  var rows='';
+  for(var hr=0;hr<24;hr++){var e=o[hr]||{},cls=e.c||'',col=cls?tmClsObj(cls).c:'transparent';
+    var btns=TM_CLS.map(function(x){var on=cls===x.k;return '<button class="tm-cls'+(on?' on':'')+'" style="'+(on?'background:'+x.c+';border-color:'+x.c+';color:#fff':'color:'+x.c+';border-color:'+x.c)+'" title="'+x.l+'" onclick="anTimeSet(\''+key+'\','+hr+',\'c\',\''+(on?'':x.k)+'\');R()">'+x.k+'</button>';}).join('');
+    var hl=(hr<10?'0'+hr:hr)+':00';
+    rows+='<div class="tm-row" style="border-left-color:'+col+'"><span class="tm-hr">'+hl+'</span><input type="text" value="'+anEsc(e.t||'')+'" placeholder="—" onchange="anTimeSet(\''+key+'\','+hr+',\'t\',this.value)"><div class="tm-clsbtns">'+btns+'</div></div>';}
+  var ft=counts.A+counts.B,tt=ft+counts.C+counts.D+counts.E;
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-clock-hour-4"></i> '+tmDay+' de '+AN_MES_LONG[tmMonth]+' · 24 horas</div><div class="an-card-sub">Foco em alto impacto (A+B): '+(tt?Math.round(ft/tt*100)+'%':'—')+'</div></div>'+sum+'<div class="tm-sched">'+rows+'</div></div>';
+}
+function hTime(){
+  var months=[5,6,7,8,9,10,11];
+  var mseg='<div class="an-seg" style="margin-bottom:16px">'+months.map(function(m){return '<button class="an-seg-btn'+(m===tmMonth?' active':'')+'" onclick="tmSetMonth('+m+')">'+AN_MES_LONG[m]+'</button>';}).join('')+'</div>';
+  var legend='<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-flag"></i> Classificação (A–E)</div></div><div class="tm-legend">'+TM_CLS.map(function(x){return '<div class="tm-leg"><b style="background:'+x.c+'">'+x.k+'</b><span><b style="color:'+x.c+'">'+x.l+'</b> — '+x.d+'</span></div>';}).join('')+'</div></div>';
+  var h=pageHeader('Gestão do tempo','Planeje o dia hora a hora e classifique cada bloco (A–E) para fazer as metas acontecerem')+mseg
+    +'<div class="tm-wrap"><div>'+tmCalendar()+legend+'</div><div>'+tmSchedule()+'</div></div>';
+  return '<div class="an-root">'+h+'</div>';
+}
 
 /* ═══════════════════════════════════════════════════════════════
    DASHBOARD — KPIs + Alertas de variação + Oportunidades + Metas
