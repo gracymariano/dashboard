@@ -639,9 +639,24 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .tm-cls{width:24px;height:24px;border:1.5px solid;border-radius:7px;background:var(--card);font-size:11px;font-weight:800;cursor:pointer;padding:0}
 .tm-legend{display:flex;flex-direction:column;gap:8px}
 .tm-leg{display:flex;align-items:flex-start;gap:9px;font-size:12px;line-height:1.4;color:var(--text-secondary)}
-.tm-leg b{width:22px;height:22px;border-radius:6px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.tm-leg>b{width:22px;height:22px;border-radius:6px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
 .tm-sum{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .tm-sumc{font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;color:#fff}
+.tl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:980px){.tl-grid{grid-template-columns:1fr}}
+.tl-row{display:flex;align-items:center;gap:6px;padding:6px 7px;border-radius:9px;background:var(--bg);border-left:3px solid transparent;margin-bottom:5px;flex-wrap:wrap}
+.tl-item{flex:1;min-width:120px;border:1px solid rgba(11,34,57,.1);border-radius:7px;padding:6px 8px;font-size:12.5px;font-family:inherit;background:var(--card);color:var(--text-primary)}
+.tl-h{width:54px;border:1px solid rgba(11,34,57,.1);border-radius:7px;padding:6px 4px;font-size:12px;font-family:inherit;text-align:center;background:var(--card);color:var(--text-primary)}
+.tl-item:focus,.tl-h:focus{outline:none;border-color:var(--primary)}
+.tl-clsbtns{display:flex;gap:3px}
+.tl-del{border:none;background:none;color:var(--text-secondary);cursor:pointer;font-size:14px;padding:2px 4px;line-height:1}
+.tl-del:hover{color:var(--danger)}
+.tl-sub{font-size:11.5px;color:var(--text-secondary)}
+.tl-total{color:var(--navy)}
+.tl-add{font-size:12px;color:var(--primary-dark);background:var(--primary-light);border:none;border-radius:9px;padding:8px 10px;cursor:pointer;font-weight:600;width:100%;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:5px}
+.tl-add:hover{filter:brightness(.97)}
+.tl-bar{height:14px;border-radius:7px;background:rgba(11,34,57,.08);overflow:hidden;margin:4px 0 2px}
+.tl-bar-fill{height:100%;border-radius:7px;transition:width .3s}
 .an-sortable:hover{color:var(--primary-dark)}
 .an-camp-tbl th.sorted{color:var(--primary-dark)}
 .T th.tp-sort{user-select:none}
@@ -676,7 +691,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <button class="nav-item" data-id="cora" data-sec="" onclick="navTo('cora','')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M13.5 6.5l3 3"/></svg>Conteúdo</button>
 
     <div class="sb-section">Planejamento</div>
-    <button class="nav-item" data-id="hub" data-sec="tempo" onclick="navTo('hub','tempo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/></svg>Gestão do tempo</button>
+    <button class="nav-item" data-id="hub" data-sec="tempo" onclick="navTo('hub','tempo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/></svg>Gestão do Tempo</button>
     <button class="nav-item" data-id="road" data-sec="" onclick="navTo('road','')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M9 13l2 2 4-4"/></svg>Plano de Execução</button>
   </nav>
 
@@ -1737,7 +1752,7 @@ var SIDEBAR_NAV = [
   {id:'hub',sec:'app',           l:'App',               ic:'ti-device-mobile',     group:'main'},
   {id:'hub',sec:'seo',           l:'SEO',               ic:'ti-search',            group:'main'},
   {id:'cora',sec:'',             l:'Conteúdo',          ic:'ti-pencil',            group:'main'},
-  {id:'hub',sec:'tempo',         l:'Gestão do tempo',   ic:'ti-calendar-time',     group:'main'},
+  {id:'hub',sec:'tempo',         l:'Gestão do Tempo',   ic:'ti-calendar-time',     group:'main'},
   {id:'road',sec:'',             l:'Plano de Execução',       ic:'ti-calendar-event',    group:'main'},
 ];
 
@@ -2703,7 +2718,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.ui)s.ui={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.ui)s.ui={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -4211,13 +4226,60 @@ function tmSchedule(){
   var ft=counts.A+counts.B,tt=ft+counts.C+counts.D+counts.E;
   return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-clock-hour-4"></i> '+tmDay+' de '+AN_MES_LONG[tmMonth]+' · 24 horas</div><div class="an-card-sub">Foco em alto impacto (A+B): '+(tt?Math.round(ft/tt*100)+'%':'—')+'</div></div>'+sum+'<div class="tm-sched">'+rows+'</div></div>';
 }
+var tmTab='agenda';
+function tmSetTab(t){tmTab=t;R();}
+var TM_LISTS=[
+  {k:'pessoal',     l:'Objetivos pessoais',      ic:'ti-heart',        sub:'Para realizar meus objetivos pessoais'},
+  {k:'profissional',l:'Objetivos profissionais', ic:'ti-briefcase',    sub:'Para realizar meus objetivos profissionais'},
+  {k:'rotina',      l:'Dia a dia',               ic:'ti-rotate-clockwise', sub:'Coisas que eu faço no dia a dia'}
+];
+function anTLArr(k){var s=anStore();s.tlists=s.tlists||{};if(!Array.isArray(s.tlists[k]))s.tlists[k]=[];return s.tlists[k];}
+function anTLSet(k,idx,field,val){var a=anTLArr(k);if(!a[idx])a[idx]={t:'',h:null,c:''};if(field==='h'){a[idx].h=(val===''||isNaN(Number(val)))?null:Number(val);}else{a[idx][field]=val;}sv();}
+function anTLAdd(k){var a=anTLArr(k);if(a.length<10){a.push({t:'',h:null,c:''});sv();}}
+function anTLDel(k,idx){var a=anTLArr(k);a.splice(idx,1);sv();}
+function tmHrs(v){var n=Number(v)||0;return (Math.round(n*10)/10).toString().replace('.',',');}
+function tmListsView(){
+  var s=anStore();s.tlists=s.tlists||{};
+  TM_LISTS.forEach(function(L){if(!Array.isArray(s.tlists[L.k]))s.tlists[L.k]=[];});
+  var grand=0,clsH={A:0,B:0,C:0,D:0,E:0},nItems=0;
+  TM_LISTS.forEach(function(L){(s.tlists[L.k]||[]).forEach(function(it){var h=Number(it.h)||0;grand+=h;if(it.c&&clsH[it.c]!=null)clsH[it.c]+=h;if((it.t&&it.t.trim())||h)nItems++;});});
+  var over=grand>24, days=grand/24, pct=Math.min(100,grand/24*100);
+  var ab=clsH.A+clsH.B, cde=clsH.C+clsH.D+clsH.E;
+  // summary
+  var msg;
+  if(grand===0){msg='Adicione itens com o tempo estimado em cada lista — o sistema soma tudo e mostra se cabe em um dia.';}
+  else if(over){msg='Você estimou <b>'+tmHrs(grand)+' h</b> — isso equivale a <b>'+tmHrs(days)+' dias</b>. <b style="color:var(--danger)">Não cabe em um único dia (24 h).</b> Use o ABCDE: foque nos <b style="color:'+tmClsObj('A').c+'">A</b>, agende os <b style="color:'+tmClsObj('B').c+'">B</b>, reduza os <b style="color:'+tmClsObj('C').c+'">C</b>, <b>delegue os D</b> e <b>elimine os E</b> para liberar tempo.';}
+  else {msg='Você estimou <b>'+tmHrs(grand)+' h</b> de 24 h. Cabe no dia — mas lembre que parte das 24 h é sono/descanso; priorize os <b style="color:'+tmClsObj('A').c+'">A</b> e <b style="color:'+tmClsObj('B').c+'">B</b>.';}
+  var chips=TM_CLS.map(function(x){return '<span class="tm-sumc" style="background:'+x.c+(clsH[x.k]?'':';opacity:.45')+'">'+x.k+': '+tmHrs(clsH[x.k])+' h</span>';}).join('');
+  var summary='<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-sum"></i> Cabe no seu dia?</div><div class="an-card-sub">'+nItems+' itens · alto impacto (A+B): '+tmHrs(ab)+' h · baixo/delegável/eliminável (C+D+E): '+tmHrs(cde)+' h</div></div>'
+    +'<div style="display:flex;align-items:baseline;gap:8px;margin:2px 0 2px"><span style="font-size:30px;font-weight:800;color:'+(over?'var(--danger)':'var(--navy)')+'">'+tmHrs(grand)+' h</span><span class="tl-sub">de 24 h em um dia</span></div>'
+    +'<div class="tl-bar"><div class="tl-bar-fill" style="width:'+pct.toFixed(1)+'%;background:'+(over?'var(--danger)':'var(--primary)')+'"></div></div>'
+    +'<p class="tl-sub" style="line-height:1.55;margin:6px 0 10px">'+msg+'</p>'
+    +'<div class="tm-sum">'+chips+'</div></div>';
+  // 3 lists
+  var lists='<div class="tl-grid">'+TM_LISTS.map(function(L){
+    var arr=s.tlists[L.k]||[];var sub=arr.reduce(function(a,it){return a+(Number(it.h)||0);},0);
+    var rows=arr.map(function(it,idx){
+      var cls=it.c||'',col=cls?tmClsObj(cls).c:'transparent';
+      var btns=TM_CLS.map(function(x){var on=cls===x.k;return '<button class="tm-cls'+(on?' on':'')+'" style="'+(on?'background:'+x.c+';border-color:'+x.c+';color:#fff':'color:'+x.c+';border-color:'+x.c)+'" title="'+x.l+'" onclick="anTLSet(\''+L.k+'\','+idx+',\'c\',\''+(on?'':x.k)+'\');R()">'+x.k+'</button>';}).join('');
+      return '<div class="tl-row" style="border-left-color:'+col+'"><input class="tl-item" type="text" value="'+anEsc(it.t||'')+'" placeholder="Atividade..." onchange="anTLSet(\''+L.k+'\','+idx+',\'t\',this.value)"><input class="tl-h" type="number" step="any" min="0" value="'+(it.h==null?'':it.h)+'" placeholder="h" title="Tempo estimado em horas" onchange="anTLSet(\''+L.k+'\','+idx+',\'h\',this.value);R()"><div class="tl-clsbtns">'+btns+'</div><button class="tl-del" title="Remover" onclick="anTLDel(\''+L.k+'\','+idx+');R()"><i class="ti ti-trash"></i></button></div>';
+    }).join('');
+    var add=arr.length<10?'<button class="tl-add" onclick="anTLAdd(\''+L.k+'\');R()"><i class="ti ti-plus" style="font-size:11px"></i> adicionar item ('+arr.length+'/10)</button>':'<div class="tl-sub" style="text-align:center;padding:6px">Máximo de 10 itens atingido</div>';
+    return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti '+L.ic+'"></i> '+L.l+'</div><div class="an-card-sub">'+L.sub+' · <b class="tl-total">'+tmHrs(sub)+' h</b></div></div>'+(rows||'<div class="tl-sub" style="padding:2px 0 8px">Nenhum item ainda.</div>')+add+'</div>';
+  }).join('')+'</div>';
+  return summary+lists;
+}
 function hTime(){
+  var tabs=[['agenda','Agenda do dia','ti-calendar'],['listas','Objetivos & Rotina','ti-list-check']];
+  var tabbar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(tmTab===t[0]?' active':'')+'" onclick="tmSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
+  var head=pageHeader('Gestão do Tempo','Planeje o tempo e priorize com a classificação A–E para fazer as metas acontecerem');
+  if(tmTab==='listas'){
+    return '<div class="an-root">'+head+tabbar+tmListsView()+'</div>';
+  }
   var months=[5,6,7,8,9,10,11];
   var mseg='<div class="an-seg" style="margin-bottom:16px">'+months.map(function(m){return '<button class="an-seg-btn'+(m===tmMonth?' active':'')+'" onclick="tmSetMonth('+m+')">'+AN_MES_LONG[m]+'</button>';}).join('')+'</div>';
   var legend='<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-flag"></i> Classificação (A–E)</div></div><div class="tm-legend">'+TM_CLS.map(function(x){return '<div class="tm-leg"><b style="background:'+x.c+'">'+x.k+'</b><span><b style="color:'+x.c+'">'+x.l+'</b> — '+x.d+'</span></div>';}).join('')+'</div></div>';
-  var h=pageHeader('Gestão do tempo','Planeje o dia hora a hora e classifique cada bloco (A–E) para fazer as metas acontecerem')+mseg
-    +'<div class="tm-wrap"><div>'+tmCalendar()+legend+'</div><div>'+tmSchedule()+'</div></div>';
-  return '<div class="an-root">'+h+'</div>';
+  return '<div class="an-root">'+head+tabbar+mseg+'<div class="tm-wrap"><div>'+tmCalendar()+legend+'</div><div>'+tmSchedule()+'</div></div></div>';
 }
 
 /* ═══════════════════════════════════════════════════════════════
