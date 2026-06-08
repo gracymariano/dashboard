@@ -642,6 +642,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .tm-leg>b{width:22px;height:22px;border-radius:6px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
 .tm-sum{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .tm-sumc{font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;color:#fff}
+.seg-bar{height:5px;border-radius:3px;background:rgba(11,34,57,.07);margin-top:4px;overflow:hidden;max-width:220px}
+.seg-bar-f{height:100%;background:var(--primary);border-radius:3px}
+.seg-share{font-size:10px;color:var(--text-secondary);font-weight:600}
+.seg-tbl td{padding:8px 10px;font-variant-numeric:tabular-nums}
+.seg-tbl td:first-child{min-width:160px;font-variant-numeric:normal}
+.seg-insight{display:flex;gap:10px;align-items:flex-start;background:var(--bg);border-radius:10px;padding:11px 13px;margin-bottom:12px}
+.seg-insight i{font-size:18px;margin-top:1px;flex-shrink:0}
+.seg-ins-t{font-weight:700;font-size:12.5px;color:var(--navy);margin-bottom:2px}
+.seg-ins-x{font-size:11.5px;color:var(--text-secondary);line-height:1.5}
+.seg-d{font-size:10px;font-weight:700;white-space:nowrap}
 .tm-hrow{display:flex;gap:8px;padding:5px 6px;border-radius:9px;background:var(--bg);align-items:flex-start}
 .tm-hrow+.tm-hrow{margin-top:3px}
 .tm-hlabel{width:52px;flex-shrink:0;font-size:11px;font-weight:700;color:var(--text-secondary);padding-top:9px;display:flex;flex-direction:column;align-items:flex-start;gap:1px}
@@ -2283,9 +2293,109 @@ function hAQ(){
 
 var seoTab='busca';
 function seoSetTab(t){seoTab=t;rHub(document.getElementById('app'));}
+/* ═══════════════════════════════════════════════════════════════
+   SEGMENTOS DE BUSCA — dispositivo, país e aspecto da pesquisa (GSC)
+   ac.an.seoseg[year][prop][dim][mi]=[{n,c,i,p}]
+   ═══════════════════════════════════════════════════════════════ */
+var SEG_DIMS=[{k:'device',l:'Dispositivo',ic:'ti-devices'},{k:'country',l:'País',ic:'ti-world'},{k:'appearance',l:'Aspecto da pesquisa',ic:'ti-sparkles'}];
+var segDim='device', segMi=null, _anSegImp=null;
+function segDimObj(k){return SEG_DIMS.find(function(d){return d.k===k;})||SEG_DIMS[0];}
+function anSegObj(year,prop){var s=anStore();s.seoseg=s.seoseg||{};s.seoseg[year]=s.seoseg[year]||{};s.seoseg[year][prop]=s.seoseg[year][prop]||{};return s.seoseg[year][prop];}
+function anSegRows(year,prop,dim,mi){var o=anSegObj(year,prop);return(o[dim]&&o[dim][mi])?o[dim][mi]:[];}
+function anSegMonths(year,prop,dim){var o=anSegObj(year,prop);if(!o[dim])return[];return Object.keys(o[dim]).map(Number).sort(function(a,b){return a-b;});}
+function anSegCurMi(){var ms=anSegMonths(anYear,anProp,segDim);if(segMi!=null&&ms.indexOf(segMi)>=0)return segMi;if(ms.length)return ms[ms.length-1];var now=new Date();return String(now.getFullYear())===String(anYear)?now.getMonth():0;}
+function segSetDim(k){segDim=k;segMi=null;anR();}
+function segSetMi(v){segMi=parseInt(v,10);anR();}
+function anSegParse(rows){
+  var clean=rows.filter(function(c){if(!c||!c.length)return false;var f=String(c[0]==null?'':c[0]).trim();if(f.charAt(0)==='#')return false;return c.some(function(x){return String(x==null?'':x).trim()!=='';});});
+  var hi=-1,cc=-1,ic=-1,pc=-1,dc=0,dimLbl='';
+  for(var r=0;r<clean.length;r++){var cols=clean[r];if(cols.length<2)continue;var a=-1,b=-1,p=-1;
+    cols.forEach(function(c,ci){if(a<0&&anSeoMatch(c,['clique','clicks']))a=ci;if(b<0&&anSeoMatch(c,['impress']))b=ci;if(p<0&&anSeoMatch(c,['posição','posicao','position']))p=ci;});
+    if(a>=0&&b>=0){hi=r;cc=a;ic=b;pc=p;for(var k=0;k<cols.length;k++){if(k===cc||k===ic||k===pc)continue;if(anSeoMatch(cols[k],['ctr','taxa']))continue;dc=k;break;}dimLbl=String(cols[dc]||'').replace(/"/g,'').trim();break;}}
+  if(hi<0)return{dim:null,rows:[],dimLbl:''};
+  var dl=dimLbl.toLowerCase();
+  var dim=/dispositiv|device/.test(dl)?'device':(/pa[íi]s|country/.test(dl)?'country':(/aspecto|appearance|apar[êe]nc|snippet/.test(dl)?'appearance':'other'));
+  var out=[];clean.slice(hi+1).forEach(function(c){var n=String(c[dc]||'').trim();if(!n||n.charAt(0)==='#')return;var cl=hNumParse(c[cc]),im=hNumParse(c[ic]),po=pc>=0?hNumParse(c[pc]):null;if(cl==null&&im==null)return;out.push({n:n,c:cl||0,i:im||0,p:po});});
+  out.sort(function(a,b){return b.c-a.c;});
+  return{dim:dim,rows:out,dimLbl:dimLbl};
+}
+function anSegImportOpen(){
+  if(anProp==='all'){anNeedsProp();return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});anSegPreview(rows,f.name);}catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});anSegPreview(rows,f.name);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function anSegPreview(rows,fname){
+  var p=anSegParse(rows);if(!p.rows.length){toast('Não reconheci o arquivo. Use os exports do Search Console (Dispositivos, Países ou Aspecto da pesquisa).','ti-alert-circle');return;}
+  _anSegImp={parsed:p};var mi=anSegCurMi();
+  var dimSel='<select class="fsel" id="an-seg-dim">'+SEG_DIMS.map(function(d){return '<option value="'+d.k+'"'+((p.dim===d.k||(p.dim==='other'&&d.k===segDim))?' selected':'')+'>'+d.l+'</option>';}).join('')+'</select>';
+  var msel='<select class="fsel" id="an-seg-mi">';for(var i=0;i<12;i++)msel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';msel+='</select>';
+  var o=document.createElement('div');o.className='ov';o.id='an-segimp-ov';
+  o.innerHTML='<div class="mx" style="width:560px;max-width:96vw"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar Search Console — '+propLabel(anProp)+'</h4>'
+    +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 12px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong> · <strong>'+p.rows.length+'</strong> linha(s) reconhecida(s).</p>'
+    +'<div style="display:flex;gap:14px;flex-wrap:wrap"><div><div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Dimensão</div>'+dimSel+'</div><div><div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Mês de referência</div>'+msel+'</div></div>'
+    +'<div class="mbb" style="margin-top:16px"><button onclick="document.getElementById(\'an-segimp-ov\').remove();_anSegImp=null">Cancelar</button><button class="pr" onclick="anSegApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anSegImp=null;}});
+}
+function anSegApply(){
+  if(!_anSegImp)return;var dim=document.getElementById('an-seg-dim').value,mi=parseInt(document.getElementById('an-seg-mi').value,10);
+  var o=anSegObj(anYear,anProp);o[dim]=o[dim]||{};o[dim][mi]=_anSegImp.parsed.rows;
+  sv();document.getElementById('an-segimp-ov').remove();_anSegImp=null;segDim=dim;segMi=mi;anR();
+  toast('Importado — '+segDimObj(dim).l+' · '+AN_MES_LONG[mi]+'/'+anYear+'.','ti-file-import');
+}
+function segInsightCard(ic,col,title,txt){
+  return '<div class="seg-insight" style="border-left:3px solid '+col+'"><i class="ti '+ic+'" style="color:'+col+'"></i><div><div class="seg-ins-t">'+title+'</div><div class="seg-ins-x">'+txt+'</div></div></div>';
+}
+function anSegInsight(dim,rows,totC,totI){
+  if(dim==='device'){
+    var rel=rows.filter(function(r){return r.i>=(totI*0.03)&&r.p!=null;});
+    if(rel.length>=2){
+      var best=rel.reduce(function(a,b){return b.p<a.p?b:a;}),worst=rel.reduce(function(a,b){return b.p>a.p?b:a;}),gap=worst.p-best.p;
+      if(gap>=4)return segInsightCard('ti-devices','var(--warning)','Diferença grande entre dispositivos','Em <b>'+anEsc(best.n)+'</b> você está na posição <b>'+best.p.toFixed(1).replace('.',',')+'</b>, mas em <b>'+anEsc(worst.n)+'</b> cai para <b>'+worst.p.toFixed(1).replace('.',',')+'</b> — '+gap.toFixed(1).replace('.',',')+' posições pior. Vale revisar conteúdo e experiência no '+anEsc(worst.n).toLowerCase()+'.');
+    }
+  } else if(dim==='country'){
+    var br=rows.find(function(r){return /bra[sz]il/i.test(r.n);}),brI=br?br.i:0,brC=br?br.c:0,fI=totI-brI,fC=totC-brC;
+    if(totI>0&&fI/totI>=0.10){
+      var fCtr=fI?(fC/fI*100):0,brCtr=brI?(brC/brI*100):0;
+      return segInsightCard('ti-world','var(--warning)','Impressões internacionais diluindo o CTR',Math.round(fI/totI*100)+'% das impressões vêm de fora do Brasil, com CTR de <b>'+fCtr.toFixed(1).replace('.',',')+'%</b> — bem abaixo dos <b>'+brCtr.toFixed(1).replace('.',',')+'%</b> do Brasil. Isso puxa o CTR médio para baixo sem significar pior desempenho no seu público real.');
+    }
+  }
+  return '';
+}
+function anSegView(){
+  var dim=segDim,mi=anSegCurMi(),years=anYears(),isAll=anProp==='all';
+  var sub='<div class="an-seg" style="margin-bottom:14px">'+SEG_DIMS.map(function(d){return '<button class="an-seg-btn'+(dim===d.k?' active':'')+'" onclick="segSetDim(\''+d.k+'\')"><i class="ti '+d.ic+'"></i>'+d.l+'</button>';}).join('')+'</div>';
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var moSel='<select class="fsel" onchange="segSetMi(this.value)">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select>';
+  var ctrl='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" '+(isAll?'onclick="anNeedsProp()"':'onclick="anSegImportOpen()"')+'><i class="ti ti-upload"></i> Importar Search Console</button></div></div>';
+  var rows=anSegRows(anYear,anProp,dim,mi),body;
+  if(!rows.length){
+    body='<div class="an-card" style="text-align:center;padding:30px 16px;color:var(--text-secondary)"><i class="ti '+segDimObj(dim).ic+'" style="font-size:30px;color:var(--primary);opacity:.5"></i><p style="margin:10px 0 4px;font-weight:600;color:var(--navy)">Sem dados de '+segDimObj(dim).l+' em '+AN_MES_LONG[mi]+'/'+anYear+'</p><p style="font-size:11.5px;margin:0">Exporte do Search Console (aba '+segDimObj(dim).l+') e clique em <strong>Importar Search Console</strong>.</p></div>';
+  } else {
+    var totC=rows.reduce(function(a,b){return a+(b.c||0);},0),totI=rows.reduce(function(a,b){return a+(b.i||0);},0),maxC=Math.max.apply(null,rows.map(function(r){return r.c||0;}))||1;
+    var months=anSegMonths(anYear,anProp,dim),prevMi=null;months.forEach(function(m){if(m<mi&&(prevMi==null||m>prevMi))prevMi=m;});
+    var prevMap={};if(prevMi!=null)anSegRows(anYear,anProp,dim,prevMi).forEach(function(r){prevMap[r.n]=r;});
+    var trs=rows.map(function(r){var share=totC?(r.c/totC*100):0,ctr=r.i?(r.c/r.i*100):0,pr=prevMap[r.n];
+      var cD='';if(pr&&pr.c!=null){var d=r.c-pr.c,pct=pr.c?(d/pr.c*100):null;if(pct!=null&&Math.abs(pct)>=1)cD=' <span class="seg-d" style="color:'+(d>0?'var(--success)':'var(--danger)')+'">'+(d>0?'▲':'▼')+Math.abs(pct).toFixed(0)+'%</span>';}
+      var pD='';if(pr&&pr.p!=null&&r.p!=null){var dp=r.p-pr.p;if(Math.abs(dp)>=0.3)pD=' <span class="seg-d" style="color:'+(dp<0?'var(--success)':'var(--danger)')+'">'+(dp<0?'▼':'▲')+Math.abs(dp).toFixed(1).replace('.',',')+'</span>';}
+      return '<tr><td style="text-align:left"><div style="font-weight:600">'+anEsc(r.n)+'</div><div class="seg-bar"><div class="seg-bar-f" style="width:'+(r.c/maxC*100).toFixed(1)+'%"></div></div></td>'
+        +'<td>'+fN(r.c)+' <span class="seg-share">'+share.toFixed(0)+'%</span>'+cD+'</td><td>'+fN(r.i)+'</td><td>'+ctr.toFixed(1).replace('.',',')+'%</td><td>'+(r.p==null?'—':r.p.toFixed(1).replace('.',','))+pD+'</td></tr>';
+    }).join('');
+    var ctrTot=totI?(totC/totI*100):0;
+    var cmp=prevMi!=null?' · vs '+AN_MES_LONG[prevMi]:'';
+    body=anSegInsight(dim,rows,totC,totI)
+      +'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti '+segDimObj(dim).ic+'"></i> '+segDimObj(dim).l+' · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+rows.length+' segmentos · '+fN(totC)+' cliques · '+fN(totI)+' impressões · CTR '+ctrTot.toFixed(1).replace('.',',')+'%'+cmp+'</div></div>'
+      +'<div class="hwrap"><table class="htbl seg-tbl"><thead><tr><th style="text-align:left">'+segDimObj(dim).l+'</th><th>Cliques</th><th>Impressões</th><th>CTR</th><th>Posição</th></tr></thead><tbody>'+trs+'</tbody></table></div>'
+      +(prevMi!=null?'<div class="tl-sub" style="padding:8px 4px 0">▲▼ comparado a '+AN_MES_LONG[prevMi]+'/'+anYear+' · em Posição, ▼ verde = melhorou (subiu no ranking).</div>':'')+'</div>';
+  }
+  return sub+ctrl+body;
+}
 function hSEO(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
-  var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['vel','Velocidade','ti-gauge']];
+  var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['seg','Segmentos','ti-chart-donut'],['vel','Velocidade','ti-gauge']];
   var bar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(seoTab===t[0]?' active':'')+'" onclick="seoSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
   if(seoTab==='busca'){
     anSection='gsc';
@@ -2293,6 +2403,9 @@ function hSEO(){
   }
   if(seoTab==='opp'){
     return pageHeader('SEO','Oportunidades e decaimento · Search Console')+'<div class="an-root">'+bar+anPropChips()+anSeoView()+'</div>';
+  }
+  if(seoTab==='seg'){
+    return pageHeader('SEO','Segmentos · dispositivo, país e aspecto da pesquisa')+'<div class="an-root">'+bar+anPropChips()+anSegView()+'</div>';
   }
   anSection='cwv';
   return pageHeader('SEO','Velocidade · Core Web Vitals')+'<div class="an-root">'+bar+anPropChips()+anSectionBody()+'</div>';
@@ -2734,7 +2847,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.ui)s.ui={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.ui)s.ui={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -3178,7 +3291,7 @@ function anSpark(arr,fmt,hi){
 var _anMan=null;
 function anManualOpen(){if(anProp==='all'){anNeedsProp();return;}_anMan={section:anSection,prop:anProp,year:anYear};
   var o=document.createElement('div');o.className='ov';o.id='an-man-ov';
-  o.innerHTML='<div class="mx" style="width:760px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-man-body"></div></div>';
+  o.innerHTML='<div class="mx" style="width:760px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-man-body" style="overflow:auto;flex:1;min-height:0"></div></div>';
   document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anMan=null;}});anManBody();}
 function anManBody(){
   if(!_anMan)return;var sec=AN_SECTIONS[_anMan.section],d=anRaw(_anMan.year,_anMan.section,_anMan.prop),years=anYears();
@@ -3215,13 +3328,18 @@ function anImportOpen(){
     else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});anPreview(section,prop,rows,f.name);};rd.readAsText(f,'UTF-8');}
   };inp.click();
 }
+function _parseYM(s){s=String(s==null?'':s).trim();if(!s)return null;
+  var m=s.match(/(20\d{2})-(\d{2})-\d{2}/)||s.match(/(20\d{2})(\d{2})\d{2}/);if(m)return{y:m[1],mi:parseInt(m[2],10)-1};
+  m=s.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/);if(m)return{y:m[3],mi:parseInt(m[2],10)-1};
+  return null;}
 function anParse(section,rows){
   var sec=AN_SECTIONS[section];
   var monthIdx=-1,year=anYear;
   // detectar data (Data de início: AAAAMMDD ou dd/mm/aaaa) em qualquer célula/comentário — usa TODAS as linhas, inclusive cabeçalho do GA4
   var flat=[];rows.forEach(function(r){(r||[]).forEach(function(c){flat.push(String(c==null?'':c));});});
   for(var fi=0;fi<flat.length;fi++){var cell=flat[fi];
-    var m=cell.match(/(20\d{2})(\d{2})\d{2}/);if(m){year=m[1];monthIdx=parseInt(m[2],10)-1;break;}
+    var m=cell.match(/(20\d{2})-(\d{2})-\d{2}/);if(m){year=m[1];monthIdx=parseInt(m[2],10)-1;break;}
+    m=cell.match(/(20\d{2})(\d{2})\d{2}/);if(m){year=m[1];monthIdx=parseInt(m[2],10)-1;break;}
     m=cell.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/);if(m){year=m[3];monthIdx=parseInt(m[2],10)-1;break;}
   }
   // remover comentários do GA4 (linhas iniciadas por '#') e linhas vazias antes de analisar a estrutura
@@ -3248,6 +3366,21 @@ function anParse(section,rows){
     var mi=monthIdx>=0?monthIdx:new Date().getMonth();
     var dataRows=clean.slice(headerIdx+1);
     var totalRow=dataRows.find(function(c){var f=String(c[0]||'').toLowerCase().trim();return f==='total'||f==='totais'||f==='all'||f.indexOf('total')===0;});
+    // se houver coluna de DATA com linhas diárias (ex.: GSC "Gráfico"), agrega por mês
+    var hdr=clean[headerIdx]||[],usedCols=Object.keys(colMap).map(function(k){return colMap[k];}),dateCol=-1;
+    for(var dci=0;dci<hdr.length;dci++){if(usedCols.indexOf(dci)>=0)continue;if(/(^|\b)(data|date)(\b|$)/i.test(String(hdr[dci]||''))){dateCol=dci;break;}}
+    if(dateCol<0){for(var dcj=0;dcj<hdr.length;dcj++){if(usedCols.indexOf(dcj)>=0)continue;var hit=dataRows.filter(function(c){return _parseYM(c[dcj]);}).length;if(hit>=Math.max(2,Math.ceil(dataRows.length*0.6))){dateCol=dcj;break;}}}
+    if(dateCol>=0&&dataRows.some(function(c){return _parseYM(c[dateCol]);})){
+      var byM={};dataRows.forEach(function(c){var ym=_parseYM(c[dateCol]);if(!ym)return;if(ym.y)year=ym.y;(byM[ym.mi]=byM[ym.mi]||[]).push(c);});
+      Object.keys(colMap).forEach(function(mk){var ci=colMap[mk],meta=anMeta(section,mk),wk=meta.w||sec.head,wci=colMap[wk],arr=Array(12).fill(null);
+        Object.keys(byM).forEach(function(miK){var mi2=Number(miK),mr=byM[miK],val2=null;
+          if(meta.fmt==='int'){var s2=0,a2=false;mr.forEach(function(c){var v=hNumParse(c[ci]);if(v!=null){s2+=v;a2=true;}});val2=a2?s2:null;}
+          else{if(wci!=null&&mk!==wk){var nu=0,de=0;mr.forEach(function(c){var v=hNumParse(c[ci]),w=hNumParse(c[wci]);if(v!=null&&w!=null){nu+=v*w;de+=w;}});if(de>0)val2=nu/de;}
+            if(val2==null){var ns=mr.map(function(c){return hNumParse(c[ci]);}).filter(function(v){return v!=null;});if(ns.length)val2=ns.reduce(function(a,b){return a+b;},0)/ns.length;}}
+          if(val2!=null)arr[mi2]=val2;});
+        result[mk]=arr;});
+      return{mode:'month',data:result,year:year,monthIdx:-1,defMode:'update'};
+    }
     Object.keys(colMap).forEach(function(mk){var ci=colMap[mk],meta=anMeta(section,mk),val=null;
       var wk=meta.w||sec.head,wci=colMap[wk]; // coluna de contagem usada como peso
       if(totalRow){val=hNumParse(totalRow[ci]);}
@@ -3285,7 +3418,7 @@ function anPreview(section,prop,rows,fname){
       +'</div>';
   }
   var o=document.createElement('div');o.className='ov';o.id='an-imp-ov';
-  o.innerHTML='<div class="mx" style="width:620px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column">'
+  o.innerHTML='<div class="mx" style="width:620px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column;overflow:auto">'
     +'<h4 style="display:flex;align-items:center;gap:7px"><i class="ti ti-upload" style="color:var(--primary)"></i> Importar — '+sec.l+' · '+propLabel(prop)+'</h4>'
     +'<p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 4px;line-height:1.5"><strong>'+found.length+'</strong> métrica(s) reconhecida(s) em <em>'+anEsc(fname||'arquivo')+'</em>.</p>'
     +'<p style="font-size:11px;margin:0 0 10px">'+detected+'</p>'
@@ -3423,7 +3556,7 @@ function anCampTrend(mk){
 var _anCampMan=null;
 function anCampManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}_anCampMan={mi:anCampCurMi()};
   var o=document.createElement('div');o.className='ov';o.id='an-cman-ov';
-  o.innerHTML='<div class="mx" style="width:860px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-cman-body"></div></div>';
+  o.innerHTML='<div class="mx" style="width:860px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-cman-body" style="overflow:auto;flex:1;min-height:0"></div></div>';
   document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anCampMan=null;}});anCampManBody();}
 function anCampManBody(){
   if(!_anCampMan)return;var mi=_anCampMan.mi,mets=AN_SECTIONS.camp.metrics,o=anCampObj(anYear,anProp),names=Object.keys(o);
@@ -3617,7 +3750,7 @@ function anRevPivot(){
 }
 function anRevManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}_anRevMan={};
   var o=document.createElement('div');o.className='ov';o.id='an-revman-ov';
-  o.innerHTML='<div class="mx" style="width:900px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-revman-body"></div></div>';
+  o.innerHTML='<div class="mx" style="width:900px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-revman-body" style="overflow:auto;flex:1;min-height:0"></div></div>';
   document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anRevMan=null;}});anRevManBody();}
 function anRevManBody(){
   var nets=anRevNetworksAll(anYear,anProp),lastCol=anRevLastCol(),months=[];for(var i=0;i<=lastCol;i++)months.push(i);
@@ -3808,7 +3941,7 @@ function anRetApply(rows){
 }
 function anRetManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}_anRetMan={};
   var o=document.createElement('div');o.className='ov';o.id='an-retman-ov';
-  o.innerHTML='<div class="mx" style="width:900px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-retman-body"></div></div>';
+  o.innerHTML='<div class="mx" style="width:900px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-retman-body" style="overflow:auto;flex:1;min-height:0"></div></div>';
   document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anRetMan=null;}});anRetManBody();}
 function anRetManBody(){
   var lastCol=anRetLastCol();
@@ -4198,7 +4331,7 @@ function anPgApply(){
 /* ── Manual (página × meses, métrica selecionada) ── */
 function anPgManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}_anPgMan={};
   var o=document.createElement('div');o.className='ov';o.id='an-pgman-ov';
-  o.innerHTML='<div class="mx" style="width:880px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-pgman-body"></div></div>';
+  o.innerHTML='<div class="mx" style="width:880px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-pgman-body" style="overflow:auto;flex:1;min-height:0"></div></div>';
   document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anPgMan=null;}});anPgManBody();}
 function anPgManBody(){
   var o=anPgObj(anYear,anProp),names=Object.keys(o),lastCol=anPgLastCol(),months=[];for(var i=0;i<=lastCol;i++)months.push(i);
