@@ -3266,7 +3266,7 @@ function anPreview(section,prop,rows,fname){
   if(!rows||!rows.length){toast('Arquivo vazio ou ilegível.','ti-alert-circle');return;}
   var p=anParse(section,rows);var found=Object.keys(p.data).filter(function(k){return(p.data[k]||[]).some(function(v){return v!=null;});});
   if(!found.length){toast('Nenhuma métrica de "'+sec.l+'" reconhecida. Baixe o modelo para ver o formato.','ti-alert-circle');return;}
-  _anImp={section:section,prop:prop,parsed:p.data,year:p.year,mode:p.defMode};
+  _anImp={section:section,prop:prop,parsed:p.data,year:p.year,mode:p.defMode,headK:(sec.head||null),monthIdx:p.monthIdx,overrideHead:null};
   var prev='<table style="width:100%;border-collapse:collapse;font-size:10px"><tr><th style="text-align:left;padding:5px 8px;border-bottom:1px solid rgba(0,0,0,.08);background:var(--bg);color:var(--text-secondary);font-weight:700">Métrica</th>'
     +HMESES.map(function(m){return '<th style="text-align:right;padding:5px 4px;border-bottom:1px solid rgba(0,0,0,.08);background:var(--bg);color:var(--text-secondary);font-weight:700">'+m+'</th>';}).join('')+'</tr>';
   sec.metrics.forEach(function(mt){if(!p.data[mt.k])return;prev+='<tr><td style="padding:4px 8px;border-bottom:1px solid rgba(0,0,0,.05);font-weight:600;white-space:nowrap">'+mt.l+'</td>'
@@ -3274,6 +3274,16 @@ function anPreview(section,prop,rows,fname){
   prev+='</table>';
   var detected=p.mode==='month'&&p.monthIdx>=0?('<span style="color:var(--primary-dark)"><i class="ti ti-calendar-check" style="font-size:11px"></i> Mês detectado: <strong>'+AN_MES_LONG[p.monthIdx]+'/'+p.year+'</strong></span>'):('<span>Formato anual (12 meses)</span>');
   var radio=function(val,lbl,desc){return '<label style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border:1px solid rgba(0,0,0,.08);border-radius:9px;cursor:pointer;font-size:11.5px"><input type="radio" name="animp" value="'+val+'"'+(_anImp.mode===val?' checked':'')+' onchange="_anImp.mode=this.value" style="margin-top:2px;width:auto"><span><strong>'+lbl+'</strong><br><span style="color:var(--text-secondary);font-size:10.5px">'+desc+'</span></span></label>';};
+  var ovBlock='';
+  var headK=sec.head||null,headMeta=headK?anMeta(section,headK):null;
+  var headVal=(headK&&p.monthIdx>=0&&p.data[headK])?p.data[headK][p.monthIdx]:null;
+  if(p.mode==='month'&&p.monthIdx>=0&&headMeta&&headVal!=null){
+    ovBlock='<div style="border:1px solid rgba(0,0,0,.08);border-radius:9px;padding:10px 12px;margin-bottom:12px;background:var(--bg)">'
+      +'<label style="font-size:11.5px;font-weight:600;display:block;margin-bottom:5px"><i class="ti ti-sum" style="font-size:12px;color:var(--primary-dark)"></i> Total de '+headMeta.l+' (opcional)</label>'
+      +'<input id="an-imp-ov-total" type="number" step="any" min="0" placeholder="ex.: 3017" oninput="_anImp.overrideHead=(this.value===\'\'?null:Number(this.value))" style="width:100%;border:1px solid rgba(11,34,57,.15);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;background:var(--card);color:var(--text-primary)">'
+      +'<p style="font-size:10.5px;color:var(--text-secondary);margin:6px 0 0;line-height:1.45">A soma das linhas do arquivo deu <strong>'+anShort(headVal,headMeta.fmt)+'</strong>. No GA4, esse total às vezes difere do número da visão geral. Se quiser, digite aqui o total exato do GA4 que ele <strong>sobrescreve</strong> a soma em '+AN_MES_LONG[p.monthIdx]+'/'+p.year+'. Deixe em branco para usar a soma.</p>'
+      +'</div>';
+  }
   var o=document.createElement('div');o.className='ov';o.id='an-imp-ov';
   o.innerHTML='<div class="mx" style="width:620px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column">'
     +'<h4 style="display:flex;align-items:center;gap:7px"><i class="ti ti-upload" style="color:var(--primary)"></i> Importar — '+sec.l+' · '+propLabel(prop)+'</h4>'
@@ -3286,6 +3296,7 @@ function anPreview(section,prop,rows,fname){
       +radio('replace','Substituir o ano','Sobrescreve as métricas enviadas — meses em branco no arquivo ficam vazios.')
       +radio('add','Somar aos dados existentes','Adiciona os valores do arquivo aos já cadastrados, mês a mês.')
     +'</div>'
+    +ovBlock
     +'<div class="mbb"><button onclick="document.getElementById(\'an-imp-ov\').remove();_anImp=null">Cancelar</button>'
     +'<button class="pr" onclick="anApply()"><i class="ti ti-check" style="font-size:11px"></i> Confirmar importação</button></div></div>';
   document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anImp=null;}});
@@ -3298,6 +3309,10 @@ function anApply(){
     else if(mode==='update')d[k]=cur.map(function(c,i){return inc[i]==null?c:inc[i];});
     else d[k]=inc.slice(0,12);
     n++;});
+  if(_anImp.overrideHead!=null&&_anImp.headK&&_anImp.monthIdx>=0){
+    var dh=Array.isArray(d[_anImp.headK])?d[_anImp.headK]:Array(12).fill(null);
+    dh[_anImp.monthIdx]=_anImp.overrideHead;d[_anImp.headK]=dh;
+  }
   sv();document.getElementById('an-imp-ov').remove();_anImp=null;anYear=year;
   if(_anMan){_anMan.year=year;_anMan.prop=prop;_anMan.section=section;}
   anR();if(_anMan)anManBody();
