@@ -1647,6 +1647,7 @@ function hMatchMetric(ds,label){label=(label==null?'':label).toString().toLowerC
 function hNumParse(raw){if(raw==null)return null;let s=String(raw).replace(/"/g,'').trim();if(s===''||s==='—')return null;s=s.replace(/[^\d.,-]/g,'');if(s===''||s==='-')return null;
   if(s.indexOf(',')>-1&&s.indexOf('.')>-1)s=s.replace(/\./g,'').replace(',','.');
   else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,'');
+  else if(s.indexOf(',')<0&&/\.\d{3}$/.test(s))s=s.replace(/\./g,'');
   else s=s.replace(',','.');
   const v=parseFloat(s);return isNaN(v)?null:v}
 function hImport(y,dsId){
@@ -2496,12 +2497,68 @@ function socTable(){
   }).join('');
   return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti '+socNetObj(net).ic+'" style="color:'+socNetObj(net).c+'"></i> '+socNetObj(net).l+' · '+propLabel(anProp)+'</div><div class="an-card-sub">Preencha os meses — salva automaticamente. Toque num card acima para trocar de rede.</div></div><div class="hwrap"><table class="htbl"><thead><tr><th>Métrica</th>'+HMESES.map(function(m){return '<th>'+m+'</th>';}).join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
+/* ── SOCIAL: barra de controles + importação/modelo (estética igual às outras seções) ── */
+function socControls(){
+  var years=anYears();
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var nSel='<select class="fsel" onchange="socSetNet(this.value)">'+SOCIAL_NETS.map(function(n){return '<option value="'+n.k+'"'+(n.k===socNet?' selected':'')+'>'+n.l+'</option>';}).join('')+'</select>';
+  return '<div class="an-card an-camp-ctrl">'
+    +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Rede</span>'+nSel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="socManualFocus()"><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<button class="an-btn" onclick="socModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
+    +'<button class="an-btn prim" onclick="socImportOpen()"><i class="ti ti-upload"></i> Importar CSV/XLSX</button></div></div>';
+}
+function socManualFocus(){
+  if(anProp==='all'){toast('Selecione um perfil específico nos chips para inserir os dados.','ti-info-circle');return;}
+  var el=document.querySelector('.an-root .htbl .hin');if(el){el.focus();if(el.select)el.select();el.scrollIntoView({behavior:'smooth',block:'center'});}
+}
+function socModelDownload(){
+  if(anProp==='all'){toast('Selecione um perfil específico para baixar o modelo.','ti-info-circle');return;}
+  var net=socNetObj(socNet);
+  var esc=function(s){s=String(s);return /[",;\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+  var head=['Metrica'].concat(HMESES).map(esc).join(',');
+  var rows=SOCIAL_METRICS.map(function(m){return [m.l,'','','','','','','','','','','',''].map(esc).join(',');});
+  var csv='\uFEFF'+head+'\n'+rows.join('\n')+'\n';
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='modelo_social_'+net.k+'_'+anProp+'_'+anYear+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  toast('Modelo de '+net.l+' baixado.','ti-download');
+}
+function socMetricIdx(label){
+  label=(label==null?'':label).toString().toLowerCase().trim();if(!label)return -1;
+  function idxK(k){for(var z=0;z<SOCIAL_METRICS.length;z++)if(SOCIAL_METRICS[z].k===k)return z;return -1;}
+  for(var i=0;i<SOCIAL_METRICS.length;i++){if(label===SOCIAL_METRICS[i].l.toLowerCase()||label===SOCIAL_METRICS[i].k)return i;}
+  for(var j=0;j<SOCIAL_METRICS.length;j++){if(label.indexOf(SOCIAL_METRICS[j].l.toLowerCase())>=0)return j;}
+  if(label.indexOf('novos')>=0||label.indexOf('new')>=0)return idxK('novos');
+  if(label.indexOf('seguidor')>=0||label.indexOf('follow')>=0)return idxK('seguidores');
+  if(label.indexOf('alcance')>=0||label.indexOf('reach')>=0)return idxK('alcance');
+  if(label.indexOf('visualiza')>=0||label.indexOf('view')>=0||label.indexOf('impress')>=0)return idxK('visualizacoes');
+  if(label.indexOf('intera')>=0||label.indexOf('engaj')>=0||label.indexOf('curtid')>=0||label.indexOf('coment')>=0)return idxK('interacoes');
+  if(label.indexOf('public')>=0||label.indexOf('post')>=0)return idxK('publicacoes');
+  return -1;
+}
+function socImportOpen(){
+  if(anProp==='all'){toast('Selecione um perfil específico nos chips antes de importar.','ti-info-circle');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});socApply(rows);}catch(err){toast('Falha ao ler o arquivo: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});socApply(rows);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function socApply(rows){
+  var clean=rows.filter(function(c){return c&&c.some(function(x){return String(x==null?'':x).trim()!=='';});});
+  if(!clean.length){toast('Arquivo vazio ou ilegível.','ti-alert-circle');return;}
+  var net=socNet,n=0,mset={};
+  clean.forEach(function(c,idx){var mi=socMetricIdx(c[0]);if(mi<0)return;if(idx===0&&!/\d/.test(String(c[1]||'')))return;var mk=SOCIAL_METRICS[mi].k;
+    for(var off=0;off<12;off++){var v=hNumParse(c[off+1]);if(v!=null){anSocSet(anYear,anProp,net,mk,off,v);n++;mset[mk]=1;}}});
+  if(!n){toast('Não reconheci o arquivo. Use o modelo (coluna Métrica + Jan…Dez).','ti-alert-circle');return;}
+  sv();anR();toast(Object.keys(mset).length+' métrica(s) importada(s) em '+socNetObj(net).l+'.','ti-file-import');
+}
+
 function hSOCIAL(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
-  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var h=pageHeader('Social','Redes sociais — seguidores, alcance e engajamento por perfil')
     +anPropChips()
-    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:12px;color:var(--text-secondary);font-weight:600">Ano</span>'+ySel+'</div>'
+    +socControls()
     +socTotalCard()+socSummary()+socChart(socNet)+socTable();
   return '<div class="an-root">'+h+'</div>';
 }
