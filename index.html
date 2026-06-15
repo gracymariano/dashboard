@@ -671,6 +671,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .htbl.pg-prev td:first-child,.htbl.pg-prev th:first-child{white-space:normal;overflow-wrap:anywhere;max-width:340px;line-height:1.35}
 .htbl.pg-prev td{padding:7px 8px}
 .htbl.pg-prev td:not(:first-child),.htbl.pg-prev th:not(:first-child){white-space:nowrap;padding-left:12px;padding-right:12px}
+.an-projtag{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;opacity:.7;margin-left:1px}
+.an-pill.an-pill-proj{background:var(--primary-light);color:var(--primary-dark)}
+.an-camp-pivot th.proj,.an-camp-pivot td.proj{background:rgba(22,199,154,.10);color:var(--primary-dark);font-weight:700}
+.an-camp-pivot th.proj{color:var(--primary-dark)}
 .ov .mx{overflow-wrap:anywhere}
 .ov .mx .htbl td:first-child,.ov .mx .htbl th:first-child{overflow-wrap:normal}
 .tm-hrow{display:flex;gap:8px;padding:5px 6px;border-radius:9px;background:var(--bg);align-items:flex-start}
@@ -1647,7 +1651,6 @@ function hMatchMetric(ds,label){label=(label==null?'':label).toString().toLowerC
 function hNumParse(raw){if(raw==null)return null;let s=String(raw).replace(/"/g,'').trim();if(s===''||s==='—')return null;s=s.replace(/[^\d.,-]/g,'');if(s===''||s==='-')return null;
   if(s.indexOf(',')>-1&&s.indexOf('.')>-1)s=s.replace(/\./g,'').replace(',','.');
   else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,'');
-  else if(s.indexOf(',')<0&&/\.\d{3}$/.test(s))s=s.replace(/\./g,'');
   else s=s.replace(',','.');
   const v=parseFloat(s);return isNaN(v)?null:v}
 function hImport(y,dsId){
@@ -2497,68 +2500,12 @@ function socTable(){
   }).join('');
   return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti '+socNetObj(net).ic+'" style="color:'+socNetObj(net).c+'"></i> '+socNetObj(net).l+' · '+propLabel(anProp)+'</div><div class="an-card-sub">Preencha os meses — salva automaticamente. Toque num card acima para trocar de rede.</div></div><div class="hwrap"><table class="htbl"><thead><tr><th>Métrica</th>'+HMESES.map(function(m){return '<th>'+m+'</th>';}).join('')+'</tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
-/* ── SOCIAL: barra de controles + importação/modelo (estética igual às outras seções) ── */
-function socControls(){
-  var years=anYears();
-  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
-  var nSel='<select class="fsel" onchange="socSetNet(this.value)">'+SOCIAL_NETS.map(function(n){return '<option value="'+n.k+'"'+(n.k===socNet?' selected':'')+'>'+n.l+'</option>';}).join('')+'</select>';
-  return '<div class="an-card an-camp-ctrl">'
-    +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Rede</span>'+nSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="socManualFocus()"><i class="ti ti-pencil"></i> Inserir manual</button>'
-    +'<button class="an-btn" onclick="socModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
-    +'<button class="an-btn prim" onclick="socImportOpen()"><i class="ti ti-upload"></i> Importar CSV/XLSX</button></div></div>';
-}
-function socManualFocus(){
-  if(anProp==='all'){toast('Selecione um perfil específico nos chips para inserir os dados.','ti-info-circle');return;}
-  var el=document.querySelector('.an-root .htbl .hin');if(el){el.focus();if(el.select)el.select();el.scrollIntoView({behavior:'smooth',block:'center'});}
-}
-function socModelDownload(){
-  if(anProp==='all'){toast('Selecione um perfil específico para baixar o modelo.','ti-info-circle');return;}
-  var net=socNetObj(socNet);
-  var esc=function(s){s=String(s);return /[",;\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
-  var head=['Metrica'].concat(HMESES).map(esc).join(',');
-  var rows=SOCIAL_METRICS.map(function(m){return [m.l,'','','','','','','','','','','',''].map(esc).join(',');});
-  var csv='\uFEFF'+head+'\n'+rows.join('\n')+'\n';
-  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-  a.href=url;a.download='modelo_social_'+net.k+'_'+anProp+'_'+anYear+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
-  toast('Modelo de '+net.l+' baixado.','ti-download');
-}
-function socMetricIdx(label){
-  label=(label==null?'':label).toString().toLowerCase().trim();if(!label)return -1;
-  function idxK(k){for(var z=0;z<SOCIAL_METRICS.length;z++)if(SOCIAL_METRICS[z].k===k)return z;return -1;}
-  for(var i=0;i<SOCIAL_METRICS.length;i++){if(label===SOCIAL_METRICS[i].l.toLowerCase()||label===SOCIAL_METRICS[i].k)return i;}
-  for(var j=0;j<SOCIAL_METRICS.length;j++){if(label.indexOf(SOCIAL_METRICS[j].l.toLowerCase())>=0)return j;}
-  if(label.indexOf('novos')>=0||label.indexOf('new')>=0)return idxK('novos');
-  if(label.indexOf('seguidor')>=0||label.indexOf('follow')>=0)return idxK('seguidores');
-  if(label.indexOf('alcance')>=0||label.indexOf('reach')>=0)return idxK('alcance');
-  if(label.indexOf('visualiza')>=0||label.indexOf('view')>=0||label.indexOf('impress')>=0)return idxK('visualizacoes');
-  if(label.indexOf('intera')>=0||label.indexOf('engaj')>=0||label.indexOf('curtid')>=0||label.indexOf('coment')>=0)return idxK('interacoes');
-  if(label.indexOf('public')>=0||label.indexOf('post')>=0)return idxK('publicacoes');
-  return -1;
-}
-function socImportOpen(){
-  if(anProp==='all'){toast('Selecione um perfil específico nos chips antes de importar.','ti-info-circle');return;}
-  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
-  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
-    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});socApply(rows);}catch(err){toast('Falha ao ler o arquivo: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
-    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});socApply(rows);};rd.readAsText(f,'UTF-8');}
-  };inp.click();
-}
-function socApply(rows){
-  var clean=rows.filter(function(c){return c&&c.some(function(x){return String(x==null?'':x).trim()!=='';});});
-  if(!clean.length){toast('Arquivo vazio ou ilegível.','ti-alert-circle');return;}
-  var net=socNet,n=0,mset={};
-  clean.forEach(function(c,idx){var mi=socMetricIdx(c[0]);if(mi<0)return;if(idx===0&&!/\d/.test(String(c[1]||'')))return;var mk=SOCIAL_METRICS[mi].k;
-    for(var off=0;off<12;off++){var v=hNumParse(c[off+1]);if(v!=null){anSocSet(anYear,anProp,net,mk,off,v);n++;mset[mk]=1;}}});
-  if(!n){toast('Não reconheci o arquivo. Use o modelo (coluna Métrica + Jan…Dez).','ti-alert-circle');return;}
-  sv();anR();toast(Object.keys(mset).length+' métrica(s) importada(s) em '+socNetObj(net).l+'.','ti-file-import');
-}
-
 function hSOCIAL(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var h=pageHeader('Social','Redes sociais — seguidores, alcance e engajamento por perfil')
     +anPropChips()
-    +socControls()
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:12px;color:var(--text-secondary);font-weight:600">Ano</span>'+ySel+'</div>'
     +socTotalCard()+socSummary()+socChart(socNet)+socTable();
   return '<div class="an-root">'+h+'</div>';
 }
@@ -3073,17 +3020,22 @@ function anShort(v,fmt){if(v==null||v==='')return'—';v=Number(v);
   return v.toLocaleString('pt-BR',{maximumFractionDigits:1});}
 
 /* ── Estatísticas por métrica (atual / anterior / projeção / variação) ── */
+function anIsCumulative(fmt){return fmt==='int'||fmt==='money';}
 function anStats(year,section,prop,mk){
   var meta=anMeta(section,mk),fmt=meta.fmt;
   var arr=anSeries(year,section,prop,mk),filled=anFilled(arr);
-  if(!filled.length)return{cur:null,prev:null,proj:null,varp:null,fmt:fmt,idx:null};
+  if(!filled.length)return{cur:null,prev:null,proj:null,varp:null,varRef:null,isPartial:false,fmt:fmt,idx:null};
   var last=filled[filled.length-1],prevO=filled.length>1?filled[filled.length-2]:null;
   var cur=last.v,prev=prevO?prevO.v:null;
   var varp=(prev!=null&&prev!==0)?((cur-prev)/Math.abs(prev)*100):null;
-  var proj=cur,now=new Date(),isCur=String(now.getFullYear())===String(year);
-  if(isCur&&last.i===now.getMonth()&&fmt==='int'){var dE=now.getDate()-1,tD=dIM(Number(year),last.i);if(dE>0)proj=Math.round(cur/dE*tD);}
-  else if(fmt==='int'&&prev!=null){proj=Math.round(cur+(cur-prev));}
-  return{cur:cur,prev:prev,proj:proj,varp:varp,fmt:fmt,idx:last.i};
+  var now=new Date(),isPartial=false,proj=cur;
+  if(String(now.getFullYear())===String(year)&&last.i===now.getMonth()){
+    var dE=Math.max(1,now.getDate()-1),tD=dIM(Number(year),last.i);
+    if(dE<tD){isPartial=true;proj=anIsCumulative(fmt)?(fmt==='int'?Math.round(cur/dE*tD):cur/dE*tD):cur;}
+  }
+  var refVal=isPartial?proj:cur;
+  var varRef=(prev!=null&&prev!==0)?((refVal-prev)/Math.abs(prev)*100):null;
+  return{cur:cur,prev:prev,proj:proj,varp:varp,varRef:varRef,isPartial:isPartial,fmt:fmt,idx:last.i};
 }
 function anSemaphore(varp){if(varp==null)return'flat';if(varp>2)return'up';if(varp<-2)return'down';return'flat';}
 function anSemColor(s){return s==='up'?'var(--success)':s==='down'?'var(--danger)':'var(--warning)';}
@@ -3220,8 +3172,8 @@ function anHistoryCharts(){
   }
   var blocks=AN_SECTIONS[anSection].metrics.map(function(m){
     var arr=anSeries(anYear,anSection,anProp,m.k);
-    var st=anStats(anYear,anSection,anProp,m.k),sem=anSemaphore(m.inv?-st.varp:st.varp);
-    var varHtml=st.varp==null?'<span class="an-var flat">—</span>':'<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
+    var st=anStats(anYear,anSection,anProp,m.k),vr=st.varRef,sem=anSemaphore(m.inv?-vr:vr);
+    var varHtml=vr==null?'<span class="an-var flat">—</span>':'<span class="an-var '+sem+'">'+(vr>=0?'▲ ':'▼ ')+Math.abs(vr).toFixed(1)+'%'+(st.isPartial?' <span class="an-projtag">proj.</span>':'')+'</span>';
     var valTxt=st.cur==null?'—':anFmt(st.cur,m.fmt);
     var body=anFilled(arr).length?anBarChart(arr,m.fmt):'<div class="an-empty"><i class="ti ti-chart-bar"></i><p>Sem dados</p></div>';
     return '<div class="an-hchart">'
@@ -3238,17 +3190,17 @@ function anHistoryCharts(){
 /* ── Componente: cards de métrica com semáforo ── */
 function anMetricCards(){
   var cards=AN_SECTIONS[anSection].metrics.map(function(m){
-    var st=anStats(anYear,anSection,anProp,m.k),sem=anSemaphore(m.inv?-st.varp:st.varp);
+    var st=anStats(anYear,anSection,anProp,m.k),vr=st.varRef,sem=anSemaphore(m.inv?-vr:vr);
     var varHtml='';
-    if(st.varp==null)varHtml='<span class="an-var flat">—</span>';
-    else varHtml='<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
+    if(vr==null)varHtml='<span class="an-var flat">—</span>';
+    else varHtml='<span class="an-var '+sem+'"'+(st.isPartial?' title="Variação da projeção do mês vs mês anterior"':'')+'>'+(vr>=0?'▲ ':'▼ ')+Math.abs(vr).toFixed(1)+'%'+(st.isPartial?' <span class="an-projtag">proj.</span>':'')+'</span>';
     var valTxt=st.cur==null?'—':anFmt(st.cur,m.fmt);
     return '<div class="an-mcard">'
-      +'<div class="an-mcard-top"><div class="an-mcard-lbl">'+m.l+'</div><div class="an-mcard-tools"><button class="an-edit" title="Inserir/editar dados" onclick="anManualOpen()"><i class="ti ti-pencil"></i></button><span class="an-dot" style="background:'+anSemColor(sem)+'" title="'+(sem==='up'?'Crescimento':sem==='down'?'Queda':'Estabilidade')+'"></span></div></div>'
+      +'<div class="an-mcard-top"><div class="an-mcard-lbl">'+m.l+'</div><div class="an-mcard-tools"><button class="an-edit" title="Inserir/editar dados" onclick="anManualOpen()"><i class="ti ti-pencil"></i></button><span class="an-dot" style="background:'+anSemColor(sem)+'" title="'+(sem==='up'?'Crescimento':sem==='down'?'Queda':'Estabilidade')+(st.isPartial?' (vs projeção)':'')+'"></span></div></div>'
       +'<div class="an-mcard-valrow"><span class="an-mcard-val">'+valTxt+'</span>'+varHtml+'</div>'
       +'<div class="an-mcard-foot">'
         +'<span class="an-pill">Mês ant.: <b>'+(st.prev==null?'—':anShort(st.prev,m.fmt))+'</b></span>'
-        +'<span class="an-pill">Projeção: <b>'+(st.proj==null?'—':anShort(st.proj,m.fmt))+'</b></span>'
+        +'<span class="an-pill'+(st.isPartial?' an-pill-proj':'')+'" title="'+(st.isPartial?'Estimativa do mês fechado (ritmo até agora)':'Mês fechado')+'">Projeção: <b>'+(st.proj==null?'—':anShort(st.proj,m.fmt))+'</b></span>'
       +'</div>'
     +'</div>';
   }).join('');
@@ -4363,13 +4315,16 @@ function anPgMonths(year,prop){var o=anPgObj(year,prop),set={};Object.keys(o).fo
 function anPgHasAny(year,prop){return anPgMonths(year,prop).length>0;}
 function anPgLastCol(){var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();var ms=anPgMonths(anYear,anProp);return ms.length?ms[ms.length-1]:11;}
 function anPgTotal(year,prop,mk,mi){if(mk==='rpm'){var rec=anPgTotal(year,prop,'rec',mi),ses=anPgTotal(year,prop,'ses',mi);return(rec!=null&&ses!=null&&ses>0)?rec/ses*1000:null;}var o=anPgObj(year,prop),s=0,any=false;Object.keys(o).forEach(function(n){var v=anPgVal(year,prop,n,mk,mi);if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
-function anPgVarp(year,prop,name,mk,lastCol){var cur=anPgVal(year,prop,name,mk,lastCol),prev=lastCol>0?anPgVal(year,prop,name,mk,lastCol-1):null;if(cur==null||prev==null||Number(prev)===0)return null;return(Number(cur)-Number(prev))/Math.abs(Number(prev))*100;}
+function anPgProjVal(year,prop,name,mk,mi){var v=anPgVal(year,prop,name,mk,mi);if(v==null)return null;var now=new Date();if(!(String(now.getFullYear())===String(year)&&mi===now.getMonth()))return v;var dE=Math.max(1,now.getDate()-1),tD=dIM(Number(year),mi);if(dE>=tD)return v;if(mk==='ses')return Math.round(Number(v)/dE*tD);if(mk==='rec')return Number(v)/dE*tD;return v;}
+function anPgProjTotal(year,prop,mk,mi){if(mk==='rpm'){var rec=anPgProjTotal(year,prop,'rec',mi),ses=anPgProjTotal(year,prop,'ses',mi);return(rec!=null&&ses!=null&&ses>0)?rec/ses*1000:null;}var o=anPgObj(year,prop),s=0,any=false;Object.keys(o).forEach(function(n){var v=anPgProjVal(year,prop,n,mk,mi);if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
+function anPgIsPartial(){var now=new Date(),lc=anPgLastCol();return String(now.getFullYear())===String(anYear)&&lc===now.getMonth()&&Math.max(1,now.getDate()-1)<dIM(Number(anYear),lc);}
+function anPgVarp(year,prop,name,mk,lastCol){var cur=anPgProjVal(year,prop,name,mk,lastCol),prev=lastCol>0?anPgVal(year,prop,name,mk,lastCol-1):null;if(cur==null||prev==null||Number(prev)===0)return null;return(Number(cur)-Number(prev))/Math.abs(Number(prev))*100;}
 function anPgVarCell(varp){if(varp==null)return '<span class="an-na">—</span>';var c=varp>=5?'var(--success)':varp>=-5?'var(--warning)':'var(--danger)';var a=varp>=0?'▲':'▼';return '<span style="color:'+c+';font-weight:700">'+(varp>=0?'+':'')+varp.toFixed(0)+'% '+a+'</span>';}
 function anPgSortSet(by){if(anPgSort.by===by)anPgSort.dir=anPgSort.dir==='asc'?'desc':'asc';else{anPgSort.by=by;anPgSort.dir=(by==='name'?'asc':'desc');}anR();}
 
 /* ── Pivot página × meses ── */
 function anPgPivot(){
-  var o=anPgObj(anYear,anProp),lastCol=anPgLastCol();
+  var o=anPgObj(anYear,anProp),lastCol=anPgLastCol(),isPartial=anPgIsPartial();
   var months=[];for(var i=0;i<=lastCol;i++)months.push(i);
   var mk=anPgCurMetric(),meta=anPgMeta(mk);
   var names=Object.keys(o).filter(function(n){return months.some(function(mi){return anPgVal(anYear,anProp,n,mk,mi)!=null;});});
@@ -4381,21 +4336,25 @@ function anPgPivot(){
   function arr(by){var on=(anPgSort.by===by)||(anPgSort.by===null&&by===String(lastCol));return on?(anPgSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
   function th(lbl,by,cls,style){var on=(anPgSort.by===by)||(anPgSort.by===null&&by===String(lastCol));return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'"'+(style?' style="'+style+'"':'')+' onclick="anPgSortSet(\''+by+'\')">'+lbl+arr(by)+'</th>';}
   var head='<tr>'+th('Página','name','stick','text-align:left')
-    +months.map(function(mi){return th(HMESES[mi]+'/'+anYear.slice(2),String(mi),(mi===lastCol?'on':''));}).join('')
+    +months.map(function(mi){return th(HMESES[mi]+'/'+anYear.slice(2)+((isPartial&&mi===lastCol)?' (parc.)':''),String(mi),(mi===lastCol?'on':''));}).join('')
+    +(isPartial?'<th class="proj">Proj. '+HMESES[lastCol]+'/'+anYear.slice(2)+'</th>':'')
     +th('Variação','var','on')+'</tr>';
   var body=names.map(function(n){
     return '<tr><td class="stick" style="text-align:left;font-weight:600;max-width:340px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(n)+'">'+anEsc(n)+'</td>'
       +months.map(function(mi){var v=anPgVal(anYear,anProp,n,mk,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
+      +(isPartial?(function(){var pv=anPgProjVal(anYear,anProp,n,mk,lastCol);return '<td class="proj">'+(pv==null?'<span class="an-na">—</span>':anShort(pv,meta.fmt))+'</td>';})():'')
       +'<td class="on">'+anPgVarCell(anPgVarp(anYear,anProp,n,mk,lastCol))+'</td></tr>';
   }).join('');
-  var totVar=(function(){var cur=anPgTotal(anYear,anProp,mk,lastCol),prev=lastCol>0?anPgTotal(anYear,anProp,mk,lastCol-1):null;if(cur==null||prev==null||prev===0)return null;return(cur-prev)/Math.abs(prev)*100;})();
+  var totVar=(function(){var cur=anPgProjTotal(anYear,anProp,mk,lastCol),prev=lastCol>0?anPgTotal(anYear,anProp,mk,lastCol-1):null;if(cur==null||prev==null||prev===0)return null;return(cur-prev)/Math.abs(prev)*100;})();
   var totLbl=mk==='rpm'?'RPM (geral)':'Total';
   var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">'+totLbl+'</td>'
     +months.map(function(mi){var v=anPgTotal(anYear,anProp,mk,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
+    +(isPartial?(function(){var pv=anPgProjTotal(anYear,anProp,mk,lastCol);return '<td class="proj">'+(pv==null?'<span class="an-na">—</span>':anShort(pv,meta.fmt))+'</td>';})():'')
     +'<td class="on">'+anPgVarCell(totVar)+'</td></tr>';
-  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por página e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' páginas · variação = '+HMESES[lastCol]+' vs '+(lastCol>0?HMESES[lastCol-1]:'—')+'</div></div>'
+  var varLbl=isPartial?('projeção de '+HMESES[lastCol]+' vs '+(lastCol>0?HMESES[lastCol-1]:'—')):(HMESES[lastCol]+' vs '+(lastCol>0?HMESES[lastCol-1]:'—'));
+  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por página e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' páginas · variação = '+varLbl+'</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div>'
-    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Clique no cabeçalho para ordenar (inclusive por Variação) · RPM = receita ÷ sessões × 1000</div>';
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Clique no cabeçalho para ordenar (inclusive por Variação) · RPM = receita ÷ sessões × 1000'+(isPartial?' · <b>Proj.</b> = estimativa do mês fechado pelo ritmo até agora ('+Math.max(1,(new Date()).getDate()-1)+'/'+dIM(Number(anYear),lastCol)+' dias)':'')+'</div>';
 }
 function anPgControls(){
   var years=anYears(),mk=anPgCurMetric();
