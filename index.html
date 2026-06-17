@@ -643,19 +643,15 @@ const CATS=['reels','artigos','pins','melhorias'];
 const CATL={reels:'Reels',artigos:'Artigos',pins:'Pins',melhorias:'Melhorias'};
 const CATC={reels:'var(--red)',artigos:'var(--blu)',pins:'var(--cor)',melhorias:'var(--pur)'};
 async function ld(){try{
-  // Cache sessionStorage: carrega instantaneamente se disponível
-  try{const c=sessionStorage.getItem('gd_v4_c');if(c){const p=JSON.parse(c);cT=p.t||{};ac=p.a||{};tE=p.e||{};
-    // Atualiza em background sem bloquear a renderização
-    sbGet('gd_v4').then(d=>{if(d&&!_svTimer){cT=d.t||{};ac=d.a||{};tE=d.e||{};try{sessionStorage.setItem('gd_v4_c',JSON.stringify({t:cT,a:ac,e:tE}));}catch(e){}R();}}).catch(()=>{});return;}}catch(e){}
-  // Sem cache: busca direto no Supabase
+  // Busca sempre direto no Supabase (sem cache)
   const d=await sbGet('gd_v4');
-  if(d){cT=d.t||{};ac=d.a||{};tE=d.e||{};try{sessionStorage.setItem('gd_v4_c',JSON.stringify({t:cT,a:ac,e:tE}));}catch(e){}}
+  if(d){cT=d.t||{};ac=d.a||{};tE=d.e||{}}
   else{// migrar dados existentes do localStorage, se houver
-  const s=localStorage.getItem('gd_v4');if(s){try{const lsd=JSON.parse(s);cT=lsd.t||{};ac=lsd.a||{};tE=lsd.e||{};await sbSet('gd_v4',{t:cT,a:ac,e:tE});localStorage.removeItem('gd_v4');try{sessionStorage.setItem('gd_v4_c',JSON.stringify({t:cT,a:ac,e:tE}));}catch(e){}}catch(e2){}}}
+  const s=localStorage.getItem('gd_v4');if(s){try{const lsd=JSON.parse(s);cT=lsd.t||{};ac=lsd.a||{};tE=lsd.e||{};await sbSet('gd_v4',{t:cT,a:ac,e:tE});localStorage.removeItem('gd_v4');}catch(e2){}}}
 }catch(e){console.error('ld error',e)}}
 // Debounce: agrupa saves rápidos em uma única chamada (500ms de espera)
 let _svTimer=null;
-function sv(){const el=document.querySelector('.sb');if(el)el.innerHTML='<i class="ti ti-clock" style="font-size:10px;opacity:.55"></i> Pendente…';clearTimeout(_svTimer);_svTimer=setTimeout(()=>{_svTimer=null;const el2=document.querySelector('.sb');if(el2)el2.innerHTML='<i class="ti ti-loader-2" style="font-size:10px;display:inline-block;animation:spin .8s linear infinite"></i> Salvando...';sbSet('gd_v4',{t:cT,a:ac,e:tE}).then(()=>{try{sessionStorage.setItem('gd_v4_c',JSON.stringify({t:cT,a:ac,e:tE}));}catch(e){}const el3=document.querySelector('.sb');if(el3)el3.innerHTML='<i class="ti ti-device-floppy" style="font-size:10px"></i> Salvo'}).catch(()=>{const el3=document.querySelector('.sb');if(el3)el3.innerHTML='<i class="ti ti-alert-circle" style="font-size:10px;color:var(--red)"></i> Erro ao salvar'})},500);}
+function sv(){const el=document.querySelector('.sb');if(el)el.innerHTML='<i class="ti ti-clock" style="font-size:10px;opacity:.55"></i> Pendente…';clearTimeout(_svTimer);_svTimer=setTimeout(()=>{_svTimer=null;const el2=document.querySelector('.sb');if(el2)el2.innerHTML='<i class="ti ti-loader-2" style="font-size:10px;display:inline-block;animation:spin .8s linear infinite"></i> Salvando...';sbSet('gd_v4',{t:cT,a:ac,e:tE}).then(()=>{const el3=document.querySelector('.sb');if(el3)el3.innerHTML='<i class="ti ti-device-floppy" style="font-size:10px"></i> Salvo'}).catch(()=>{const el3=document.querySelector('.sb');if(el3)el3.innerHTML='<i class="ti ti-alert-circle" style="font-size:10px;color:var(--red)"></i> Erro ao salvar'})},500);}
 // Helpers
 function K(m,d,i){return m+'-'+d+'-'+i}
 function EK(m,d){return m+'-'+d}
@@ -2313,4 +2309,28 @@ function toast(msg,ic){
   var t=document.getElementById('toast');
   var m=document.getElementById('toast-msg');
   if(m)m.textContent=msg;else t.textContent=msg;
-  t.classLi
+  t.classList.add('sh');setTimeout(function(){t.classList.remove('sh');},2400);
+}
+
+// Extend R() safely — avoid hoisting conflict
+var _R_hub_original = null;
+(function(){
+  var _base = R;  // captures script-1 R at runtime (not hoisted)
+  _R_hub_original = _base;
+  R = function R_extended(){
+    _base();
+    updateSidebar();
+    if(aT==='hub')initDashCharts();
+  };
+})();
+
+document.getElementById('app').innerHTML='<div style="text-align:center;padding:60px;color:var(--text-secondary)"><i class="ti ti-loader-2" style="font-size:28px;display:block;margin-bottom:10px;animation:spin .8s linear infinite"></i>Carregando do Supabase…</div>';
+ld().then(function(){
+  try{R();}
+  catch(err){
+    document.getElementById('app').innerHTML='<div style="padding:20px;background:#fff;border-radius:12px;border:2px solid #ef4444;margin:20px"><strong style="color:#ef4444;font-size:14px">Erro:</strong><pre style="font-size:11px;margin-top:8px;white-space:pre-wrap;color:#333">'+err.message+'\n\n'+err.stack+'</pre></div>';
+  }
+});
+</script>
+</body>
+</html>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
