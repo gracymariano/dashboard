@@ -3047,15 +3047,21 @@ function anExec(year,section,prop,mk){
   var meta=anMeta(section,mk),fmt=meta.fmt;
   var arr=anSeries(year,section,prop,mk),filled=anFilled(arr);
   if(!filled.length)return null;
+  // substitui o valor do mês em andamento pela projeção (estimativa de fechamento), evitando que o
+  // mês parcial apareça artificialmente como "pior mês"/"pior crescimento" só por estar incompleto
+  var now=new Date(),isCurYear=String(now.getFullYear())===String(year);
+  filled=filled.map(function(o){
+    if(isCurYear&&o.i===now.getMonth()&&(fmt==='int'||fmt==='money')){
+      var dE=dElapsed(Number(year),o.i),tD=dIM(Number(year),o.i);
+      if(dE>0)return{i:o.i,v:proj(o.v,dE,tD),isProj:true};
+    }
+    return o;
+  });
   var best=filled.reduce(function(a,b){return b.v>a.v?b:a;});
   var worst=filled.reduce(function(a,b){return b.v<a.v?b:a;});
   var first=filled[0],last=filled[filled.length-1];
   var growth=first.v?((last.v-first.v)/Math.abs(first.v)*100):0;
-  var avg=filled.reduce(function(s,o){return s+o.v;},0)/filled.length;
-  var sum=filled.reduce(function(s,o){return s+o.v;},0);
-  var goal=anGoal(year,section,prop);
-  var goalPct=goal>0?((fmt==='int'?sum:avg)/goal*100):null;
-  return{best:best,worst:worst,growth:growth,avg:avg,sum:sum,first:first,last:last,goal:goal,goalPct:goalPct,fmt:fmt};
+  return{best:best,worst:worst,growth:growth,first:first,last:last,fmt:fmt,hasProj:filled.some(function(o){return o.isProj;})};
 }
 
 /* ── Ações de UI ── */
@@ -3106,21 +3112,20 @@ function anExecRow(){
       +card('ti-trophy','Melhor mês','—')
       +card('ti-trending-down','Pior mês','—')
       +card('ti-chart-arrows-vertical','Crescimento acumulado','—')
-      +card('ti-chart-bar','Média mensal','—')
-      +card('ti-target','Meta anual','—','Defina uma meta','style="cursor:pointer" onclick="anGoalEdit()"')
       +'</div>';
   }
   var gc=ex.growth>0?'var(--success)':ex.growth<0?'var(--danger)':'var(--warning)';
   var gar=ex.growth>=0?'▲':'▼';
-  var goalTxt=ex.goalPct!=null?(ex.goalPct.toFixed(0)+'%'):'—';
-  var goalSub=ex.goal>0?('Meta: '+anShort(ex.goal,meta.fmt)):'Defina uma meta';
+  var projTag=' <i class="ti ti-chart-line" style="font-size:10px;color:var(--text-secondary)" title="Mês em andamento — valor projetado"></i>';
+  var bestSub=anFmt(ex.best.v,meta.fmt)+(ex.best.isProj?projTag:'');
+  var worstSub=anFmt(ex.worst.v,meta.fmt)+(ex.worst.isProj?projTag:'');
+  var growthSub=AN_MES_LONG[ex.first.i].slice(0,3)+' → '+AN_MES_LONG[ex.last.i].slice(0,3)+(ex.last.isProj?projTag:'');
   return '<div class="an-exec">'
-    +card('ti-trophy','Melhor mês',AN_MES_LONG[ex.best.i].slice(0,3)+'/'+anYear.slice(2),anFmt(ex.best.v,meta.fmt))
-    +card('ti-trending-down','Pior mês',AN_MES_LONG[ex.worst.i].slice(0,3)+'/'+anYear.slice(2),anFmt(ex.worst.v,meta.fmt))
-    +card('ti-chart-arrows-vertical','Crescimento acumulado','<span style="color:'+gc+'">'+(ex.growth>=0?'+':'')+ex.growth.toFixed(0)+'% '+gar+'</span>',AN_MES_LONG[ex.first.i].slice(0,3)+' → '+AN_MES_LONG[ex.last.i].slice(0,3))
-    +card('ti-chart-bar','Média mensal',anFmt(meta.fmt==='int'?Math.round(ex.avg):ex.avg,meta.fmt),anFilled(anSeries(anYear,anSection,anProp,fk)).length+' meses preenchidos')
-    +card('ti-target','Meta anual','<span style="color:'+(ex.goalPct!=null?(ex.goalPct>=100?'var(--success)':ex.goalPct>=60?'var(--warning)':'var(--danger)'):'var(--navy)')+'">'+goalTxt+'</span>',goalSub+' · editar','style="cursor:pointer" onclick="anGoalEdit()"')
-    +'</div>';
+    +card('ti-trophy','Melhor mês',AN_MES_LONG[ex.best.i].slice(0,3)+'/'+anYear.slice(2),bestSub)
+    +card('ti-trending-down','Pior mês',AN_MES_LONG[ex.worst.i].slice(0,3)+'/'+anYear.slice(2),worstSub)
+    +card('ti-chart-arrows-vertical','Crescimento acumulado','<span style="color:'+gc+'">'+(ex.growth>=0?'+':'')+ex.growth.toFixed(0)+'% '+gar+'</span>',growthSub)
+    +'</div>'
+    +(ex.hasProj?'<div class="an-card-sub" style="margin-top:-4px;margin-bottom:10px"><i class="ti ti-info-circle" style="font-size:11px"></i> O mês em andamento entra com a projeção de fechamento (não o valor parcial), para uma comparação justa.</div>':'');
 }
 
 function anGoalEdit(){
@@ -3137,6 +3142,7 @@ function anGoalProgress(){
   var goal=anMGoal(anYear,anSection,anProp,mi,mk);
   var real=anSeries(anYear,anSection,anProp,mk)[mi];
   var realNum=(real==null||real==='')?0:Number(real);
+  var prevVal=mi>0?anSeries(anYear,anSection,anProp,mk)[mi-1]:null;
   var now=new Date(),isCurMonth=String(now.getFullYear())===String(anYear)&&now.getMonth()===mi;
   var projVal=null;
   if(isCurMonth&&(meta.fmt==='int'||meta.fmt==='money')){var dE=dElapsed(Number(anYear),mi),tD=dIM(Number(anYear),mi);if(dE>0)projVal=proj(realNum,dE,tD);}
@@ -3148,17 +3154,21 @@ function anGoalProgress(){
   var mSel='<select class="fsel" onchange="anSetGoalMetric(this.value)" title="Métrica da meta">'+sec.metrics.map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="anSetGoalMonth(this.value)" title="Mês da meta">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select>';
   var setBtn='<button class="an-btn prim" onclick="anMGoalEdit('+mi+')"><i class="ti ti-target"></i> '+(goal>0?'Editar meta':'Definir meta')+'</button>';
+  var prevTxt='<div class="an-gp-pair"><span>Mês anterior ('+(mi>0?HMESES[mi-1]:'—')+')</span><b>'+(prevVal!=null?anFmt(prevVal,meta.fmt):'—')+'</b></div>';
   var right;
   if(goal>0){
     var falta=goal-realNum;
     var projTxt=projVal!=null?('<div class="an-gp-pair"><span>Projeção do mês</span><b style="color:'+projCol+'">'+anFmt(projVal,meta.fmt)+(projPct!=null?' ('+projPct.toFixed(0)+'%)':'')+'</b></div>'):'';
     right='<div class="an-gp-nums"><div class="an-gp-pair"><span>Realizado</span><b>'+anFmt(realNum,meta.fmt)+'</b></div>'
+      +prevTxt
       +'<div class="an-gp-pair"><span>Meta</span><b>'+anFmt(goal,meta.fmt)+'</b></div>'
       +'<div class="an-gp-pair"><span>'+(falta>0?'Falta':'Excedente')+'</span><b style="color:'+col+'">'+anFmt(Math.abs(falta),meta.fmt)+'</b></div>'
       +projTxt
       +'<div class="an-gp-pct" style="color:'+col+'">'+pct.toFixed(0)+'%</div></div>';
   }else{
-    right='<div class="an-gp-nums"><div class="an-gp-pair"><span>Realizado</span><b>'+anFmt(realNum,meta.fmt)+'</b></div><div style="font-size:11.5px;color:var(--text-secondary);align-self:center">Escolha a métrica e o mês acima e defina a meta para acompanhar o progresso.</div></div>';
+    right='<div class="an-gp-nums"><div class="an-gp-pair"><span>Realizado</span><b>'+anFmt(realNum,meta.fmt)+'</b></div>'
+      +prevTxt
+      +'<div style="font-size:11.5px;color:var(--text-secondary);align-self:center">Escolha a métrica e o mês acima e defina a meta para acompanhar o progresso.</div></div>';
   }
   var projNote=(goal>0&&isCurMonth&&projVal==null)?'<div class="an-card-sub" style="margin-top:6px"><i class="ti ti-info-circle" style="font-size:11px"></i> Projeção indisponível para esta métrica (disponível para métricas acumulativas como cliques/impressões/sessões/receita).</div>':'';
   return '<div class="an-card an-gp">'
@@ -3929,6 +3939,8 @@ function anRevApply(rows){
    SEO OPORTUNIDADE — Search Console: oportunidade (pos 4–20) + decaimento
    ═══════════════════════════════════════════════════════════════ */
 var anSeoMi=null, anSeoTab='opp', _anSeoImp=null;
+var anSeoOppSort={by:'i',dir:'desc'}; // ordenação da tabela de Oportunidades SEO: by = 'c'|'i'|'ctr'|'pp'|'p'
+function anSeoOppSortSet(by){if(anSeoOppSort.by===by)anSeoOppSort.dir=anSeoOppSort.dir==='asc'?'desc':'asc';else{anSeoOppSort.by=by;anSeoOppSort.dir=(by==='pp'||by==='p')?'asc':'desc';}anR();}
 function anSeoObj(year,prop){var s=anStore();s.seo[year]=s.seo[year]||{};s.seo[year][prop]=s.seo[year][prop]||{};return s.seo[year][prop];}
 function anSeoMonths(year,prop){var o=anSeoObj(year,prop);return Object.keys(o).map(Number).sort(function(a,b){return a-b;});}
 function anSeoCurMi(){if(anSeoMi!=null&&anSeoMi>=0&&anSeoMi<=11)return anSeoMi;var ms=anSeoMonths(anYear,anProp);if(ms.length)return ms[ms.length-1];var now=new Date();return String(now.getFullYear())===String(anYear)?now.getMonth():0;}
@@ -3988,31 +4000,44 @@ function anSeoView(){
   return h;
 }
 function anSeoOpp(mi){
-  var rows=anSeoRows(anYear,anProp,mi).filter(function(r){return r.p!=null&&r.p>=3.5&&r.p<=20;}).sort(function(a,b){return b.i-a.i;}).slice(0,60);
+  var rows=anSeoRows(anYear,anProp,mi).filter(function(r){return r.p!=null&&r.p>=3.5&&r.p<=20;}).slice(0,60);
   if(!rows.length)return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-target-arrow"></i> Oportunidades · '+AN_MES_LONG[mi]+'/'+anYear+'</div></div><div class="an-empty"><i class="ti ti-target-arrow"></i><p>Nenhum termo na posição 4–20 neste mês</p><span>Importe um mês com dados de posição</span></div></div>';
   var prevRows=mi>0?anSeoRows(anYear,anProp,mi-1):[],pm={};prevRows.forEach(function(r){pm[r.q]=r;});
-  var body=rows.map(function(r){var ctr=r.i>0?(r.c/r.i*100):0;var pr=pm[r.q],pp=(pr&&pr.p!=null)?pr.p:null;var pomove=(pp!=null)?(r.p-pp):null;
+  rows=rows.map(function(r){var ctr=r.i>0?(r.c/r.i*100):0;var pr=pm[r.q],pp=(pr&&pr.p!=null)?pr.p:null;return{q:r.q,c:r.c,i:r.i,ctr:ctr,pp:pp,p:r.p};});
+  var by=anSeoOppSort.by,dir=anSeoOppSort.dir;
+  rows.sort(function(a,b){var va=a[by],vb=b[by];if(va==null)va=-Infinity;if(vb==null)vb=-Infinity;return dir==='asc'?va-vb:vb-va;});
+  function arrow(by2){return anSeoOppSort.by===by2?(anSeoOppSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
+  function th(lbl,by2,cls){var on=anSeoOppSort.by===by2;return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'" onclick="anSeoOppSortSet(\''+by2+'\')">'+lbl+arrow(by2)+'</th>';}
+  var body=rows.map(function(r){var pomove=(r.p!=null&&r.pp!=null)?(r.p-r.pp):null;
     return '<tr><td class="stick" style="text-align:left;max-width:360px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.q)+'">'+anEsc(r.q)+'</td>'
-      +'<td>'+anFmt(r.c,'int')+'</td><td>'+anFmt(r.i,'int')+'</td><td>'+ctr.toFixed(1)+'%</td>'
-      +'<td>'+(pp!=null?pp.toFixed(1):'—')+'</td>'
-      +'<td class="on">'+r.p.toFixed(1)+(pomove!=null?' <span style="font-size:10px;color:'+(pomove>0?'var(--danger)':'var(--success)')+'">('+(pomove>0?'+':'')+pomove.toFixed(1)+')</span>':'')+'</td></tr>';
+      +'<td>'+anFmt(r.c,'int')+'</td><td>'+anFmt(r.i,'int')+'</td><td>'+r.ctr.toFixed(1)+'%</td>'
+      +'<td>'+(r.pp!=null?r.pp.toFixed(1):'—')+'</td>'
+      +'<td class="on">'+r.p.toFixed(1)+(pomove!=null?' <span style="font-size:10px;color:'+(pomove>0?'var(--danger)':'var(--success)')+'">Variação: '+(pomove>0?'+':'')+pomove.toFixed(1)+'</span>':'')+'</td></tr>';
   }).join('');
-  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-target-arrow"></i> Oportunidades de SEO · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · termos na posição 4–20 (quase página 1) ordenados por impressões</div></div>'
-    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Consulta / Página</th><th>Cliques</th><th>Impressões</th><th>CTR</th><th>Posição ('+(mi>0?HMESES[mi-1]:'mês ant.')+')</th><th class="on">Posição ('+HMESES[mi]+')</th></tr></thead><tbody>'+body+'</tbody></table></div>'
+  var head='<tr><th class="stick" style="text-align:left">Consulta / Página</th>'
+    +th('Cliques','c')+th('Impressões','i')+th('CTR','ctr')+th('Posição ('+(mi>0?HMESES[mi-1]:'mês ant.')+')','pp')+th('Posição ('+HMESES[mi]+')','p','on')+'</tr>';
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-target-arrow"></i> Oportunidades de SEO · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · termos na posição 4–20 (quase página 1) · clique no cabeçalho para ordenar</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-bulb" style="font-size:12px"></i> Foque nesses: pequenas melhorias de conteúdo/links podem levá-los à página 1 e multiplicar os cliques.</div></div>';
 }
 function anSeoDecay(mi){
   if(mi<1||!anSeoRows(anYear,anProp,mi-1).length)return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-trending-down"></i> Decaimento</div></div><div class="an-empty"><i class="ti ti-trending-down"></i><p>Preciso de dois meses para comparar</p><span>Importe '+(mi>0?AN_MES_LONG[mi-1]:'o mês anterior')+' e '+AN_MES_LONG[mi]+' para ver quem perdeu cliques</span></div></div>';
+  var now=new Date(),isCurMonth=String(now.getFullYear())===String(anYear)&&now.getMonth()===mi;
+  var projFactor=null;if(isCurMonth){var dE=dElapsed(Number(anYear),mi),tD=dIM(Number(anYear),mi);if(dE>0)projFactor=tD/dE;}
   var cur=anSeoRows(anYear,anProp,mi),prev=anSeoRows(anYear,anProp,mi-1),pm={};prev.forEach(function(r){pm[r.q]=r;});
-  var rows=cur.map(function(r){var pr=pm[r.q];if(!pr)return null;return{q:r.q,c:r.c,pc:pr.c,d:r.c-pr.c,p:r.p,pp:pr.p};}).filter(function(x){return x&&x.d<0;}).sort(function(a,b){return a.d-b.d;}).slice(0,60);
-  if(!rows.length)return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-trending-down"></i> Decaimento · '+AN_MES_LONG[mi]+' vs '+AN_MES_LONG[mi-1]+'</div></div><div class="an-empty"><i class="ti ti-mood-happy"></i><p>Nenhuma queda relevante de cliques</p><span>Nenhum termo presente nos dois meses perdeu cliques</span></div></div>';
+  var rows=cur.map(function(r){var pr=pm[r.q];if(!pr)return null;var proj=projFactor?Math.round(r.c*projFactor):null;var cmpVal=proj!=null?proj:r.c;return{q:r.q,c:r.c,proj:proj,pc:pr.c,d:cmpVal-pr.c,realD:r.c-pr.c,p:r.p,pp:pr.p};}).filter(function(x){return x&&x.d<0;}).sort(function(a,b){return a.d-b.d;}).slice(0,60);
+  if(!rows.length)return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-trending-down"></i> Decaimento · '+AN_MES_LONG[mi]+' vs '+AN_MES_LONG[mi-1]+'</div></div><div class="an-empty"><i class="ti ti-mood-happy"></i><p>Nenhuma queda relevante de cliques</p><span>Nenhum termo presente nos dois meses perdeu cliques'+(projFactor?' (considerando a projeção de fechamento do mês)':'')+'</span></div></div>';
   var body=rows.map(function(r){var pomove=(r.p!=null&&r.pp!=null)?(r.p-r.pp):null;
+    var clicksCell=projFactor?(anFmt(r.c,'int')+' <span style="font-size:9px;color:var(--text-secondary)">(proj: '+anFmt(r.proj,'int')+')</span>'):anFmt(r.c,'int');
     return '<tr><td class="stick" style="text-align:left;max-width:340px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.q)+'">'+anEsc(r.q)+'</td>'
-      +'<td>'+anFmt(r.c,'int')+'</td><td>'+anFmt(r.pc,'int')+'</td><td class="on" style="color:var(--danger);font-weight:700">'+r.d+'</td>'
-      +'<td>'+(r.p!=null?r.p.toFixed(1):'—')+(pomove!=null?' <span style="font-size:10px;color:'+(pomove>0?'var(--danger)':'var(--success)')+'">('+(pomove>0?'+':'')+pomove.toFixed(1)+')</span>':'')+'</td></tr>';
+      +'<td>'+clicksCell+'</td><td>'+anFmt(r.pc,'int')+'</td>'
+      +'<td class="on" style="color:var(--danger);font-weight:700">'+r.d+(projFactor&&r.realD!==r.d?' <span style="font-size:9px;color:var(--text-secondary);font-weight:400">(real: '+r.realD+')</span>':'')+'</td>'
+      +'<td>'+(r.pp!=null?r.pp.toFixed(1):'—')+'</td>'
+      +'<td>'+(r.p!=null?r.p.toFixed(1):'—')+(pomove!=null?' <span style="font-size:10px;color:'+(pomove>0?'var(--danger)':'var(--success)')+'">Variação: '+(pomove>0?'+':'')+pomove.toFixed(1)+'</span>':'')+'</td></tr>';
   }).join('');
-  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-trending-down"></i> Conteúdo em decaimento · '+AN_MES_LONG[mi]+' vs '+AN_MES_LONG[mi-1]+'</div><div class="an-card-sub">'+propLabel(anProp)+' · maiores quedas de cliques (candidatos a atualização)</div></div>'
-    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Consulta / Página</th><th>Cliques ('+HMESES[mi]+')</th><th>Cliques ('+HMESES[mi-1]+')</th><th class="on">Δ</th><th>Posição</th></tr></thead><tbody>'+body+'</tbody></table></div>'
+  var projNote=projFactor?' · queda calculada com a projeção de cliques do mês em andamento (evita falso decaimento por mês incompleto)':'';
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-trending-down"></i> Conteúdo em decaimento · '+AN_MES_LONG[mi]+' vs '+AN_MES_LONG[mi-1]+'</div><div class="an-card-sub">'+propLabel(anProp)+' · maiores quedas de cliques (candidatos a atualização)'+projNote+'</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Consulta / Página</th><th>Cliques ('+HMESES[mi]+')</th><th>Cliques ('+HMESES[mi-1]+')</th><th class="on">Δ</th><th>Posição ('+HMESES[mi-1]+')</th><th>Posição ('+HMESES[mi]+')</th></tr></thead><tbody>'+body+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-refresh" style="font-size:12px"></i> Atualize/reotimize esses conteúdos: perderam tráfego e costumam ter o melhor retorno por esforço.</div></div>';
 }
 
