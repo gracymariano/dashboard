@@ -552,7 +552,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .an-gp-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .an-gp-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .an-gp-controls .fsel{max-width:210px}
-.an-gp-bar{height:12px;border-radius:8px;background:var(--bg);overflow:hidden;border:1px solid rgba(11,34,57,.06);position:relative}
+.an-gp-bar{height:12px;border-radius:8px;background:var(--bg);overflow:hidden;border:1px solid rgba(11,34,57,.06)}
 .an-gp-fill{height:100%;border-radius:8px;min-width:2px;transition:width .5s ease}
 .an-gp-nums{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:13px}
 .an-gp-pair{display:flex;flex-direction:column;gap:2px}
@@ -1649,10 +1649,6 @@ function hNumParse(raw){if(raw==null)return null;let s=String(raw).replace(/"/g,
   else if((s.match(/\./g)||[]).length>1)s=s.replace(/\./g,'');
   else s=s.replace(',','.');
   const v=parseFloat(s);return isNaN(v)?null:v}
-// Parser específico para métricas de % (fmt 'pct'): o GA4/GSC às vezes exporta a taxa já em fração
-// decimal (ex.: "0.8") em vez de percentual (ex.: "80%"). Quando o texto original não traz o símbolo "%"
-// e o valor numérico cai entre -1 e 1 (fração plausível), convertemos para escala percentual (×100).
-function hPctParse(raw){const v=hNumParse(raw);if(v==null)return null;const hasPctSign=String(raw==null?'':raw).indexOf('%')>-1;if(!hasPctSign&&v!==0&&Math.abs(v)<=1)return v*100;return v}
 function hImport(y,dsId){
   const inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
   inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const ext=(f.name.split('.').pop()||'').toLowerCase();
@@ -2327,9 +2323,6 @@ function seoSetTab(t){seoTab=t;rHub(document.getElementById('app'));}
    ═══════════════════════════════════════════════════════════════ */
 var SEG_DIMS=[{k:'device',l:'Dispositivo',ic:'ti-devices'},{k:'country',l:'País',ic:'ti-world'},{k:'appearance',l:'Aspecto da pesquisa',ic:'ti-sparkles'}];
 var segDim='device', segMi=null, _anSegImp=null;
-var segSortDir='desc'; // ordenação da tabela de Segmentos por Cliques: 'desc' (padrão) ou 'asc'
-function segSortToggle(){segSortDir=segSortDir==='asc'?'desc':'asc';anR();}
-function segSortArrow(){return segSortDir==='asc'?' \u25B2':' \u25BC';}
 function segDimObj(k){return SEG_DIMS.find(function(d){return d.k===k;})||SEG_DIMS[0];}
 function anSegObj(year,prop){var s=anStore();s.seoseg=s.seoseg||{};s.seoseg[year]=s.seoseg[year]||{};s.seoseg[year][prop]=s.seoseg[year][prop]||{};return s.seoseg[year][prop];}
 function anSegRows(year,prop,dim,mi){var o=anSegObj(year,prop);return(o[dim]&&o[dim][mi])?o[dim][mi]:[];}
@@ -2376,15 +2369,15 @@ function anSegApply(){
   sv();document.getElementById('an-segimp-ov').remove();_anSegImp=null;segDim=dim;segMi=mi;anR();
   toast('Importado — '+segDimObj(dim).l+' · '+AN_MES_LONG[mi]+'/'+anYear+'.','ti-file-import');
 }
-function segInsightCard(ic,col,title,txt,act){
-  return '<div class="seg-insight" style="border-left:3px solid '+col+'"><i class="ti '+ic+'" style="color:'+col+'"></i><div><div class="seg-ins-t">'+title+'</div><div class="seg-ins-x">'+txt+'</div></div>'+(act?'<button class="an-btn an-opp-btn" onclick="'+act+'"><i class="ti ti-arrow-right"></i></button>':'')+'</div>';
+function segInsightCard(ic,col,title,txt){
+  return '<div class="seg-insight" style="border-left:3px solid '+col+'"><i class="ti '+ic+'" style="color:'+col+'"></i><div><div class="seg-ins-t">'+title+'</div><div class="seg-ins-x">'+txt+'</div></div></div>';
 }
 function anSegInsight(dim,rows,totC,totI){
   if(dim==='device'){
     var rel=rows.filter(function(r){return r.i>=(totI*0.03)&&r.p!=null;});
     if(rel.length>=2){
       var best=rel.reduce(function(a,b){return b.p<a.p?b:a;}),worst=rel.reduce(function(a,b){return b.p>a.p?b:a;}),gap=worst.p-best.p;
-      if(gap>=4)return segInsightCard('ti-devices','var(--warning)','Diferença grande entre dispositivos','Em <b>'+anEsc(best.n)+'</b> você está na posição <b>'+best.p.toFixed(1).replace('.',',')+'</b>, mas em <b>'+anEsc(worst.n)+'</b> cai para <b>'+worst.p.toFixed(1).replace('.',',')+'</b> — '+gap.toFixed(1).replace('.',',')+' posições pior. Vale revisar conteúdo e experiência no '+anEsc(worst.n).toLowerCase()+'.',"seoSetTab('pgdev')");
+      if(gap>=4)return segInsightCard('ti-devices','var(--warning)','Diferença grande entre dispositivos','Em <b>'+anEsc(best.n)+'</b> você está na posição <b>'+best.p.toFixed(1).replace('.',',')+'</b>, mas em <b>'+anEsc(worst.n)+'</b> cai para <b>'+worst.p.toFixed(1).replace('.',',')+'</b> — '+gap.toFixed(1).replace('.',',')+' posições pior. Vale revisar conteúdo e experiência no '+anEsc(worst.n).toLowerCase()+'.');
     }
   } else if(dim==='country'){
     var br=rows.find(function(r){return /bra[sz]il/i.test(r.n);}),brI=br?br.i:0,brC=br?br.c:0,fI=totI-brI,fC=totC-brC;
@@ -2409,18 +2402,17 @@ function anSegView(){
     var totC=rows.reduce(function(a,b){return a+(b.c||0);},0),totI=rows.reduce(function(a,b){return a+(b.i||0);},0),maxC=Math.max.apply(null,rows.map(function(r){return r.c||0;}))||1;
     var months=anSegMonths(anYear,anProp,dim),prevMi=null;months.forEach(function(m){if(m<mi&&(prevMi==null||m>prevMi))prevMi=m;});
     var prevMap={};if(prevMi!=null)anSegRows(anYear,anProp,dim,prevMi).forEach(function(r){prevMap[r.n]=r;});
-    var sortedRows=rows.slice().sort(function(a,b){return segSortDir==='asc'?(a.c||0)-(b.c||0):(b.c||0)-(a.c||0);});
-    var trs=sortedRows.map(function(r){var share=totC?(r.c/totC*100):0,ctr=r.i?(r.c/r.i*100):0,pr=prevMap[r.n];
+    var trs=rows.map(function(r){var share=totC?(r.c/totC*100):0,ctr=r.i?(r.c/r.i*100):0,pr=prevMap[r.n];
       var cD='';if(pr&&pr.c!=null){var d=r.c-pr.c,pct=pr.c?(d/pr.c*100):null;if(pct!=null&&Math.abs(pct)>=1)cD=' <span class="seg-d" style="color:'+(d>0?'var(--success)':'var(--danger)')+'">'+(d>0?'▲':'▼')+Math.abs(pct).toFixed(0)+'%</span>';}
       var pD='';if(pr&&pr.p!=null&&r.p!=null){var dp=r.p-pr.p;if(Math.abs(dp)>=0.3)pD=' <span class="seg-d" style="color:'+(dp<0?'var(--success)':'var(--danger)')+'">'+(dp<0?'▼':'▲')+Math.abs(dp).toFixed(1).replace('.',',')+'</span>';}
       return '<tr><td style="text-align:left"><div style="font-weight:600">'+anEsc(r.n)+'</div><div class="seg-bar"><div class="seg-bar-f" style="width:'+(r.c/maxC*100).toFixed(1)+'%"></div></div></td>'
-        +'<td style="text-align:left">'+fN(r.c)+' <span class="seg-share">'+share.toFixed(0)+'%</span>'+cD+'</td><td>'+fN(r.i)+'</td><td>'+ctr.toFixed(1).replace('.',',')+'%</td><td>'+(r.p==null?'—':r.p.toFixed(1).replace('.',','))+pD+'</td></tr>';
+        +'<td>'+fN(r.c)+' <span class="seg-share">'+share.toFixed(0)+'%</span>'+cD+'</td><td>'+fN(r.i)+'</td><td>'+ctr.toFixed(1).replace('.',',')+'%</td><td>'+(r.p==null?'—':r.p.toFixed(1).replace('.',','))+pD+'</td></tr>';
     }).join('');
     var ctrTot=totI?(totC/totI*100):0;
     var cmp=prevMi!=null?' · vs '+AN_MES_LONG[prevMi]:'';
     body=anSegInsight(dim,rows,totC,totI)
       +'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti '+segDimObj(dim).ic+'"></i> '+segDimObj(dim).l+' · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+rows.length+' segmentos · '+fN(totC)+' cliques · '+fN(totI)+' impressões · CTR '+ctrTot.toFixed(1).replace('.',',')+'%'+cmp+'</div></div>'
-      +'<div class="hwrap"><table class="htbl seg-tbl"><thead><tr><th style="text-align:left">'+segDimObj(dim).l+'</th><th class="an-sortable" style="text-align:left" onclick="segSortToggle()">Cliques'+segSortArrow()+'</th><th>Impressões</th><th>CTR</th><th>Posição</th></tr></thead><tbody>'+trs+'</tbody></table></div>'
+      +'<div class="hwrap"><table class="htbl seg-tbl"><thead><tr><th style="text-align:left">'+segDimObj(dim).l+'</th><th>Cliques</th><th>Impressões</th><th>CTR</th><th>Posição</th></tr></thead><tbody>'+trs+'</tbody></table></div>'
       +(prevMi!=null?'<div class="tl-sub" style="padding:8px 4px 0">▲▼ comparado a '+AN_MES_LONG[prevMi]+'/'+anYear+' · em Posição, ▼ verde = melhorou (subiu no ranking).</div>':'')+'</div>';
   }
   return sub+ctrl+body;
@@ -2515,7 +2507,7 @@ function hSOCIAL(){
 }
 function hSEO(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
-  var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['seg','Segmentos','ti-chart-donut'],['pgdev','Páginas/Disp.','ti-devices'],['vel','Velocidade','ti-gauge']];
+  var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['seg','Segmentos','ti-chart-donut'],['vel','Velocidade','ti-gauge']];
   var bar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(seoTab===t[0]?' active':'')+'" onclick="seoSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
   if(seoTab==='busca'){
     anSection='gsc';
@@ -2526,9 +2518,6 @@ function hSEO(){
   }
   if(seoTab==='seg'){
     return pageHeader('SEO','Segmentos · dispositivo, país e aspecto da pesquisa')+'<div class="an-root">'+bar+anPropChips()+anSegView()+'</div>';
-  }
-  if(seoTab==='pgdev'){
-    return pageHeader('SEO','Páginas por Dispositivo · posição Celular vs Computador')+'<div class="an-root">'+bar+anPropChips()+pgDevView()+'</div>';
   }
   anSection='cwv';
   return pageHeader('SEO','Velocidade · Core Web Vitals')+'<div class="an-root">'+bar+anPropChips()+anSectionBody()+'</div>';
@@ -2972,7 +2961,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -3137,37 +3126,27 @@ function anGoalProgress(){
   var goal=anMGoal(anYear,anSection,anProp,mi,mk);
   var real=anSeries(anYear,anSection,anProp,mk)[mi];
   var realNum=(real==null||real==='')?0:Number(real);
-  var now=new Date(),isCurMonth=String(now.getFullYear())===String(anYear)&&now.getMonth()===mi;
-  var projVal=null;
-  if(isCurMonth&&(meta.fmt==='int'||meta.fmt==='money')){var dE=dElapsed(Number(anYear),mi),tD=dIM(Number(anYear),mi);if(dE>0)projVal=proj(realNum,dE,tD);}
   var pct=goal>0?(realNum/goal*100):null;
-  var projPct=(goal>0&&projVal!=null)?(projVal/goal*100):null;
   var pctClamp=pct==null?0:Math.max(0,Math.min(100,pct));
   var col=pct==null?'var(--text-secondary)':pct>=100?'var(--success)':pct>=60?'var(--warning)':'var(--danger)';
-  var projCol=projPct==null?col:projPct>=100?'var(--success)':projPct>=60?'var(--warning)':'var(--danger)';
   var mSel='<select class="fsel" onchange="anSetGoalMetric(this.value)" title="Métrica da meta">'+sec.metrics.map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="anSetGoalMonth(this.value)" title="Mês da meta">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select>';
   var setBtn='<button class="an-btn prim" onclick="anMGoalEdit('+mi+')"><i class="ti ti-target"></i> '+(goal>0?'Editar meta':'Definir meta')+'</button>';
   var right;
   if(goal>0){
     var falta=goal-realNum;
-    var projTxt=projVal!=null?('<div class="an-gp-pair"><span>Projeção do mês</span><b style="color:'+projCol+'">'+anFmt(projVal,meta.fmt)+(projPct!=null?' ('+projPct.toFixed(0)+'%)':'')+'</b></div>'):'';
     right='<div class="an-gp-nums"><div class="an-gp-pair"><span>Realizado</span><b>'+anFmt(realNum,meta.fmt)+'</b></div>'
       +'<div class="an-gp-pair"><span>Meta</span><b>'+anFmt(goal,meta.fmt)+'</b></div>'
       +'<div class="an-gp-pair"><span>'+(falta>0?'Falta':'Excedente')+'</span><b style="color:'+col+'">'+anFmt(Math.abs(falta),meta.fmt)+'</b></div>'
-      +projTxt
       +'<div class="an-gp-pct" style="color:'+col+'">'+pct.toFixed(0)+'%</div></div>';
   }else{
     right='<div class="an-gp-nums"><div class="an-gp-pair"><span>Realizado</span><b>'+anFmt(realNum,meta.fmt)+'</b></div><div style="font-size:11.5px;color:var(--text-secondary);align-self:center">Escolha a métrica e o mês acima e defina a meta para acompanhar o progresso.</div></div>';
   }
-  var projNote=(goal>0&&isCurMonth&&projVal==null)?'<div class="an-card-sub" style="margin-top:6px"><i class="ti ti-info-circle" style="font-size:11px"></i> Projeção indisponível para esta métrica (disponível para métricas acumulativas como cliques/impressões/sessões/receita).</div>':'';
   return '<div class="an-card an-gp">'
     +'<div class="an-gp-hd"><div class="an-card-ttl"><i class="ti ti-flag-check"></i> Meta do mês</div>'
     +'<div class="an-gp-controls">'+mSel+moSel+setBtn+'</div></div>'
-    +'<div class="an-gp-bar"><div class="an-gp-fill" style="width:'+pctClamp.toFixed(1)+'%;background:'+col+'"></div>'
-    +(goal>0&&projPct!=null?'<div class="an-gp-fill" style="position:absolute;top:0;left:0;height:100%;width:'+Math.max(0,Math.min(100,projPct)).toFixed(1)+'%;background:'+projCol+';opacity:.35"></div>':'')
-    +'</div>'
-    +right+projNote+'</div>';
+    +'<div class="an-gp-bar"><div class="an-gp-fill" style="width:'+pctClamp.toFixed(1)+'%;background:'+col+'"></div></div>'
+    +right+'</div>';
 }
 function anMGoalEdit(mi){
   if(anProp==='all'){toast('Selecione uma propriedade específica para definir a meta.','ti-info-circle');return;}
@@ -3489,8 +3468,8 @@ function anParse(section,rows){
   var wideRows=clean.filter(function(cols){if(!anMatchCol(sec,cols[0]))return false;
     var nn=0;for(var i=1;i<cols.length;i++){if(hNumParse(cols[i])!=null)nn++;}return nn>=2;});
   if(wideRows.length>=2){
-    wideRows.forEach(function(cols){var mk=anMatchCol(sec,cols[0]);if(!mk||result[mk])return;var meta=anMeta(section,mk);
-      var nums=[];for(var i=1;i<cols.length&&nums.length<12;i++)nums.push(meta.fmt==='pct'?hPctParse(cols[i]):hNumParse(cols[i]));while(nums.length<12)nums.push(null);result[mk]=nums;});
+    wideRows.forEach(function(cols){var mk=anMatchCol(sec,cols[0]);if(!mk||result[mk])return;
+      var nums=[];for(var i=1;i<cols.length&&nums.length<12;i++)nums.push(hNumParse(cols[i]));while(nums.length<12)nums.push(null);result[mk]=nums;});
     return{mode:'wide',data:result,year:year,monthIdx:-1,defMode:'replace'};
   }
   // formato GA4: cabeçalho com métricas em colunas, dados por canal/linha
@@ -3509,23 +3488,21 @@ function anParse(section,rows){
     if(dateCol>=0&&dataRows.some(function(c){return _parseYM(c[dateCol]);})){
       var byM={};dataRows.forEach(function(c){var ym=_parseYM(c[dateCol]);if(!ym)return;if(ym.y)year=ym.y;(byM[ym.mi]=byM[ym.mi]||[]).push(c);});
       Object.keys(colMap).forEach(function(mk){var ci=colMap[mk],meta=anMeta(section,mk),wk=meta.w||sec.head,wci=colMap[wk],arr=Array(12).fill(null);
-        var pv=function(c,idx){return meta.fmt==='pct'?hPctParse(c[idx]):hNumParse(c[idx]);};
         Object.keys(byM).forEach(function(miK){var mi2=Number(miK),mr=byM[miK],val2=null;
-          if(meta.fmt==='int'){var s2=0,a2=false;mr.forEach(function(c){var v=pv(c,ci);if(v!=null){s2+=v;a2=true;}});val2=a2?s2:null;}
-          else{if(wci!=null&&mk!==wk){var nu=0,de=0;mr.forEach(function(c){var v=pv(c,ci),w=hNumParse(c[wci]);if(v!=null&&w!=null){nu+=v*w;de+=w;}});if(de>0)val2=nu/de;}
-            if(val2==null){var ns=mr.map(function(c){return pv(c,ci);}).filter(function(v){return v!=null;});if(ns.length)val2=ns.reduce(function(a,b){return a+b;},0)/ns.length;}}
+          if(meta.fmt==='int'){var s2=0,a2=false;mr.forEach(function(c){var v=hNumParse(c[ci]);if(v!=null){s2+=v;a2=true;}});val2=a2?s2:null;}
+          else{if(wci!=null&&mk!==wk){var nu=0,de=0;mr.forEach(function(c){var v=hNumParse(c[ci]),w=hNumParse(c[wci]);if(v!=null&&w!=null){nu+=v*w;de+=w;}});if(de>0)val2=nu/de;}
+            if(val2==null){var ns=mr.map(function(c){return hNumParse(c[ci]);}).filter(function(v){return v!=null;});if(ns.length)val2=ns.reduce(function(a,b){return a+b;},0)/ns.length;}}
           if(val2!=null)arr[mi2]=val2;});
         result[mk]=arr;});
       return{mode:'month',data:result,year:year,monthIdx:-1,defMode:'update'};
     }
     Object.keys(colMap).forEach(function(mk){var ci=colMap[mk],meta=anMeta(section,mk),val=null;
       var wk=meta.w||sec.head,wci=colMap[wk]; // coluna de contagem usada como peso
-      var pv=function(c,idx){return meta.fmt==='pct'?hPctParse(c[idx]):hNumParse(c[idx]);};
-      if(totalRow){val=pv(totalRow,ci);}
-      else if(meta.fmt==='int'){var s=0,any=false;dataRows.forEach(function(c){var v=pv(c,ci);if(v!=null){s+=v;any=true;}});val=any?s:null;}
+      if(totalRow){val=hNumParse(totalRow[ci]);}
+      else if(meta.fmt==='int'){var s=0,any=false;dataRows.forEach(function(c){var v=hNumParse(c[ci]);if(v!=null){s+=v;any=true;}});val=any?s:null;}
       else{ // taxa/tempo/média: média PONDERADA pela contagem (resultado correto a nível de propriedade)
-        if(wci!=null&&mk!==wk){var num=0,den=0;dataRows.forEach(function(c){var v=pv(c,ci),w=hNumParse(c[wci]);if(v!=null&&w!=null){num+=v*w;den+=w;}});if(den>0)val=num/den;}
-        if(val==null){var nums=dataRows.map(function(c){return pv(c,ci);}).filter(function(v){return v!=null;});if(nums.length)val=nums.reduce(function(a,b){return a+b;},0)/nums.length;}
+        if(wci!=null&&mk!==wk){var num=0,den=0;dataRows.forEach(function(c){var v=hNumParse(c[ci]),w=hNumParse(c[wci]);if(v!=null&&w!=null){num+=v*w;den+=w;}});if(den>0)val=num/den;}
+        if(val==null){var nums=dataRows.map(function(c){return hNumParse(c[ci]);}).filter(function(v){return v!=null;});if(nums.length)val=nums.reduce(function(a,b){return a+b;},0)/nums.length;}
       }
       var arr=Array(12).fill(null);if(val!=null)arr[mi]=val;result[mk]=arr;});
     return{mode:'month',data:result,year:year,monthIdx:mi,defMode:'update'};
@@ -3990,15 +3967,12 @@ function anSeoView(){
 function anSeoOpp(mi){
   var rows=anSeoRows(anYear,anProp,mi).filter(function(r){return r.p!=null&&r.p>=3.5&&r.p<=20;}).sort(function(a,b){return b.i-a.i;}).slice(0,60);
   if(!rows.length)return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-target-arrow"></i> Oportunidades · '+AN_MES_LONG[mi]+'/'+anYear+'</div></div><div class="an-empty"><i class="ti ti-target-arrow"></i><p>Nenhum termo na posição 4–20 neste mês</p><span>Importe um mês com dados de posição</span></div></div>';
-  var prevRows=mi>0?anSeoRows(anYear,anProp,mi-1):[],pm={};prevRows.forEach(function(r){pm[r.q]=r;});
-  var body=rows.map(function(r){var ctr=r.i>0?(r.c/r.i*100):0;var pr=pm[r.q],pp=(pr&&pr.p!=null)?pr.p:null;var pomove=(pp!=null)?(r.p-pp):null;
+  var body=rows.map(function(r){var ctr=r.i>0?(r.c/r.i*100):0;
     return '<tr><td class="stick" style="text-align:left;max-width:360px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.q)+'">'+anEsc(r.q)+'</td>'
-      +'<td>'+anFmt(r.c,'int')+'</td><td>'+anFmt(r.i,'int')+'</td><td>'+ctr.toFixed(1)+'%</td>'
-      +'<td>'+(pp!=null?pp.toFixed(1):'—')+'</td>'
-      +'<td class="on">'+r.p.toFixed(1)+(pomove!=null?' <span style="font-size:10px;color:'+(pomove>0?'var(--danger)':'var(--success)')+'">('+(pomove>0?'+':'')+pomove.toFixed(1)+')</span>':'')+'</td></tr>';
+      +'<td>'+anFmt(r.c,'int')+'</td><td>'+anFmt(r.i,'int')+'</td><td>'+ctr.toFixed(1)+'%</td><td class="on">'+r.p.toFixed(1)+'</td></tr>';
   }).join('');
   return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-target-arrow"></i> Oportunidades de SEO · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · termos na posição 4–20 (quase página 1) ordenados por impressões</div></div>'
-    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Consulta / Página</th><th>Cliques</th><th>Impressões</th><th>CTR</th><th>Posição ('+(mi>0?HMESES[mi-1]:'mês ant.')+')</th><th class="on">Posição ('+HMESES[mi]+')</th></tr></thead><tbody>'+body+'</tbody></table></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Consulta / Página</th><th>Cliques</th><th>Impressões</th><th>CTR</th><th class="on">Posição</th></tr></thead><tbody>'+body+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-bulb" style="font-size:12px"></i> Foque nesses: pequenas melhorias de conteúdo/links podem levá-los à página 1 e multiplicar os cliques.</div></div>';
 }
 function anSeoDecay(mi){
@@ -4015,85 +3989,6 @@ function anSeoDecay(mi){
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Consulta / Página</th><th>Cliques ('+HMESES[mi]+')</th><th>Cliques ('+HMESES[mi-1]+')</th><th class="on">Δ</th><th>Posição</th></tr></thead><tbody>'+body+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-refresh" style="font-size:12px"></i> Atualize/reotimize esses conteúdos: perderam tráfego e costumam ter o melhor retorno por esforço.</div></div>';
 }
-
-/* ═══════════════════════════════════════════════════════════════
-   PÁGINAS POR DISPOSITIVO — compara a posição da mesma página no Search
-   Console entre Celular e Computador (dois imports separados, um por
-   dispositivo, já filtrados na aba "Dispositivos" do GSC antes de exportar
-   o relatório de "Páginas").
-   armazenamento: s.pgdev[year][prop][device][mi] = [{q,c,i,p}] (mesmo formato de anSeoParse)
-   ═══════════════════════════════════════════════════════════════ */
-var PGDEV_LIST=[{k:'mobile',l:'Celular',ic:'ti-device-mobile'},{k:'desktop',l:'Computador',ic:'ti-device-desktop'}];
-var pgDevMi=null,pgDevImportDevice='mobile',_anPgDevImp=null;
-function pgDevObj(year,prop){var s=anStore();s.pgdev[year]=s.pgdev[year]||{};s.pgdev[year][prop]=s.pgdev[year][prop]||{};return s.pgdev[year][prop];}
-function pgDevRows(year,prop,device,mi){var o=pgDevObj(year,prop);return(o[device]&&o[device][mi])?o[device][mi]:[];}
-function pgDevMonths(year,prop){var o=pgDevObj(year,prop),set={};PGDEV_LIST.forEach(function(d){Object.keys(o[d.k]||{}).forEach(function(mi){set[mi]=1;});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
-function pgDevHasAny(year,prop){return pgDevMonths(year,prop).length>0;}
-function pgDevCurMi(){var ms=pgDevMonths(anYear,anProp);if(pgDevMi!=null&&ms.indexOf(pgDevMi)>=0)return pgDevMi;if(ms.length)return ms[ms.length-1];var now=new Date();return String(now.getFullYear())===String(anYear)?now.getMonth():0;}
-function pgDevSetMi(v){pgDevMi=parseInt(v,10);anR();}
-function pgDevSetImportDevice(d){pgDevImportDevice=d;}
-function pgDevImportOpen(){
-  if(anProp==='all'){toast('Selecione uma propriedade específica para importar.','ti-info-circle');return;}
-  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
-  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
-    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});pgDevPreview(rows,f.name);}catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
-    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});pgDevPreview(rows,f.name);};rd.readAsText(f,'UTF-8');}
-  };inp.click();
-}
-function pgDevPreview(rows,fname){
-  var p=anSeoParse(rows);if(!p.rows.length){toast('Não reconheci o arquivo. Use o export "Páginas" do Search Console (filtrado por dispositivo).','ti-alert-circle');return;}
-  _anPgDevImp={parsed:p,device:pgDevImportDevice};var mi=pgDevCurMi();
-  var devSel='<select class="fsel" id="an-pgdev-device" onchange="_anPgDevImp.device=this.value">'+PGDEV_LIST.map(function(d){return '<option value="'+d.k+'"'+(d.k===pgDevImportDevice?' selected':'')+'>'+d.l+'</option>';}).join('')+'</select>';
-  var msel='<select class="fsel" id="an-pgdev-mi">';for(var i=0;i<12;i++)msel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';msel+='</select>';
-  var o=document.createElement('div');o.className='ov';o.id='an-pgdevimp-ov';
-  o.innerHTML='<div class="mx" style="width:560px;max-width:96vw"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar Páginas por Dispositivo — '+propLabel(anProp)+'</h4>'
-    +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br><strong>'+p.rows.length+'</strong> páginas com cliques, impressões e posição.</p>'
-    +'<p style="font-size:11px;color:var(--text-secondary);margin:0 0 10px;line-height:1.5"><i class="ti ti-info-circle" style="font-size:12px"></i> Confirme abaixo de qual dispositivo este arquivo foi exportado (deve ter sido filtrado na aba "Dispositivos" do GSC antes de exportar "Páginas").</p>'
-    +'<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Dispositivo deste arquivo</div>'+devSel
-    +'<div style="font-size:12px;font-weight:600;color:var(--navy);margin:10px 0 6px">Mês de referência</div>'+msel
-    +'<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'an-pgdevimp-ov\').remove();_anPgDevImp=null">Cancelar</button><button class="pr" onclick="pgDevApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
-  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anPgDevImp=null;}});
-}
-function pgDevApply(){
-  if(!_anPgDevImp)return;
-  var device=document.getElementById('an-pgdev-device').value,mi=parseInt(document.getElementById('an-pgdev-mi').value);
-  var o=pgDevObj(anYear,anProp);o[device]=o[device]||{};o[device][mi]=_anPgDevImp.parsed.rows;
-  sv();document.getElementById('an-pgdevimp-ov').remove();_anPgDevImp=null;pgDevMi=mi;anR();
-  toast('Páginas ('+(PGDEV_LIST.find(function(d){return d.k===device;})||{}).l+') importadas — '+AN_MES_LONG[mi]+'/'+anYear+'.','ti-file-import');
-}
-function pgDevView(){
-  var h='';var mi=pgDevCurMi();var years=anYears();
-  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
-  var moSel='<select class="fsel" onchange="pgDevSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
-  h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="pgDevImportOpen()"><i class="ti ti-upload"></i> Importar Páginas (por dispositivo)</button></div></div>';
-  if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-devices"></i><p>Selecione uma propriedade</p><span>Páginas por Dispositivo é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
-  var mob=pgDevRows(anYear,anProp,'mobile',mi),desk=pgDevRows(anYear,anProp,'desktop',mi);
-  if(!mob.length&&!desk.length){
-    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-devices"></i><p>Sem dados de Páginas por Dispositivo em '+AN_MES_LONG[mi]+'/'+anYear+'</p><span>No Search Console: aba "Dispositivos" → clique em "Celular" → aba "Páginas" → exportar. Repita clicando em "Computador". Importe os dois arquivos aqui.</span></div></div>';
-    return h;
-  }
-  var mobMap={};mob.forEach(function(r){mobMap[r.q]=r;});
-  var deskMap={};desk.forEach(function(r){deskMap[r.q]=r;});
-  var names={};Object.keys(mobMap).forEach(function(n){names[n]=1;});Object.keys(deskMap).forEach(function(n){names[n]=1;});
-  var rows=Object.keys(names).map(function(n){var rm=mobMap[n],rd=deskMap[n];var pm=rm?rm.p:null,pd=rd?rd.p:null;var gap=(pm!=null&&pd!=null)?(pd-pm):null;return{n:n,pm:pm,pd:pd,cm:rm?rm.c:0,cd:rd?rd.c:0,gap:gap};});
-  rows=rows.filter(function(r){return r.gap!=null;}).sort(function(a,b){return b.gap-a.gap;});
-  if(!rows.length){
-    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-devices"></i><p>Importe os dois dispositivos para este mês</p><span>Já tenho '+(mob.length?'Celular':'')+(mob.length&&desk.length?' e ':'')+(desk.length?'Computador':'')+', mas preciso da mesma página presente nos dois arquivos para calcular a diferença.</span></div></div>';
-    return h;
-  }
-  var worst=rows[0];
-  var insight=worst.gap>=4?('<div class="seg-insight" style="border-left:3px solid var(--warning)"><i class="ti ti-devices" style="color:var(--warning)"></i><div><div class="seg-ins-t">Maior diferença entre dispositivos</div><div class="seg-ins-x">Em <b>'+anEsc(worst.n)+'</b>: posição <b>'+worst.pm.toFixed(1).replace('.',',')+'</b> no Celular vs <b>'+worst.pd.toFixed(1).replace('.',',')+'</b> no Computador — '+worst.gap.toFixed(1).replace('.',',')+' posições pior no Computador. Vale revisar conteúdo e experiência nessa página.</div></div></div>'):'';
-  var body=rows.map(function(r){var c=r.gap>=4?'var(--danger)':r.gap<=-4?'var(--success)':'var(--warning)';
-    return '<tr><td class="stick" style="text-align:left;max-width:360px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.n)+'">'+anEsc(r.n)+'</td>'
-      +'<td>'+(r.pm!=null?r.pm.toFixed(1).replace('.',','):'—')+'</td><td>'+(r.pd!=null?r.pd.toFixed(1).replace('.',','):'—')+'</td>'
-      +'<td class="on" style="color:'+c+';font-weight:700">'+(r.gap>=0?'+':'')+r.gap.toFixed(1).replace('.',',')+'</td></tr>';
-  }).join('');
-  return h+insight+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-devices"></i> Páginas por Dispositivo · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+rows.length+' páginas presentes em Celular e Computador · ordenado pela maior diferença (Computador pior)</div></div>'
-    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Página</th><th>Posição (Celular)</th><th>Posição (Computador)</th><th class="on">Diferença</th></tr></thead><tbody>'+body+'</tbody></table></div>'
-    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-bulb" style="font-size:12px"></i> Diferença positiva = pior no Computador. Priorize revisar conteúdo/experiência nas páginas com maior diferença.</div></div>';
-}
-
 
 /* ═══════════════════════════════════════════════════════════════
    RETENÇÃO — matriz de coortes (mês de aquisição × meses depois)
@@ -4128,7 +4023,7 @@ function anRetMatrix(){
     for(var off=0;off<=maxOff;off++){
       if(off>maxo){cells+='<td style="background:rgba(11,34,57,.02)"></td>';continue;}
       var v=anRetVal(anYear,anProp,ci,off);
-      cells+='<td style="background:'+anRetColor(v,off,maxRet)+';color:'+(off===0?'#fff':'var(--navy)')+';font-weight:'+(off===0?'700':'600')+'">'+(v==null?'<span class="an-na">—</span>':v.toFixed(2).replace('.',',')+'%')+'</td>';
+      cells+='<td style="background:'+anRetColor(v,off,maxRet)+';color:'+(off===0?'#fff':'var(--navy)')+';font-weight:'+(off===0?'700':'600')+'">'+(v==null?'<span class="an-na">—</span>':(v>=10?Math.round(v):v.toFixed(1).replace('.',','))+'%')+'</td>';
     }
     rows+='<tr><td class="stick" style="text-align:left;font-weight:600">'+HMESES[ci]+'/'+anYear.slice(2)+'</td>'+cells+'</tr>';
   }
@@ -4178,7 +4073,7 @@ function anRetManBody(){
    ADSENSE — dados diários (a partir de Março) · estética do Analytics
    Métricas: Impressões, Cliques, CTR, eCPM, Receita, Visibilidade
    ═══════════════════════════════════════════════════════════════ */
-var ADS_METRICS_ADM=[
+var ADS_METRICS=[
   {k:'imp', l:'Impressões',    fmt:'int',   kind:'sum'},
   {k:'cli', l:'Cliques',       fmt:'int',   kind:'sum'},
   {k:'ctr', l:'CTR',           fmt:'pct',   kind:'rate', num:'cli', den:'imp', mult:100},
@@ -4186,31 +4081,17 @@ var ADS_METRICS_ADM=[
   {k:'rec', l:'Receita',       fmt:'money', kind:'sum'},
   {k:'vis', l:'Visibilidade',  fmt:'pct',   kind:'wavg', w:'imp'}
 ];
-// Colunas do relatório padrão do Google AdSense (nesta ordem)
-var ADS_METRICS_ADSENSE=[
-  {k:'rec',    l:'Ganhos Estimados',          fmt:'money', kind:'sum'},
-  {k:'pv',     l:'Visualizações de página',   fmt:'int',   kind:'sum'},
-  {k:'rpmpv',  l:'RPM de página',             fmt:'money', kind:'rate', num:'rec', den:'pv',  mult:1000},
-  {k:'imp',    l:'Impressões',                fmt:'int',   kind:'sum'},
-  {k:'rpmimp', l:'RPM de impressões',         fmt:'money', kind:'rate', num:'rec', den:'imp', mult:1000},
-  {k:'cli',    l:'Cliques',                   fmt:'int',   kind:'sum'},
-  {k:'cpc',    l:'CPC',                       fmt:'money', kind:'rate', num:'rec', den:'cli', mult:1},
-  {k:'avimp',  l:'Impressões de Active View', fmt:'int',   kind:'sum'},
-  {k:'ctr',    l:'CTR',                       fmt:'pct',   kind:'rate', num:'cli', den:'imp', mult:100}
-];
-var ADS_METRICS=ADS_METRICS_ADM; // mantido por compatibilidade; usar anAdsCurMetrics() nas funções
-function anAdsCurMetrics(){return anAdsSrc==='adm'?ADS_METRICS_ADSENSE:ADS_METRICS_ADM;}
 var anAdsYear=String(new Date().getFullYear());
 var anAdsMi=null, anAdsFocus='rec';
 var _anAdsImp=null,_anAdsMan=null;
 var anAdsSrc='ads', anAdsLbl='AdSense';
 function anAdsLabel(){return anAdsLbl;}
-function anAdsMeta(mk){return anAdsCurMetrics().find(function(m){return m.k===mk;})||{fmt:'int',l:mk,kind:'sum'};}
+function anAdsMeta(mk){return ADS_METRICS.find(function(m){return m.k===mk;})||{fmt:'int',l:mk,kind:'sum'};}
 function anAdsObj(year,mi){var s=anStore();var b=anAdsSrc==='adm'?s.adm:s.ads;b[year]=b[year]||{};b[year][mi]=b[year][mi]||{};return b[year][mi];}
 function anAdsArr(year,mi,mk){var o=anAdsObj(year,mi);if(!Array.isArray(o[mk]))o[mk]=Array(31).fill(null);return o[mk];}
 function anAdsSet(year,mi,mk,di,val){var a=anAdsArr(year,mi,mk);a[di]=(val===''||val==null||isNaN(Number(val)))?null:Number(val);}
 function anAdsValD(year,mi,mk,di){var o=anAdsObj(year,mi);return Array.isArray(o[mk])?o[mk][di]:null;}
-function anAdsDaysWith(year,mi){var o=anAdsObj(year,mi),set={};anAdsCurMetrics().forEach(function(m){(o[m.k]||[]).forEach(function(v,i){if(v!=null&&v!=='')set[i]=1;});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
+function anAdsDaysWith(year,mi){var o=anAdsObj(year,mi),set={};ADS_METRICS.forEach(function(m){(o[m.k]||[]).forEach(function(v,i){if(v!=null&&v!=='')set[i]=1;});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
 function anAdsHasAny(year,mi){return anAdsDaysWith(year,mi).length>0;}
 function anAdsSumD(year,mi,mk){var a=anAdsArr(year,mi,mk),s=0,any=false;a.forEach(function(v){if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
 function anAdsMonthTotal(year,mi,mk){var meta=anAdsMeta(mk);
@@ -4236,7 +4117,7 @@ function anAdsYears(){var ys=new Set([String(new Date().getFullYear())]);var s=a
 
 /* ── Cards mensais (com melhor dia) ── */
 function anAdsCards(mi){
-  var cards=anAdsCurMetrics().map(function(m){
+  var cards=ADS_METRICS.map(function(m){
     var st=anAdsStats(anAdsYear,mi,m.k),sem=anSemaphore(st.varp),best=anAdsBestDay(anAdsYear,mi,m.k);
     var varHtml=st.varp==null?'<span class="an-var flat">—</span>':'<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
     var bestHtml=best?'<div class="an-ads-best"><i class="ti ti-star-filled"></i> Melhor dia: <b>'+(best.d+1)+'/'+HMESES[mi]+'</b> · '+anFmt(best.v,m.fmt)+'</div>':'<div class="an-ads-best" style="opacity:.5"><i class="ti ti-star"></i> Melhor dia: —</div>';
@@ -4268,7 +4149,7 @@ function anAdsDaySvg(mi,mk){
   return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">'+out+'</svg>';
 }
 function anAdsCharts(mi){
-  var blocks=anAdsCurMetrics().map(function(m){
+  var blocks=ADS_METRICS.map(function(m){
     var st=anAdsStats(anAdsYear,mi,m.k),sem=anSemaphore(st.varp),best=anAdsBestDay(anAdsYear,mi,m.k);
     var varHtml=st.varp==null?'<span class="an-var flat" style="font-size:11px">—</span>':'<span class="an-var '+sem+'" style="font-size:11px">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
     var valTxt=st.cur==null?'—':anFmt(st.cur,m.fmt);
@@ -4285,15 +4166,15 @@ function anAdsCharts(mi){
 function anAdsTable(mi){
   var days=anAdsDaysWith(anAdsYear,mi);
   if(!days.length)return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> Dados diários · '+HMESES[mi]+'/'+anAdsYear+'</div></div><div class="an-empty"><i class="ti ti-table"></i><p>Nenhum dia preenchido</p><span>Importe o relatório do AdSense ou use "Inserir manual"</span></div></div>';
-  var best={};anAdsCurMetrics().forEach(function(m){var b=anAdsBestDay(anAdsYear,mi,m.k);best[m.k]=b?b.d:-1;});
-  var head='<tr><th class="stick" style="text-align:left">Dia</th>'+anAdsCurMetrics().map(function(m){return '<th>'+m.l+'</th>';}).join('')+'</tr>';
+  var best={};ADS_METRICS.forEach(function(m){var b=anAdsBestDay(anAdsYear,mi,m.k);best[m.k]=b?b.d:-1;});
+  var head='<tr><th class="stick" style="text-align:left">Dia</th>'+ADS_METRICS.map(function(m){return '<th>'+m.l+'</th>';}).join('')+'</tr>';
   var body=days.map(function(di){
     return '<tr><td class="stick" style="text-align:left;font-weight:600">'+(di+1)+'/'+HMESES[mi]+'</td>'
-      +anAdsCurMetrics().map(function(m){var v=anAdsValD(anAdsYear,mi,m.k,di);var isBest=best[m.k]===di&&v!=null;
+      +ADS_METRICS.map(function(m){var v=anAdsValD(anAdsYear,mi,m.k,di);var isBest=best[m.k]===di&&v!=null;
         return '<td'+(isBest?' class="an-ads-bestcell"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,m.fmt))+(isBest?' <i class="ti ti-star-filled" style="font-size:10px;color:var(--warning)"></i>':'')+'</td>';}).join('')
     +'</tr>';
   }).join('');
-  var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">Total / Mês</td>'+anAdsCurMetrics().map(function(m){return '<td>'+anShort(anAdsMonthTotal(anAdsYear,mi,m.k),m.fmt)+'</td>';}).join('')+'</tr>';
+  var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">Total / Mês</td>'+ADS_METRICS.map(function(m){return '<td>'+anShort(anAdsMonthTotal(anAdsYear,mi,m.k),m.fmt)+'</td>';}).join('')+'</tr>';
   return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> Dados diários · '+HMESES[mi]+'/'+anAdsYear+'</div><div class="an-card-sub">'+days.length+' dias · ⭐ melhor dia de cada métrica</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div></div>';
 }
@@ -4314,9 +4195,8 @@ function anAdsControls(mi){
 /* ── Modelo CSV ── */
 function anAdsModelDownload(){
   var esc=function(s){return /[",;\n]/.test(s)?'"'+String(s).replace(/"/g,'""')+'"':s;};
-  var mets=anAdsCurMetrics();
-  var head=['Data'].concat(mets.map(function(m){return m.l;})).map(esc).join(',');
-  var ex=[anAdsYear+'-03-01'].concat(mets.map(function(){return '';})).map(esc).join(',');
+  var head=['Data','Impressões','Cliques','CTR','eCPM','Receita','Visibilidade'].map(esc).join(',');
+  var ex=[anAdsYear+'-03-01','','','','','',''].map(esc).join(',');
   var csv='\uFEFF'+head+'\n'+ex+'\n';
   var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download='modelo_'+anAdsLbl.toLowerCase().replace(/[^a-z]/g,'')+'_diario.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
@@ -4324,22 +4204,8 @@ function anAdsModelDownload(){
 }
 
 /* ── Import diário (AdSense / Ad Manager) ── */
-// Ad Manager: conjunto antigo (imp/cli/ctr/ecpm/rec/vis)
-var ADS_COL_ADM=[['ctr',['ctr','taxa de clique']],['ecpm',['ecpm','rpm','cpm']],['vis',['visib','viewab','active view','visíve','visive']],['imp',['impress']],['cli',['clique','clicks','click']],['rec',['receita','estimated earnings','ganhos','rendiment','valor estimado','revenue','faturament']]];
-// AdSense: colunas do relatório padrão — regras mais específicas primeiro para não confundir "RPM de página" com "RPM de impressões"
-var ADS_COL_ADSENSE=[
-  ['rpmpv',  ['rpm de página','rpm de pagina','page rpm']],
-  ['rpmimp', ['rpm de impress','impression rpm']],
-  ['cpc',    ['cpc','custo por clique','cost per click']],
-  ['avimp',  ['impressões de active view','impressoes de active view','active view impress','viewable impress']],
-  ['ctr',    ['ctr','taxa de clique']],
-  ['pv',     ['visualizações de página','visualizacoes de pagina','page views','pageviews']],
-  ['imp',    ['impress']],
-  ['cli',    ['clique','clicks','click']],
-  ['rec',    ['ganhos estimados','estimated earnings','receita','rendiment','valor estimado','revenue','faturament']]
-];
-function anAdsCurCol(){return anAdsSrc==='adm'?ADS_COL_ADSENSE:ADS_COL_ADM;}
-function anAdsMatchCol(label){label=(label==null?'':label).toString().toLowerCase().replace(/"/g,'').trim();var COL=anAdsCurCol();for(var i=0;i<COL.length;i++){for(var k=0;k<COL[i][1].length;k++){if(label.indexOf(COL[i][1][k])>=0)return COL[i][0];}}return null;}
+var ADS_COL=[['imp',['impress']],['cli',['clique','clicks','click']],['ctr',['ctr']],['ecpm',['ecpm','rpm','cpm']],['rec',['receita','estimated earnings','ganhos','rendiment','valor estimado','revenue','faturament']],['vis',['visib','viewab','active view','visíve','visive']]];
+function anAdsMatchCol(label){label=(label==null?'':label).toString().toLowerCase().replace(/"/g,'').trim();for(var i=0;i<ADS_COL.length;i++){for(var k=0;k<ADS_COL[i][1].length;k++){if(label.indexOf(ADS_COL[i][1][k])>=0)return ADS_COL[i][0];}}return null;}
 function anAdsIsDateCol(label){label=(label==null?'':label).toString().toLowerCase();return label.indexOf('dia')>=0||label.indexOf('data')>=0||label.indexOf('date')>=0;}
 function anAdsParseDate(s){s=String(s||'').trim();var m=s.match(/(20\d{2})-(\d{1,2})-(\d{1,2})/);if(m)return{y:m[1],mi:parseInt(m[2],10)-1,d:parseInt(m[3],10)-1};m=s.match(/(\d{1,2})\/(\d{1,2})\/(20\d{2})/);if(m)return{y:m[3],mi:parseInt(m[2],10)-1,d:parseInt(m[1],10)-1};m=s.match(/(20\d{2})(\d{2})(\d{2})/);if(m)return{y:m[1],mi:parseInt(m[2],10)-1,d:parseInt(m[3],10)-1};return null;}
 function anAdsImportOpen(){
@@ -4393,8 +4259,8 @@ function anAdsManBody(){
     +'<select class="fsel" style="margin-left:auto" onchange="_anAdsMan.mi=parseInt(this.value);anAdsManBody()">';
   for(var i=2;i<12;i++)h+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anAdsYear+'</option>';
   h+='</select></h4><p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px">Preencha os dias de '+AN_MES_LONG[mi]+'. Salva automaticamente no Supabase.</p>';
-  h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl"><thead><tr><th>Dia</th>'+anAdsCurMetrics().map(function(m){return '<th>'+m.l+'</th>';}).join('')+'</tr></thead><tbody>';
-  for(var d=0;d<tD;d++){h+='<tr><td style="font-weight:600">'+(d+1)+'</td>'+anAdsCurMetrics().map(function(m){var v=anAdsValD(anAdsYear,mi,m.k,d);return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anAdsSet(anAdsYear,'+mi+',\''+m.k+'\','+d+',this.value);sv()"></td>';}).join('')+'</tr>';}
+  h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl"><thead><tr><th>Dia</th>'+ADS_METRICS.map(function(m){return '<th>'+m.l+'</th>';}).join('')+'</tr></thead><tbody>';
+  for(var d=0;d<tD;d++){h+='<tr><td style="font-weight:600">'+(d+1)+'</td>'+ADS_METRICS.map(function(m){var v=anAdsValD(anAdsYear,mi,m.k,d);return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anAdsSet(anAdsYear,'+mi+',\''+m.k+'\','+d+',this.value);sv()"></td>';}).join('')+'</tr>';}
   h+='</tbody></table></div><div class="mbb"><button onclick="anAdsImportOpen()"><i class="ti ti-upload" style="font-size:11px"></i> Importar CSV</button><button class="pr" onclick="document.getElementById(\'an-adsman-ov\').remove();_anAdsMan=null;R()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
   document.getElementById('an-adsman-body').innerHTML=h;
 }
@@ -4445,13 +4311,6 @@ function anPgVarCell(varp){if(varp==null)return '<span class="an-na">—</span>'
 function anPgSortSet(by){if(anPgSort.by===by)anPgSort.dir=anPgSort.dir==='asc'?'desc':'asc';else{anPgSort.by=by;anPgSort.dir=(by==='name'?'asc':'desc');}anR();}
 
 /* ── Pivot página × meses ── */
-function anPgProjFactor(lastCol){
-  var now=new Date();
-  if(String(now.getFullYear())!==String(anYear)||now.getMonth()!==lastCol)return null; // só projeta se for o mês em andamento
-  var dE=now.getDate()-1,tD=dIM(Number(anYear),lastCol);
-  if(dE<=0)return null;
-  return tD/dE;
-}
 function anPgPivot(){
   var o=anPgObj(anYear,anProp),lastCol=anPgLastCol();
   var months=[];for(var i=0;i<=lastCol;i++)months.push(i);
@@ -4459,8 +4318,6 @@ function anPgPivot(){
   var names=Object.keys(o).filter(function(n){return months.some(function(mi){return anPgVal(anYear,anProp,n,mk,mi)!=null;});});
   if(!names.length)return '<div class="an-empty"><i class="ti ti-file-text"></i><p>Sem '+meta.l+' para '+propLabel(anProp)+' em '+anYear+'</p><span>Importe um CSV de "Páginas e telas" do GA4 (com Sessões e Receita de anúncios), ou use o modelo</span></div>';
   var effBy=anPgSort.by===null?'var':anPgSort.by;
-  var projFactor=meta.derived?null:anPgProjFactor(lastCol); // RPM é derivado (taxa) — não projeta por dias decorridos
-  function projOf(v){return(v==null||!projFactor)?null:v*projFactor;}
   function sortKey(n){if(effBy==='name')return(n||'').toLowerCase();if(effBy==='var'){var v=anPgVarp(anYear,anProp,n,mk,lastCol);return v==null?-Infinity:v;}var mv=anPgVal(anYear,anProp,n,mk,Number(effBy));return mv==null?-Infinity:Number(mv);}
   function sortKey2(n){if(anPgSort.by!==null)return sortKey(n);var mv=anPgVal(anYear,anProp,n,mk,lastCol);return mv==null?-Infinity:Number(mv);}
   names.sort(function(a,b){var ka=sortKey2(a),kb=sortKey2(b);if(typeof ka==='string')return anPgSort.dir==='asc'?ka.localeCompare(kb):kb.localeCompare(ka);return anPgSort.dir==='asc'?ka-kb:kb-ka;});
@@ -4468,24 +4325,18 @@ function anPgPivot(){
   function th(lbl,by,cls,style){var on=(anPgSort.by===by)||(anPgSort.by===null&&by===String(lastCol));return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'"'+(style?' style="'+style+'"':'')+' onclick="anPgSortSet(\''+by+'\')">'+lbl+arr(by)+'</th>';}
   var head='<tr>'+th('Página','name','stick','text-align:left')
     +months.map(function(mi){return th(HMESES[mi]+'/'+anYear.slice(2),String(mi),(mi===lastCol?'on':''));}).join('')
-    +(projFactor?'<th class="on">Projeção</th>':'')
     +th('Variação','var','on')+'</tr>';
   var body=names.map(function(n){
-    var lastV=anPgVal(anYear,anProp,n,mk,lastCol),pv=projOf(lastV);
     return '<tr><td class="stick" style="text-align:left;font-weight:600;max-width:340px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(n)+'">'+anEsc(n)+'</td>'
       +months.map(function(mi){var v=anPgVal(anYear,anProp,n,mk,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
-      +(projFactor?'<td class="on">'+(pv==null?'<span class="an-na">—</span>':anShort(pv,meta.fmt))+'</td>':'')
       +'<td class="on">'+anPgVarCell(anPgVarp(anYear,anProp,n,mk,lastCol))+'</td></tr>';
   }).join('');
   var totVar=(function(){var cur=anPgTotal(anYear,anProp,mk,lastCol),prev=lastCol>0?anPgTotal(anYear,anProp,mk,lastCol-1):null;if(cur==null||prev==null||prev===0)return null;return(cur-prev)/Math.abs(prev)*100;})();
   var totLbl=mk==='rpm'?'RPM (geral)':'Total';
-  var totLastV=anPgTotal(anYear,anProp,mk,lastCol),totPv=projOf(totLastV);
   var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">'+totLbl+'</td>'
     +months.map(function(mi){var v=anPgTotal(anYear,anProp,mk,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
-    +(projFactor?'<td class="on">'+(totPv==null?'<span class="an-na">—</span>':anShort(totPv,meta.fmt))+'</td>':'')
     +'<td class="on">'+anPgVarCell(totVar)+'</td></tr>';
-  var projNote=projFactor?' · projeção estima o fechamento de '+HMESES[lastCol]+' com base nos dias já decorridos':'';
-  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por página e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' páginas · variação = '+HMESES[lastCol]+' vs '+(lastCol>0?HMESES[lastCol-1]:'—')+projNote+'</div></div>'
+  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por página e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' páginas · variação = '+HMESES[lastCol]+' vs '+(lastCol>0?HMESES[lastCol-1]:'—')+'</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Clique no cabeçalho para ordenar (inclusive por Variação) · RPM = receita ÷ sessões × 1000</div>';
 }
