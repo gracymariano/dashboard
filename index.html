@@ -3865,7 +3865,7 @@ function anFxToday(){return new Date().toISOString().slice(0,10);}
 function anFxRate(){var c=anFxCache();return c.rate||null;} // último valor conhecido (sincrono, para renderizar sem esperar a rede)
 async function anFxEnsure(){
   var c=anFxCache();
-  if(c.rate&&c.date===anFxToday())return c.rate; // já buscado hoje
+  if(c.rate&&c.date===anFxToday())return null; // já atualizado hoje — nada de novo para o caller fazer (evita re-render em loop)
   if(_anFxPromise)return _anFxPromise;
   _anFxPromise=(async function(){
     try{
@@ -3875,10 +3875,13 @@ async function anFxEnsure(){
       var rate=Number(d&&d.USDBRL&&d.USDBRL.bid);
       if(!rate||isNaN(rate))throw new Error('resposta inválida');
       var s=anStore();s.fx={rate:rate,date:anFxToday()};sv();
-      return rate;
+      return rate; // sucesso real e novo — vale re-renderizar
     }catch(e){
       console.error('anFxEnsure error',e);
-      return c.rate||null; // mantém o último valor em cache (mesmo de outro dia) se a busca falhar
+      // falhou: marca a tentativa de hoje pra não bater na API de novo a cada render, mas SEM re-renderizar
+      // (mantém o rate antigo em cache, se houver, só para exibição — não dispara anR())
+      var s2=anStore();s2.fx={rate:c.rate||null,date:anFxToday(),failed:true};sv();
+      return null;
     }finally{_anFxPromise=null;}
   })();
   return _anFxPromise;
