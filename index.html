@@ -1909,6 +1909,7 @@ function entryBarP(dsId){
 // ── VISÃO GERAL ──
 function hVG(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
+  anFxEnsure().then(function(rate){if(rate!=null)anR();}); // garante cotação atualizada para a Receita total/RPM
   var year=anYear,thresh=anDashThresh;
   var stSes=anStats(year,'traf','all','sessoes_tot'),stUsr=anStats(year,'user','all','usuarios_tot'),stCli=anStats(year,'gsc','all','cliques');
   var stRev=anDashRevStat(year),stRpm=anDashRpmStat(year);
@@ -2972,7 +2973,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -3018,26 +3019,32 @@ function anTargetMonth(year,section,prop,mk){var now=new Date();if(String(now.ge
 function anFmt(v,fmt){if(v==null||v==='')return'—';v=Number(v);
   if(fmt==='dur'){var s=Math.round(v),mm=Math.floor(s/60),ss=s%60;return mm>0?(mm+'m '+String(ss).padStart(2,'0')+'s'):(ss+'s');}
   if(fmt==='money')return 'R$ '+hFmt(v,'money');
+  if(fmt==='usd')return 'US$ '+hFmt(v,'money');
   return hFmt(v,fmt);}
 function anShort(v,fmt){if(v==null||v==='')return'—';v=Number(v);
   if(fmt==='int')return fN(v);
   if(fmt==='pct')return v.toFixed(1)+'%';
   if(fmt==='dur'){var s=Math.round(v);return Math.floor(s/60)+'m'+String(s%60).padStart(2,'0');}
   if(fmt==='money')return 'R$'+(Math.abs(v)>=1000?fN(v):v.toLocaleString('pt-BR',{maximumFractionDigits:2}));
+  if(fmt==='usd')return 'US$'+(Math.abs(v)>=1000?fN(v):v.toLocaleString('pt-BR',{maximumFractionDigits:2}));
   return v.toLocaleString('pt-BR',{maximumFractionDigits:1});}
 
 /* ── Estatísticas por métrica (atual / anterior / projeção / variação) ── */
 function anStats(year,section,prop,mk){
   var meta=anMeta(section,mk),fmt=meta.fmt;
   var arr=anSeries(year,section,prop,mk),filled=anFilled(arr);
-  if(!filled.length)return{cur:null,prev:null,proj:null,varp:null,fmt:fmt,idx:null};
+  if(!filled.length)return{cur:null,prev:null,proj:null,varp:null,fmt:fmt,idx:null,isProj:false};
   var last=filled[filled.length-1],prevO=filled.length>1?filled[filled.length-2]:null;
   var cur=last.v,prev=prevO?prevO.v:null;
-  var varp=(prev!=null&&prev!==0)?((cur-prev)/Math.abs(prev)*100):null;
-  var proj=cur,now=new Date(),isCur=String(now.getFullYear())===String(year);
-  if(isCur&&last.i===now.getMonth()&&fmt==='int'){var dE=now.getDate()-1,tD=dIM(Number(year),last.i);if(dE>0)proj=Math.round(cur/dE*tD);}
-  else if(fmt==='int'&&prev!=null){proj=Math.round(cur+(cur-prev));}
-  return{cur:cur,prev:prev,proj:proj,varp:varp,fmt:fmt,idx:last.i};
+  var proj=cur,now=new Date(),isCur=String(now.getFullYear())===String(year),isProj=false;
+  var projetavel=(fmt==='int'||fmt==='money'); // métricas acumulativas (somam ao longo do mês) — taxas/médias não projetam assim
+  if(isCur&&last.i===now.getMonth()&&projetavel){var dE=now.getDate()-1,tD=dIM(Number(year),last.i);if(dE>0){proj=cur/dE*tD;if(fmt==='int')proj=Math.round(proj);isProj=true;}}
+  else if(projetavel&&prev!=null){proj=cur+(cur-prev);if(fmt==='int')proj=Math.round(proj);}
+  // o farol e a variação comparam a PROJEÇÃO (estimativa de fechamento) com o mês anterior quando o mês
+  // está em andamento — senão o mês atual sempre aparece artificialmente pior por estar incompleto
+  var cmpVal=isProj?proj:cur;
+  var varp=(prev!=null&&prev!==0)?((cmpVal-prev)/Math.abs(prev)*100):null;
+  return{cur:cur,prev:prev,proj:proj,varp:varp,fmt:fmt,idx:last.i,isProj:isProj};
 }
 function anSemaphore(varp){if(varp==null)return'flat';if(varp>2)return'up';if(varp<-2)return'down';return'flat';}
 function anSemColor(s){return s==='up'?'var(--success)':s==='down'?'var(--danger)':'var(--warning)';}
@@ -3213,9 +3220,10 @@ function anHistoryCharts(){
 function anMetricCards(){
   var cards=AN_SECTIONS[anSection].metrics.map(function(m){
     var st=anStats(anYear,anSection,anProp,m.k),sem=anSemaphore(m.inv?-st.varp:st.varp);
+    var projTag=' <i class="ti ti-chart-line" style="font-size:10px" title="Comparado com a projeção de fechamento do mês (mês em andamento)"></i>';
     var varHtml='';
     if(st.varp==null)varHtml='<span class="an-var flat">—</span>';
-    else varHtml='<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
+    else varHtml='<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%'+(st.isProj?projTag:'')+'</span>';
     var valTxt=st.cur==null?'—':anFmt(st.cur,m.fmt);
     return '<div class="an-mcard">'
       +'<div class="an-mcard-top"><div class="an-mcard-lbl">'+m.l+'</div><div class="an-mcard-tools"><button class="an-edit" title="Inserir/editar dados" onclick="anManualOpen()"><i class="ti ti-pencil"></i></button><span class="an-dot" style="background:'+anSemColor(sem)+'" title="'+(sem==='up'?'Crescimento':sem==='down'?'Queda':'Estabilidade')+'"></span></div></div>'
@@ -3846,20 +3854,52 @@ function anCampView(){
 
 
 /* ═══════════════════════════════════════════════════════════════
-   RECEITA POR REDE — entrada manual · RPM unificado (todas as redes ÷ sessões)
+   COTAÇÃO USD→BRL — busca automática (AwesomeAPI), com cache de 1x/dia salvo no Supabase.
+   AdSense e Ad Manager pagam em dólar; o restante das redes em Receitas é lançado em real.
    ═══════════════════════════════════════════════════════════════ */
+var AN_USD_NETS=['adsense','ad manager','admanager','google adsense','google ad manager']; // nomes de rede tratados como USD (case-insensitive, match parcial)
+function anIsUsdNet(name){var n=(name||'').toString().toLowerCase().trim();return AN_USD_NETS.some(function(x){return n===x||n.indexOf(x)>=0;});}
+var _anFxPromise=null;
+function anFxCache(){var s=anStore();return s.fx||{};}
+function anFxToday(){return new Date().toISOString().slice(0,10);}
+function anFxRate(){var c=anFxCache();return c.rate||null;} // último valor conhecido (sincrono, para renderizar sem esperar a rede)
+async function anFxEnsure(){
+  var c=anFxCache();
+  if(c.rate&&c.date===anFxToday())return c.rate; // já buscado hoje
+  if(_anFxPromise)return _anFxPromise;
+  _anFxPromise=(async function(){
+    try{
+      var r=await fetch('https://economia.awesomeapi.com.br/last/USD-BRL');
+      if(!r.ok)throw new Error('http '+r.status);
+      var d=await r.json();
+      var rate=Number(d&&d.USDBRL&&d.USDBRL.bid);
+      if(!rate||isNaN(rate))throw new Error('resposta inválida');
+      var s=anStore();s.fx={rate:rate,date:anFxToday()};sv();
+      return rate;
+    }catch(e){
+      console.error('anFxEnsure error',e);
+      return c.rate||null; // mantém o último valor em cache (mesmo de outro dia) se a busca falhar
+    }finally{_anFxPromise=null;}
+  })();
+  return _anFxPromise;
+}
+function anFxToBRL(usd){var r=anFxRate();return(usd==null||r==null)?null:usd*r;}
+
+
 var AN_REV_DEFAULT=['AdSense','Ad Manager','UOL Afiliados','Indoleads','DGMax','Cofrinho'];
 var anRevSort={by:null,dir:'desc'}, _anRevMan=null, _anRevImp=null;
 function anRevObj(year,prop){var s=anStore();s.rev[year]=s.rev[year]||{};s.rev[year][prop]=s.rev[year][prop]||{};return s.rev[year][prop];}
 function anRevArr(year,prop,net){var o=anRevObj(year,prop);if(!Array.isArray(o[net]))o[net]=Array(12).fill(null);return o[net];}
 function anRevSet(year,prop,net,mi,val){var a=anRevArr(year,prop,net);a[mi]=(val===''||val==null||isNaN(Number(val)))?null:Number(val);}
 function anRevVal(year,prop,net,mi){var o=anRevObj(year,prop);return Array.isArray(o[net])?o[net][mi]:null;}
+function anRevValBRL(year,prop,net,mi){var v=anRevVal(year,prop,net,mi);if(v==null)return null;return anIsUsdNet(net)?anFxToBRL(v):v;} // converte só redes em USD (AdSense/Ad Manager); demais já estão em R$
 function anRevNetworks(year,prop){return Object.keys(anRevObj(year,prop));}
 function anRevNetworksAll(year,prop){var set={};AN_REV_DEFAULT.forEach(function(n){set[n]=1;});anRevNetworks(year,prop).forEach(function(n){set[n]=1;});return Object.keys(set);}
 function anRevMonths(year,prop){var o=anRevObj(year,prop),set={};Object.keys(o).forEach(function(n){(o[n]||[]).forEach(function(v,i){if(v!=null)set[i]=1;});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
 function anRevHasAny(year,prop){return anRevMonths(year,prop).length>0;}
 function anRevLastCol(){var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();var ms=anRevMonths(anYear,anProp);return ms.length?ms[ms.length-1]:11;}
-function anRevTotal(year,prop,mi){var o=anRevObj(year,prop),s=0,any=false;Object.keys(o).forEach(function(n){var v=anRevVal(year,prop,n,mi);if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
+// total em R$: redes em dólar (AdSense/Ad Manager) são convertidas pela cotação do dia antes de somar com as demais (já em R$)
+function anRevTotal(year,prop,mi){var o=anRevObj(year,prop),s=0,any=false,missingFx=false;Object.keys(o).forEach(function(n){var raw=anRevVal(year,prop,n,mi);if(raw==null)return;if(anIsUsdNet(n)){var brl=anFxToBRL(raw);if(brl==null){missingFx=true;return;}s+=brl;any=true;}else{s+=Number(raw);any=true;}});if(missingFx&&!any)return null;return any?s:null;}
 function anRevSessions(year,prop,mi){
   if(prop==='all'){var t=0,any=false;AN_REAL.forEach(function(pr){var a=anSeries(year,'traf',pr,'sessoes_tot');if(a[mi]!=null){t+=Number(a[mi]);any=true;}});return any?t:null;}
   var arr=anSeries(year,'traf',prop,'sessoes_tot');return arr[mi]!=null?Number(arr[mi]):null;
@@ -3867,6 +3907,7 @@ function anRevSessions(year,prop,mi){
 function anRevRPM(year,prop,mi){var rec=anRevTotal(year,prop,mi),ses=anRevSessions(year,prop,mi);return(rec!=null&&ses!=null&&ses>0)?rec/ses*1000:null;}
 function anRevSortSet(by){if(anRevSort.by===by)anRevSort.dir=anRevSort.dir==='asc'?'desc':'asc';else{anRevSort.by=by;anRevSort.dir=(by==='name'?'asc':'desc');}anR();}
 function anRevView(){
+  anFxEnsure().then(function(rate){if(rate!=null)anR();}); // busca a cotação do dia (cacheada); re-renderiza quando chegar, sem travar a tela
   var h='',years=anYears();
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div>'
@@ -3881,21 +3922,32 @@ function anRevPivot(){
   var nets=anRevNetworks(anYear,anProp).filter(function(n){return months.some(function(mi){return anRevVal(anYear,anProp,n,mi)!=null;});});
   if(!nets.length)return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-cash"></i> Receita por rede · '+anYear+'</div></div><div class="an-empty"><i class="ti ti-cash"></i><p>Sem receita lançada para '+propLabel(anProp)+' em '+anYear+'</p><span>Clique em "Inserir manual" e preencha AdSense, Ad Manager, UOL, Indoleads, DGMax, Cofrinho… O RPM unificado é calculado com as sessões do Tráfego.</span></div>';
   var effBy=anRevSort.by===null?String(lastCol):anRevSort.by;
-  function sortKey(n){if(effBy==='name')return(n||'').toLowerCase();var mv=anRevVal(anYear,anProp,n,Number(effBy));return mv==null?-Infinity:Number(mv);}
+  function sortKey(n){if(effBy==='name')return(n||'').toLowerCase();var mv=anRevValBRL(anYear,anProp,n,Number(effBy));return mv==null?-Infinity:Number(mv);} // ordena pelo valor já convertido p/ R$ (comparável entre redes)
   nets.sort(function(a,b){var ka=sortKey(a),kb=sortKey(b);if(typeof ka==='string')return anRevSort.dir==='asc'?ka.localeCompare(kb):kb.localeCompare(ka);return anRevSort.dir==='asc'?ka-kb:kb-ka;});
   function arr(by){var on=(anRevSort.by===by)||(anRevSort.by===null&&by===String(lastCol));return on?(anRevSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
   function th(lbl,by,cls,style){var on=(anRevSort.by===by)||(anRevSort.by===null&&by===String(lastCol));return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'"'+(style?' style="'+style+'"':'')+' onclick="anRevSortSet(\''+by+'\')">'+lbl+arr(by)+'</th>';}
-  var head='<tr>'+th('Rede','name','stick','text-align:left')+months.map(function(mi){return th(HMESES[mi]+'/'+anYear.slice(2),String(mi),(mi===lastCol?'on':''));}).join('')+'<th>Total ano</th></tr>';
-  var body=nets.map(function(n){var tot=0;
-    var tds=months.map(function(mi){var v=anRevVal(anYear,anProp,n,mi);if(v!=null)tot+=Number(v);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,'money'))+'</td>';}).join('');
-    return '<tr><td class="stick" style="text-align:left;font-weight:600">'+anEsc(n)+'</td>'+tds+'<td style="font-weight:700">'+anShort(tot,'money')+'</td></tr>';
+  var head='<tr>'+th('Rede','name','stick','text-align:left')+months.map(function(mi){return th(HMESES[mi]+'/'+anYear.slice(2),String(mi),(mi===lastCol?'on':''));}).join('')+'<th>Total ano (R$)</th></tr>';
+  var fx=anFxRate(),hasUsdNet=nets.some(anIsUsdNet);
+  var body=nets.map(function(n){var tot=0,isUsd=anIsUsdNet(n),fmt=isUsd?'usd':'money';
+    var tds=months.map(function(mi){var v=anRevVal(anYear,anProp,n,mi);if(v!=null)tot+=Number(v);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,fmt))+'</td>';}).join('');
+    var rowEnd='<td style="font-weight:700">'+anShort(tot,fmt)+'</td>';
+    var mainRow='<tr><td class="stick" style="text-align:left;font-weight:600">'+anEsc(n)+(isUsd?' <span class="an-pill" style="font-size:9px;padding:1px 5px">US$</span>':'')+'</td>'+tds+rowEnd+'</tr>';
+    if(!isUsd)return mainRow;
+    // linha auxiliar mostrando o equivalente em R$ pela cotação do dia, já que o total geral soma tudo em R$
+    var totBRL=0,anyBRL=false;
+    var tdsBRL=months.map(function(mi){var vb=anRevValBRL(anYear,anProp,n,mi);if(vb!=null){totBRL+=vb;anyBRL=true;}return '<td'+(mi===lastCol?' class="on"':'')+' style="color:var(--text-secondary);font-size:11px">'+(vb==null?'—':anShort(vb,'money'))+'</td>';}).join('');
+    var convRow='<tr><td class="stick" style="text-align:left;font-size:11px;color:var(--text-secondary);padding-top:0">↳ em R$ (cotação do dia)</td>'+tdsBRL+'<td style="font-size:11px;color:var(--text-secondary)">'+(anyBRL?anShort(totBRL,'money'):'—')+'</td></tr>';
+    return mainRow+convRow;
   }).join('');
-  var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">Total redes</td>'+months.map(function(mi){var v=anRevTotal(anYear,anProp,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,'money'))+'</td>';}).join('')+'<td style="font-weight:700">'+anShort((function(){var t=0;months.forEach(function(mi){var v=anRevTotal(anYear,anProp,mi);if(v!=null)t+=v;});return t;})(),'money')+'</td></tr>';
-  var rpmRow='<tr class="an-camp-tot an-rev-rpm"><td class="stick" style="text-align:left"><i class="ti ti-bolt" style="font-size:12px"></i> RPM unificado</td>'+months.map(function(mi){var v=anRevRPM(anYear,anProp,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anFmt(v,'money'))+'</td>';}).join('')+'<td></td></tr>';
-  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-cash"></i> Receita por rede · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+nets.length+' redes · RPM unificado = (todas as redes ÷ sessões) × 1000</div></div>'
+  var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">Total redes (R$)</td>'+months.map(function(mi){var v=anRevTotal(anYear,anProp,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,'money'))+'</td>';}).join('')+'<td style="font-weight:700">'+anShort((function(){var t=0;months.forEach(function(mi){var v=anRevTotal(anYear,anProp,mi);if(v!=null)t+=v;});return t;})(),'money')+'</td></tr>';
+  var rpmRow='<tr class="an-camp-tot an-rev-rpm"><td class="stick" style="text-align:left"><i class="ti ti-bolt" style="font-size:12px"></i> RPM unificado (R$)</td>'+months.map(function(mi){var v=anRevRPM(anYear,anProp,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anFmt(v,'money'))+'</td>';}).join('')+'<td></td></tr>';
+  var fxNote=hasUsdNet?('<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-currency-dollar" style="font-size:12px"></i> Cotação do dólar usada na conversão: '+(fx?('US$ 1 = R$ '+fx.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:4})):'buscando…')+' <button class="an-btn" style="padding:1px 8px;font-size:11px" onclick="anFxRefresh()"><i class="ti ti-refresh" style="font-size:10px"></i> Atualizar</button></div>'):'';
+  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-cash"></i> Receita por rede · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+nets.length+' redes · RPM unificado = (todas as redes, convertidas p/ R$, ÷ sessões) × 1000</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+rpmRow+'</tbody></table></div>'
-    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:12px"></i> Sessões vêm da aba Tráfego. Preencha o Tráfego do mesmo mês/propriedade para o RPM aparecer.</div>';
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:12px"></i> Sessões vêm da aba Tráfego. Preencha o Tráfego do mesmo mês/propriedade para o RPM aparecer.</div>'
+    +fxNote;
 }
+function anFxRefresh(){var s=anStore();s.fx={};anFxEnsure().then(function(){anR();});toast('Atualizando cotação do dólar…','ti-refresh');}
 function anRevManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}_anRevMan={};
   var o=document.createElement('div');o.className='ov';o.id='an-revman-ov';
   o.innerHTML='<div class="mx" style="width:900px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-revman-body" style="overflow:auto;flex:1;min-height:0"></div></div>';
@@ -3903,9 +3955,9 @@ function anRevManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade e
 function anRevManBody(){
   var nets=anRevNetworksAll(anYear,anProp),lastCol=anRevLastCol(),months=[];for(var i=0;i<=lastCol;i++)months.push(i);
   var h='<h4 style="display:flex;align-items:center;gap:7px"><i class="ti ti-cash" style="color:var(--primary)"></i> Receita por rede — '+propLabel(anProp)+' · '+anYear+'</h4>';
-  h+='<p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px;line-height:1.5">Valores mensais (R$) por rede. AdSense, Ad Manager e afiliados (UOL, Indoleads, DGMax, Cofrinho) — adicione outras se precisar. Salva no Supabase.</p>';
+  h+='<p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px;line-height:1.5">Lance o valor na moeda original de cada rede: <b>AdSense e Ad Manager em dólar (US$)</b>, demais redes (UOL, Indoleads, DGMax, Cofrinho…) em real (R$). O sistema converte USD→BRL automaticamente pela cotação do dia ao somar o total. Salva no Supabase.</p>';
   h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl"><thead><tr><th style="text-align:left">Rede</th>'+months.map(function(mi){return '<th>'+HMESES[mi]+'</th>';}).join('')+'<th></th></tr></thead><tbody>';
-  nets.forEach(function(n){var ne=anEsc(n).replace(/'/g,"\\'");h+='<tr><td style="text-align:left;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(n)+'">'+anEsc(n)+'</td>'+months.map(function(mi){var v=anRevVal(anYear,anProp,n,mi);return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anRevSet(anYear,anProp,\''+ne+'\','+mi+',this.value);sv()"></td>';}).join('')+'<td><button class="an-ic-btn del" title="Remover" onclick="anRevDelNet(\''+ne+'\')"><i class="ti ti-trash"></i></button></td></tr>';});
+  nets.forEach(function(n){var ne=anEsc(n).replace(/'/g,"\\'"),isUsd=anIsUsdNet(n);h+='<tr><td style="text-align:left;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(n)+'">'+anEsc(n)+' <span class="an-pill" style="font-size:9px;padding:1px 5px">'+(isUsd?'US$':'R$')+'</span></td>'+months.map(function(mi){var v=anRevVal(anYear,anProp,n,mi);return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anRevSet(anYear,anProp,\''+ne+'\','+mi+',this.value);sv()"></td>';}).join('')+'<td><button class="an-ic-btn del" title="Remover" onclick="anRevDelNet(\''+ne+'\')"><i class="ti ti-trash"></i></button></td></tr>';});
   h+='</tbody></table></div><div class="mbb"><button onclick="anRevAddNet()"><i class="ti ti-plus" style="font-size:11px"></i> Adicionar rede</button>'
     +'<button class="pr" onclick="document.getElementById(\'an-revman-ov\').remove();_anRevMan=null;anR()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
   document.getElementById('an-revman-body').innerHTML=h;
@@ -3940,6 +3992,8 @@ function anRevApply(rows){
    ═══════════════════════════════════════════════════════════════ */
 var anSeoMi=null, anSeoTab='opp', _anSeoImp=null;
 var anSeoOppSort={by:'i',dir:'desc'}; // ordenação da tabela de Oportunidades SEO: by = 'c'|'i'|'ctr'|'pp'|'p'
+var anSeoDecaySort={by:'d',dir:'asc'}; // ordenação da tabela de Decaimento: by = 'c'|'proj'|'pc'|'d'|'pp'|'p' (asc=queda maior primeiro, já que d é negativo)
+function anSeoDecaySortSet(by){if(anSeoDecaySort.by===by)anSeoDecaySort.dir=anSeoDecaySort.dir==='asc'?'desc':'asc';else{anSeoDecaySort.by=by;anSeoDecaySort.dir=(by==='p'||by==='pp')?'asc':(by==='d'?'asc':'desc');}anR();}
 function anSeoOppSortSet(by){if(anSeoOppSort.by===by)anSeoOppSort.dir=anSeoOppSort.dir==='asc'?'desc':'asc';else{anSeoOppSort.by=by;anSeoOppSort.dir=(by==='pp'||by==='p')?'asc':'desc';}anR();}
 function anSeoObj(year,prop){var s=anStore();s.seo[year]=s.seo[year]||{};s.seo[year][prop]=s.seo[year][prop]||{};return s.seo[year][prop];}
 function anSeoMonths(year,prop){var o=anSeoObj(year,prop);return Object.keys(o).map(Number).sort(function(a,b){return a-b;});}
@@ -4025,19 +4079,27 @@ function anSeoDecay(mi){
   var now=new Date(),isCurMonth=String(now.getFullYear())===String(anYear)&&now.getMonth()===mi;
   var projFactor=null;if(isCurMonth){var dE=dElapsed(Number(anYear),mi),tD=dIM(Number(anYear),mi);if(dE>0)projFactor=tD/dE;}
   var cur=anSeoRows(anYear,anProp,mi),prev=anSeoRows(anYear,anProp,mi-1),pm={};prev.forEach(function(r){pm[r.q]=r;});
-  var rows=cur.map(function(r){var pr=pm[r.q];if(!pr)return null;var proj=projFactor?Math.round(r.c*projFactor):null;var cmpVal=proj!=null?proj:r.c;return{q:r.q,c:r.c,proj:proj,pc:pr.c,d:cmpVal-pr.c,realD:r.c-pr.c,p:r.p,pp:pr.p};}).filter(function(x){return x&&x.d<0;}).sort(function(a,b){return a.d-b.d;}).slice(0,60);
+  var rows=cur.map(function(r){var pr=pm[r.q];if(!pr)return null;var proj=projFactor?Math.round(r.c*projFactor):null;var cmpVal=proj!=null?proj:r.c;return{q:r.q,c:r.c,proj:proj,pc:pr.c,d:cmpVal-pr.c,realD:r.c-pr.c,p:r.p,pp:pr.p};}).filter(function(x){return x&&x.d<0;});
   if(!rows.length)return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-trending-down"></i> Decaimento · '+AN_MES_LONG[mi]+' vs '+AN_MES_LONG[mi-1]+'</div></div><div class="an-empty"><i class="ti ti-mood-happy"></i><p>Nenhuma queda relevante de cliques</p><span>Nenhum termo presente nos dois meses perdeu cliques'+(projFactor?' (considerando a projeção de fechamento do mês)':'')+'</span></div></div>';
+  var by=anSeoDecaySort.by,dir=anSeoDecaySort.dir;
+  rows.sort(function(a,b){var va=a[by],vb=b[by];if(va==null)va=-Infinity;if(vb==null)vb=-Infinity;return dir==='asc'?va-vb:vb-va;});
+  rows=rows.slice(0,60);
+  function arrow(by2){return anSeoDecaySort.by===by2?(anSeoDecaySort.dir==='asc'?' \u25B2':' \u25BC'):'';}
+  function th(lbl,by2,cls){var on=anSeoDecaySort.by===by2;return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'" onclick="anSeoDecaySortSet(\''+by2+'\')">'+lbl+arrow(by2)+'</th>';}
   var body=rows.map(function(r){var pomove=(r.p!=null&&r.pp!=null)?(r.p-r.pp):null;
-    var clicksCell=projFactor?(anFmt(r.c,'int')+' <span style="font-size:9px;color:var(--text-secondary)">(proj: '+anFmt(r.proj,'int')+')</span>'):anFmt(r.c,'int');
-    return '<tr><td class="stick" style="text-align:left;max-width:340px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.q)+'">'+anEsc(r.q)+'</td>'
-      +'<td>'+clicksCell+'</td><td>'+anFmt(r.pc,'int')+'</td>'
+    return '<tr><td class="stick" style="text-align:left;max-width:300px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.q)+'">'+anEsc(r.q)+'</td>'
+      +'<td>'+anFmt(r.c,'int')+'</td>'
+      +'<td>'+(r.proj!=null?anFmt(r.proj,'int'):'—')+'</td>'
+      +'<td>'+anFmt(r.pc,'int')+'</td>'
       +'<td class="on" style="color:var(--danger);font-weight:700">'+r.d+(projFactor&&r.realD!==r.d?' <span style="font-size:9px;color:var(--text-secondary);font-weight:400">(real: '+r.realD+')</span>':'')+'</td>'
       +'<td>'+(r.pp!=null?r.pp.toFixed(1):'—')+'</td>'
       +'<td>'+(r.p!=null?r.p.toFixed(1):'—')+(pomove!=null?' <span style="font-size:10px;color:'+(pomove>0?'var(--danger)':'var(--success)')+'">Variação: '+(pomove>0?'+':'')+pomove.toFixed(1)+'</span>':'')+'</td></tr>';
   }).join('');
+  var head='<tr><th class="stick" style="text-align:left">Consulta / Página</th>'
+    +th('Cliques ('+HMESES[mi]+')','c')+th('Projeção','proj')+th('Cliques ('+HMESES[mi-1]+')','pc')+th('Δ','d','on')+th('Posição ('+HMESES[mi-1]+')','pp')+th('Posição ('+HMESES[mi]+')','p')+'</tr>';
   var projNote=projFactor?' · queda calculada com a projeção de cliques do mês em andamento (evita falso decaimento por mês incompleto)':'';
-  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-trending-down"></i> Conteúdo em decaimento · '+AN_MES_LONG[mi]+' vs '+AN_MES_LONG[mi-1]+'</div><div class="an-card-sub">'+propLabel(anProp)+' · maiores quedas de cliques (candidatos a atualização)'+projNote+'</div></div>'
-    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Consulta / Página</th><th>Cliques ('+HMESES[mi]+')</th><th>Cliques ('+HMESES[mi-1]+')</th><th class="on">Δ</th><th>Posição ('+HMESES[mi-1]+')</th><th>Posição ('+HMESES[mi]+')</th></tr></thead><tbody>'+body+'</tbody></table></div>'
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-trending-down"></i> Conteúdo em decaimento · '+AN_MES_LONG[mi]+' vs '+AN_MES_LONG[mi-1]+'</div><div class="an-card-sub">'+propLabel(anProp)+' · maiores quedas de cliques (candidatos a atualização) · clique no cabeçalho para ordenar'+projNote+'</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-refresh" style="font-size:12px"></i> Atualize/reotimize esses conteúdos: perderam tráfego e costumam ter o melhor retorno por esforço.</div></div>';
 }
 
@@ -4048,7 +4110,7 @@ function anSeoDecay(mi){
    o relatório de "Páginas").
    armazenamento: s.pgdev[year][prop][device][mi] = [{q,c,i,p}] (mesmo formato de anSeoParse)
    ═══════════════════════════════════════════════════════════════ */
-var PGDEV_LIST=[{k:'mobile',l:'Celular',ic:'ti-device-mobile'},{k:'desktop',l:'Computador',ic:'ti-device-desktop'}];
+var PGDEV_LIST=[{k:'mobile',l:'Celular',ic:'ti-device-mobile'},{k:'desktop',l:'Computador',ic:'ti-device-desktop'},{k:'tablet',l:'Tablet',ic:'ti-device-tablet'}];
 var pgDevMi=null,pgDevImportDevice='mobile',_anPgDevImp=null;
 function pgDevObj(year,prop){var s=anStore();s.pgdev[year]=s.pgdev[year]||{};s.pgdev[year][prop]=s.pgdev[year][prop]||{};return s.pgdev[year][prop];}
 function pgDevRows(year,prop,device,mi){var o=pgDevObj(year,prop);return(o[device]&&o[device][mi])?o[device][mi]:[];}
@@ -4093,30 +4155,40 @@ function pgDevView(){
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
     +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="pgDevImportOpen()"><i class="ti ti-upload"></i> Importar Páginas (por dispositivo)</button></div></div>';
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-devices"></i><p>Selecione uma propriedade</p><span>Páginas por Dispositivo é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
-  var mob=pgDevRows(anYear,anProp,'mobile',mi),desk=pgDevRows(anYear,anProp,'desktop',mi);
-  if(!mob.length&&!desk.length){
-    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-devices"></i><p>Sem dados de Páginas por Dispositivo em '+AN_MES_LONG[mi]+'/'+anYear+'</p><span>No Search Console: aba "Dispositivos" → clique em "Celular" → aba "Páginas" → exportar. Repita clicando em "Computador". Importe os dois arquivos aqui.</span></div></div>';
+  // mapa device -> {url -> row}, para qualquer subconjunto de dispositivos já importados (Celular/Computador/Tablet)
+  var devMaps={},devsWithData=PGDEV_LIST.filter(function(d){var rows=pgDevRows(anYear,anProp,d.k,mi);devMaps[d.k]={};rows.forEach(function(r){devMaps[d.k][r.q]=r;});return rows.length>0;});
+  if(!devsWithData.length){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-devices"></i><p>Sem dados de Páginas por Dispositivo em '+AN_MES_LONG[mi]+'/'+anYear+'</p><span>No Search Console: aba "Dispositivos" → clique em "Celular" → aba "Páginas" → exportar. Repita clicando em "Computador" e "Tablet". Importe os arquivos aqui.</span></div></div>';
     return h;
   }
-  var mobMap={};mob.forEach(function(r){mobMap[r.q]=r;});
-  var deskMap={};desk.forEach(function(r){deskMap[r.q]=r;});
-  var names={};Object.keys(mobMap).forEach(function(n){names[n]=1;});Object.keys(deskMap).forEach(function(n){names[n]=1;});
-  var rows=Object.keys(names).map(function(n){var rm=mobMap[n],rd=deskMap[n];var pm=rm?rm.p:null,pd=rd?rd.p:null;var gap=(pm!=null&&pd!=null)?(pd-pm):null;return{n:n,pm:pm,pd:pd,cm:rm?rm.c:0,cd:rd?rd.c:0,gap:gap};});
+  if(devsWithData.length<2){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-devices"></i><p>Importe pelo menos 2 dispositivos para este mês</p><span>Já tenho '+devsWithData.map(function(d){return d.l;}).join(', ')+', mas preciso de outro dispositivo com a mesma página para calcular a diferença.</span></div></div>';
+    return h;
+  }
+  var names={};devsWithData.forEach(function(d){Object.keys(devMaps[d.k]).forEach(function(n){names[n]=1;});});
+  var rows=Object.keys(names).map(function(n){
+    var pos={};devsWithData.forEach(function(d){var r=devMaps[d.k][n];pos[d.k]=r?r.p:null;});
+    var vals=devsWithData.map(function(d){return pos[d.k];}).filter(function(v){return v!=null;});
+    var gap=vals.length>=2?(Math.max.apply(null,vals)-Math.min.apply(null,vals)):null;
+    var bestD=null,worstD=null;devsWithData.forEach(function(d){if(pos[d.k]==null)return;if(bestD==null||pos[d.k]<pos[bestD])bestD=d.k;if(worstD==null||pos[d.k]>pos[worstD])worstD=d.k;});
+    return{n:n,pos:pos,gap:gap,bestD:bestD,worstD:worstD};
+  });
   rows=rows.filter(function(r){return r.gap!=null;}).sort(function(a,b){return b.gap-a.gap;});
   if(!rows.length){
-    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-devices"></i><p>Importe os dois dispositivos para este mês</p><span>Já tenho '+(mob.length?'Celular':'')+(mob.length&&desk.length?' e ':'')+(desk.length?'Computador':'')+', mas preciso da mesma página presente nos dois arquivos para calcular a diferença.</span></div></div>';
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-devices"></i><p>Nenhuma página em comum entre os dispositivos importados</p><span>Preciso da mesma página presente em pelo menos 2 dispositivos para calcular a diferença.</span></div></div>';
     return h;
   }
-  var worst=rows[0];
-  var insight=worst.gap>=4?('<div class="seg-insight" style="border-left:3px solid var(--warning)"><i class="ti ti-devices" style="color:var(--warning)"></i><div><div class="seg-ins-t">Maior diferença entre dispositivos</div><div class="seg-ins-x">Em <b>'+anEsc(worst.n)+'</b>: posição <b>'+worst.pm.toFixed(1).replace('.',',')+'</b> no Celular vs <b>'+worst.pd.toFixed(1).replace('.',',')+'</b> no Computador — '+worst.gap.toFixed(1).replace('.',',')+' posições pior no Computador. Vale revisar conteúdo e experiência nessa página.</div></div></div>'):'';
+  var worst=rows[0],lBest=PGDEV_LIST.find(function(d){return d.k===worst.bestD;}),lWorst=PGDEV_LIST.find(function(d){return d.k===worst.worstD;});
+  var insight=worst.gap>=4?('<div class="seg-insight" style="border-left:3px solid var(--warning)"><i class="ti ti-devices" style="color:var(--warning)"></i><div><div class="seg-ins-t">Maior diferença entre dispositivos</div><div class="seg-ins-x">Em <b>'+anEsc(worst.n)+'</b>: posição <b>'+worst.pos[worst.bestD].toFixed(1).replace('.',',')+'</b> em '+(lBest?lBest.l:worst.bestD)+' vs <b>'+worst.pos[worst.worstD].toFixed(1).replace('.',',')+'</b> em '+(lWorst?lWorst.l:worst.worstD)+' — '+worst.gap.toFixed(1).replace('.',',')+' posições pior. Vale revisar conteúdo e experiência nesse dispositivo.</div></div></div>'):'';
   var body=rows.map(function(r){var c=r.gap>=4?'var(--danger)':r.gap<=-4?'var(--success)':'var(--warning)';
-    return '<tr><td class="stick" style="text-align:left;max-width:360px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.n)+'">'+anEsc(r.n)+'</td>'
-      +'<td>'+(r.pm!=null?r.pm.toFixed(1).replace('.',','):'—')+'</td><td>'+(r.pd!=null?r.pd.toFixed(1).replace('.',','):'—')+'</td>'
-      +'<td class="on" style="color:'+c+';font-weight:700">'+(r.gap>=0?'+':'')+r.gap.toFixed(1).replace('.',',')+'</td></tr>';
+    return '<tr><td class="stick" style="text-align:left;max-width:300px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.n)+'">'+anEsc(r.n)+'</td>'
+      +devsWithData.map(function(d){var v=r.pos[d.k];return '<td>'+(v!=null?v.toFixed(1).replace('.',','):'—')+'</td>';}).join('')
+      +'<td class="on" style="color:'+c+';font-weight:700">'+r.gap.toFixed(1).replace('.',',')+'</td></tr>';
   }).join('');
-  return h+insight+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-devices"></i> Páginas por Dispositivo · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+rows.length+' páginas presentes em Celular e Computador · ordenado pela maior diferença (Computador pior)</div></div>'
-    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Página</th><th>Posição (Celular)</th><th>Posição (Computador)</th><th class="on">Diferença</th></tr></thead><tbody>'+body+'</tbody></table></div>'
-    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-bulb" style="font-size:12px"></i> Diferença positiva = pior no Computador. Priorize revisar conteúdo/experiência nas páginas com maior diferença.</div></div>';
+  var devCols=devsWithData.map(function(d){return '<th>Posição ('+d.l+')</th>';}).join('');
+  return h+insight+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-devices"></i> Páginas por Dispositivo · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+rows.length+' páginas · dispositivos: '+devsWithData.map(function(d){return d.l;}).join(', ')+' · ordenado pela maior diferença entre dispositivos</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Página</th>'+devCols+'<th class="on">Diferença</th></tr></thead><tbody>'+body+'</tbody></table></div>'
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-bulb" style="font-size:12px"></i> Diferença = maior posição menos menor posição entre os dispositivos importados. Priorize revisar conteúdo/experiência nas páginas com maior diferença.</div></div>';
 }
 
 
@@ -4207,19 +4279,19 @@ var ADS_METRICS_ADM=[
   {k:'imp', l:'Impressões',    fmt:'int',   kind:'sum'},
   {k:'cli', l:'Cliques',       fmt:'int',   kind:'sum'},
   {k:'ctr', l:'CTR',           fmt:'pct',   kind:'rate', num:'cli', den:'imp', mult:100},
-  {k:'ecpm',l:'eCPM',          fmt:'money', kind:'rate', num:'rec', den:'imp', mult:1000},
-  {k:'rec', l:'Receita',       fmt:'money', kind:'sum'},
+  {k:'ecpm',l:'eCPM',          fmt:'usd',   kind:'rate', num:'rec', den:'imp', mult:1000},
+  {k:'rec', l:'Receita',       fmt:'usd',   kind:'sum'},
   {k:'vis', l:'Visibilidade',  fmt:'pct',   kind:'wavg', w:'imp'}
 ];
-// Colunas do relatório padrão do Google AdSense (nesta ordem)
+// Colunas do relatório padrão do Google AdSense (nesta ordem) — valores sempre em dólar (US$)
 var ADS_METRICS_ADSENSE=[
-  {k:'rec',    l:'Ganhos Estimados',          fmt:'money', kind:'sum'},
+  {k:'rec',    l:'Ganhos Estimados',          fmt:'usd',   kind:'sum'},
   {k:'pv',     l:'Visualizações de página',   fmt:'int',   kind:'sum'},
-  {k:'rpmpv',  l:'RPM de página',             fmt:'money', kind:'rate', num:'rec', den:'pv',  mult:1000},
+  {k:'rpmpv',  l:'RPM de página',             fmt:'usd',   kind:'rate', num:'rec', den:'pv',  mult:1000},
   {k:'imp',    l:'Impressões',                fmt:'int',   kind:'sum'},
-  {k:'rpmimp', l:'RPM de impressões',         fmt:'money', kind:'rate', num:'rec', den:'imp', mult:1000},
+  {k:'rpmimp', l:'RPM de impressões',         fmt:'usd',   kind:'rate', num:'rec', den:'imp', mult:1000},
   {k:'cli',    l:'Cliques',                   fmt:'int',   kind:'sum'},
-  {k:'cpc',    l:'CPC',                       fmt:'money', kind:'rate', num:'rec', den:'cli', mult:1},
+  {k:'cpc',    l:'CPC',                       fmt:'usd',   kind:'rate', num:'rec', den:'cli', mult:1},
   {k:'avimp',  l:'Impressões de Active View', fmt:'int',   kind:'sum'},
   {k:'ctr',    l:'CTR',                       fmt:'pct',   kind:'rate', num:'cli', den:'imp', mult:100}
 ];
@@ -4248,11 +4320,14 @@ function anAdsMonthTotal(year,mi,mk){var meta=anAdsMeta(mk);
 function anAdsBestDay(year,mi,mk){var a=anAdsArr(year,mi,mk),bi=-1,bv=-Infinity;a.forEach(function(v,i){if(v!=null&&Number(v)>bv){bv=Number(v);bi=i;}});return bi<0?null:{d:bi,v:bv};}
 function anAdsStats(year,mi,mk){var meta=anAdsMeta(mk);
   var cur=anAdsMonthTotal(year,mi,mk),prev=mi>0?anAdsMonthTotal(year,mi-1,mk):null;
-  var varp=(prev!=null&&prev!==0&&cur!=null)?((cur-prev)/Math.abs(prev)*100):null;
-  var proj=cur,now=new Date(),isCur=String(now.getFullYear())===String(year)&&now.getMonth()===mi;
+  var proj=cur,now=new Date(),isCur=String(now.getFullYear())===String(year)&&now.getMonth()===mi,isProj=false;
   if(isCur&&cur!=null){var dE=dElapsed(Number(year),mi),tD=dIM(Number(year),mi);
-    if(meta.kind==='sum'&&dE>0)proj=Math.round(cur/dE*tD);else proj=cur;}
-  return{cur:cur,prev:prev,proj:proj,varp:varp,fmt:meta.fmt};}
+    if(meta.kind==='sum'&&dE>0){proj=cur/dE*tD;isProj=true;}else proj=cur;}
+  // farol/variação comparam a PROJEÇÃO (estimativa de fechamento) com o mês anterior quando o mês está em
+  // andamento — senão Receita/Cliques/Impressões parciais sempre aparecem em queda só por estar incompleto
+  var cmpVal=isProj?proj:cur;
+  var varp=(prev!=null&&prev!==0&&cmpVal!=null)?((cmpVal-prev)/Math.abs(prev)*100):null;
+  return{cur:cur,prev:prev,proj:proj,varp:varp,fmt:meta.fmt,isProj:isProj};}
 function anAdsCurMi(){if(anAdsMi!=null&&anAdsMi>=0&&anAdsMi<=11)return anAdsMi;var now=new Date();if(String(now.getFullYear())===String(anAdsYear)&&now.getMonth()>=2)return now.getMonth();var ds=[];for(var i=2;i<12;i++)if(anAdsHasAny(anAdsYear,i))ds.push(i);return ds.length?ds[ds.length-1]:2;}
 function anAdsSetYear(v){anAdsYear=String(v);R();}
 function anAdsSetMi(v){anAdsMi=parseInt(v,10);R();}
@@ -4263,7 +4338,8 @@ function anAdsYears(){var ys=new Set([String(new Date().getFullYear())]);var s=a
 function anAdsCards(mi){
   var cards=anAdsCurMetrics().map(function(m){
     var st=anAdsStats(anAdsYear,mi,m.k),sem=anSemaphore(st.varp),best=anAdsBestDay(anAdsYear,mi,m.k);
-    var varHtml=st.varp==null?'<span class="an-var flat">—</span>':'<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
+    var projTag=' <i class="ti ti-chart-line" style="font-size:10px" title="Comparado com a projeção de fechamento do mês (mês em andamento)"></i>';
+    var varHtml=st.varp==null?'<span class="an-var flat">—</span>':'<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%'+(st.isProj?projTag:'')+'</span>';
     var bestHtml=best?'<div class="an-ads-best"><i class="ti ti-star-filled"></i> Melhor dia: <b>'+(best.d+1)+'/'+HMESES[mi]+'</b> · '+anFmt(best.v,m.fmt)+'</div>':'<div class="an-ads-best" style="opacity:.5"><i class="ti ti-star"></i> Melhor dia: —</div>';
     return '<div class="an-mcard">'
       +'<div class="an-mcard-top"><div class="an-mcard-lbl">'+m.l+'</div><span class="an-dot" style="background:'+anSemColor(sem)+'" title="'+(sem==='up'?'Crescimento':sem==='down'?'Queda':'Estabilidade')+'"></span></div>'
@@ -4481,14 +4557,45 @@ function anPgPivot(){
   var o=anPgObj(anYear,anProp),lastCol=anPgLastCol();
   var months=[];for(var i=0;i<=lastCol;i++)months.push(i);
   var mk=anPgCurMetric(),meta=anPgMeta(mk);
-  var names=Object.keys(o).filter(function(n){return months.some(function(mi){return anPgVal(anYear,anProp,n,mk,mi)!=null;});});
+  var allNames=Object.keys(o);
+  // pré-calcula UMA matriz nome→[valores por mês] e os totais por mês, evitando recalcular anPgVal/anPgRec
+  // repetidas vezes (era O(páginas × meses) por etapa — sort, corpo, totais — e cada chamada de RPM ainda
+  // disparava 2 sub-chamadas recursivas; isso fazia a tela ficar lenta com muitas páginas)
+  var valMatrix={},rowHasData={},monthTotals=Array(12).fill(0),monthAny=Array(12).fill(false);
+  if(mk==='rpm'){
+    allNames.forEach(function(n){
+      var r=anPgRec(anYear,anProp,n),recArr=r.rec,sesArr=r.ses,row=Array(12).fill(null),any=false;
+      months.forEach(function(mi){var rec=Array.isArray(recArr)?recArr[mi]:null,ses=Array.isArray(sesArr)?sesArr[mi]:null;
+        var v=(rec!=null&&ses!=null&&Number(ses)>0)?Number(rec)/Number(ses)*1000:null;row[mi]=v;if(v!=null)any=true;});
+      valMatrix[n]=row;rowHasData[n]=any;
+    });
+    // RPM total é receita total ÷ sessões totais (não soma de RPMs) — calcula os agregados em uma só passada
+    var recTot=Array(12).fill(0),sesTot=Array(12).fill(0),recAny=Array(12).fill(false),sesAny=Array(12).fill(false);
+    allNames.forEach(function(n){var r=anPgRec(anYear,anProp,n);months.forEach(function(mi){
+      var rv=Array.isArray(r.rec)?r.rec[mi]:null;if(rv!=null){recTot[mi]+=Number(rv);recAny[mi]=true;}
+      var sv=Array.isArray(r.ses)?r.ses[mi]:null;if(sv!=null){sesTot[mi]+=Number(sv);sesAny[mi]=true;}
+    });});
+    months.forEach(function(mi){monthTotals[mi]=(recAny[mi]&&sesAny[mi]&&sesTot[mi]>0)?(recTot[mi]/sesTot[mi]*1000):null;monthAny[mi]=monthTotals[mi]!=null;});
+  }else{
+    allNames.forEach(function(n){
+      var r=anPgRec(anYear,anProp,n),arr=r[mk],row=Array(12).fill(null),any=false;
+      months.forEach(function(mi){var v=Array.isArray(arr)?arr[mi]:null;row[mi]=(v==null?null:Number(v));if(v!=null){any=true;monthTotals[mi]+=Number(v);monthAny[mi]=true;}});
+      valMatrix[n]=row;rowHasData[n]=any;
+    });
+  }
+  var names=allNames.filter(function(n){return rowHasData[n];});
   if(!names.length)return '<div class="an-empty"><i class="ti ti-file-text"></i><p>Sem '+meta.l+' para '+propLabel(anProp)+' em '+anYear+'</p><span>Importe um CSV de "Páginas e telas" do GA4 (com Sessões e Receita de anúncios), ou use o modelo</span></div>';
+  function valAt(n,mi){return valMatrix[n][mi];}
+  function varpAt(n){var cur=valAt(n,lastCol),prev=lastCol>0?valAt(n,lastCol-1):null;if(cur==null||prev==null||prev===0)return null;return(cur-prev)/Math.abs(prev)*100;}
   var effBy=anPgSort.by===null?'var':anPgSort.by;
   var projFactor=meta.derived?null:anPgProjFactor(lastCol); // RPM é derivado (taxa) — não projeta por dias decorridos
   function projOf(v){return(v==null||!projFactor)?null:v*projFactor;}
-  function sortKey(n){if(effBy==='name')return(n||'').toLowerCase();if(effBy==='var'){var v=anPgVarp(anYear,anProp,n,mk,lastCol);return v==null?-Infinity:v;}var mv=anPgVal(anYear,anProp,n,mk,Number(effBy));return mv==null?-Infinity:Number(mv);}
-  function sortKey2(n){if(anPgSort.by!==null)return sortKey(n);var mv=anPgVal(anYear,anProp,n,mk,lastCol);return mv==null?-Infinity:Number(mv);}
-  names.sort(function(a,b){var ka=sortKey2(a),kb=sortKey2(b);if(typeof ka==='string')return anPgSort.dir==='asc'?ka.localeCompare(kb):kb.localeCompare(ka);return anPgSort.dir==='asc'?ka-kb:kb-ka;});
+  function sortKey(n){if(effBy==='name')return(n||'').toLowerCase();if(effBy==='var'){var v=varpAt(n);return v==null?-Infinity:v;}var mv=valAt(n,Number(effBy));return mv==null?-Infinity:mv;}
+  function sortKey2(n){if(anPgSort.by!==null)return sortKey(n);var mv=valAt(n,lastCol);return mv==null?-Infinity:mv;}
+  // pré-computa a chave de ordenação 1x por página (em vez de recalcular a cada comparação do sort)
+  var keyed=names.map(function(n){return{n:n,k:sortKey2(n)};});
+  keyed.sort(function(a,b){if(typeof a.k==='string')return anPgSort.dir==='asc'?a.k.localeCompare(b.k):b.k.localeCompare(a.k);return anPgSort.dir==='asc'?a.k-b.k:b.k-a.k;});
+  names=keyed.map(function(x){return x.n;});
   function arr(by){var on=(anPgSort.by===by)||(anPgSort.by===null&&by===String(lastCol));return on?(anPgSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
   function th(lbl,by,cls,style){var on=(anPgSort.by===by)||(anPgSort.by===null&&by===String(lastCol));return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'"'+(style?' style="'+style+'"':'')+' onclick="anPgSortSet(\''+by+'\')">'+lbl+arr(by)+'</th>';}
   var head='<tr>'+th('Página','name','stick','text-align:left')
@@ -4496,17 +4603,17 @@ function anPgPivot(){
     +(projFactor?'<th class="on">Projeção</th>':'')
     +th('Variação','var','on')+'</tr>';
   var body=names.map(function(n){
-    var lastV=anPgVal(anYear,anProp,n,mk,lastCol),pv=projOf(lastV);
+    var lastV=valAt(n,lastCol),pv=projOf(lastV);
     return '<tr><td class="stick" style="text-align:left;font-weight:600;max-width:340px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(n)+'">'+anEsc(n)+'</td>'
-      +months.map(function(mi){var v=anPgVal(anYear,anProp,n,mk,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
+      +months.map(function(mi){var v=valAt(n,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
       +(projFactor?'<td class="on">'+(pv==null?'<span class="an-na">—</span>':anShort(pv,meta.fmt))+'</td>':'')
-      +'<td class="on">'+anPgVarCell(anPgVarp(anYear,anProp,n,mk,lastCol))+'</td></tr>';
+      +'<td class="on">'+anPgVarCell(varpAt(n))+'</td></tr>';
   }).join('');
-  var totVar=(function(){var cur=anPgTotal(anYear,anProp,mk,lastCol),prev=lastCol>0?anPgTotal(anYear,anProp,mk,lastCol-1):null;if(cur==null||prev==null||prev===0)return null;return(cur-prev)/Math.abs(prev)*100;})();
+  var totVar=(function(){var cur=monthAny[lastCol]?monthTotals[lastCol]:null,prev=(lastCol>0&&monthAny[lastCol-1])?monthTotals[lastCol-1]:null;if(cur==null||prev==null||prev===0)return null;return(cur-prev)/Math.abs(prev)*100;})();
   var totLbl=mk==='rpm'?'RPM (geral)':'Total';
-  var totLastV=anPgTotal(anYear,anProp,mk,lastCol),totPv=projOf(totLastV);
+  var totLastV=monthAny[lastCol]?monthTotals[lastCol]:null,totPv=projOf(totLastV);
   var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">'+totLbl+'</td>'
-    +months.map(function(mi){var v=anPgTotal(anYear,anProp,mk,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
+    +months.map(function(mi){var v=monthAny[mi]?monthTotals[mi]:null;return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
     +(projFactor?'<td class="on">'+(totPv==null?'<span class="an-na">—</span>':anShort(totPv,meta.fmt))+'</td>':'')
     +'<td class="on">'+anPgVarCell(totVar)+'</td></tr>';
   var projNote=projFactor?' · projeção estima o fechamento de '+HMESES[lastCol]+' com base nos dias já decorridos':'';
@@ -4801,12 +4908,20 @@ function anDashYoY(year,sec,k,idx,cur){if(idx==null||cur==null)return null;var p
 function anDashRevYoY(year,idx,cur){if(idx==null||cur==null)return null;var py=0,any=false;AN_REAL.forEach(function(pr){var v=anRevTotal(String(Number(year)-1),pr,idx);if(v!=null){py+=v;any=true;}});if(!any||py===0)return null;return(cur-py)/Math.abs(py)*100;}
 function anGoSeo(tab){seoTab=tab||'opp';navTo('hub','seo');}
 function anGoAds(){monTab='adsense';navTo('hub','monetizacao');}
-function anDashSeriesStat(series){var f=[];series.forEach(function(v,i){if(v!=null)f.push({v:Number(v),i:i});});if(!f.length)return{cur:null,prev:null,varp:null,idx:null};var last=f[f.length-1],prev=f.length>1?f[f.length-2]:null;var varp=(prev&&prev.v!==0)?((last.v-prev.v)/Math.abs(prev.v)*100):null;return{cur:last.v,prev:prev?prev.v:null,varp:varp,idx:last.i};}
-function anDashRevStat(year){var s=[];for(var mi=0;mi<12;mi++){var t=0,any=false;AN_REAL.forEach(function(pr){var v=anRevTotal(year,pr,mi);if(v!=null){t+=v;any=true;}});s.push(any?t:null);}return anDashSeriesStat(s);}
-function anDashRpmStat(year){var s=[];for(var mi=0;mi<12;mi++){var rt=0,any=false;AN_REAL.forEach(function(pr){var v=anRevTotal(year,pr,mi);if(v!=null){rt+=v;any=true;}});var ses=anRevSessions(year,'all',mi);s.push((any&&ses&&ses>0)?rt/ses*1000:null);}return anDashSeriesStat(s);}
+function anDashSeriesStat(series,year){
+  var f=[];series.forEach(function(v,i){if(v!=null)f.push({v:Number(v),i:i});});if(!f.length)return{cur:null,prev:null,varp:null,idx:null,isProj:false};
+  var last=f[f.length-1],prev=f.length>1?f[f.length-2]:null;
+  var now=new Date(),isCur=year!=null&&String(now.getFullYear())===String(year)&&last.i===now.getMonth(),isProj=false,cmpVal=last.v;
+  if(isCur){var dE=now.getDate()-1,tD=dIM(Number(year),last.i);if(dE>0){cmpVal=last.v/dE*tD;isProj=true;}}
+  var varp=(prev&&prev.v!==0)?((cmpVal-prev.v)/Math.abs(prev.v)*100):null;
+  return{cur:last.v,prev:prev?prev.v:null,varp:varp,idx:last.i,isProj:isProj,proj:isProj?cmpVal:last.v};
+}
+function anDashRevStat(year){var s=[];for(var mi=0;mi<12;mi++){var t=0,any=false;AN_REAL.forEach(function(pr){var v=anRevTotal(year,pr,mi);if(v!=null){t+=v;any=true;}});s.push(any?t:null);}return anDashSeriesStat(s,year);}
+function anDashRpmStat(year){var s=[];for(var mi=0;mi<12;mi++){var rt=0,any=false;AN_REAL.forEach(function(pr){var v=anRevTotal(year,pr,mi);if(v!=null){rt+=v;any=true;}});var ses=anRevSessions(year,'all',mi);s.push((any&&ses&&ses>0)?rt/ses*1000:null);}return anDashSeriesStat(s,year);}
 function anDashKpiCard(label,icon,st,fmt,inv,yoy){
   var sem=anSemaphore(st.varp==null?null:(inv?-st.varp:st.varp));
-  var vh=st.varp==null?'<span class="an-var flat">—</span>':'<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
+  var projTag=' <i class="ti ti-chart-line" style="font-size:10px" title="Comparado com a projeção de fechamento do mês (mês em andamento)"></i>';
+  var vh=st.varp==null?'<span class="an-var flat">—</span>':'<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%'+(st.isProj?projTag:'')+'</span>';
   var yoyH='';
   if(yoy!=null){var ysem=anSemaphore(inv?-yoy:yoy),yc=anSemColor(ysem);yoyH='<span class="an-pill" title="vs mesmo mês do ano anterior">YoY: <b style="color:'+yc+'">'+(yoy>=0?'+':'')+yoy.toFixed(0)+'%</b></span>';}
   return '<div class="an-mcard"><div class="an-mcard-top"><div class="an-mcard-lbl"><i class="ti '+icon+'" style="font-size:13px;color:var(--primary);margin-right:5px"></i>'+label+'</div><span class="an-dot" style="background:'+anSemColor(sem)+'"></span></div>'
