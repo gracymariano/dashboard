@@ -1516,7 +1516,8 @@ function hFmt(v,fmt){if(v==null||v==='')return'—';v=Number(v);
   if(fmt==='pct')return v.toLocaleString('pt-BR',{maximumFractionDigits:2})+'%';
   if(fmt==='dec')return v.toLocaleString('pt-BR',{maximumFractionDigits:2});
   if(fmt==='money')return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-  return v.toLocaleString('pt-BR');}
+  if(fmt==='int')return Math.round(v).toLocaleString('pt-BR',{maximumFractionDigits:0});
+  return v.toLocaleString('pt-BR',{maximumFractionDigits:0});}
 function hLbl(v,fmt){if(v==null)return'';if(fmt==='int')return fN(v);if(fmt==='pct')return Number(v).toFixed(1)+'%';return Number(v).toLocaleString('pt-BR',{maximumFractionDigits:1})}
 function metaOf(dsId,mk){return dsById(dsId).metrics.find(m=>m.k===mk)||{fmt:'int'}}
 // Gráfico de barras único (12 meses) — Módulo 4
@@ -2592,9 +2593,138 @@ function hAPP(){
   return '<div class="an-root">'+h+'</div>';
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   CALENDÁRIO EDITORIAL — multi-site, vazio por padrão, preenchido pelo usuário.
+   Reaproveita o estilo visual do calendário fixo de Cora Cora News (cc-stats/cc-tabs/cc-fil/cc-cg/cc-tbl),
+   mas é dinâmico, editável e cobre as 9 propriedades cadastradas em AN_PROPS.
+   Armazenamento: s.editorial[ano][prop][mes] = [{day,slot,t,cat,kw,vol,dif,pri,status}]
+   ═══════════════════════════════════════════════════════════════ */
+var ED_CATS_DEFAULT=['Geral','SEO','Sazonal','Evergreen','Notícia','Promocional'];
+var ED_STATUS=[{k:'rascunho',l:'Rascunho',c:'var(--text-secondary)'},{k:'producao',l:'Em produção',c:'var(--warning)'},{k:'publicado',l:'Publicado',c:'var(--success)'}];
+var edProp=null,edYear=null,edMi=null,edView='cal',edFil='all',_edPost=null;
+function edCurProp(){if(edProp&&AN_REAL.indexOf(edProp)>=0)return edProp;edProp=AN_REAL[0];return edProp;}
+function edCurYear(){if(edYear)return edYear;edYear=String(new Date().getFullYear());return edYear;}
+function edCurMi(){if(edMi!=null)return edMi;edMi=new Date().getMonth();return edMi;}
+function edObj(year,prop){var s=anStore();s.editorial[year]=s.editorial[year]||{};s.editorial[year][prop]=s.editorial[year][prop]||{};return s.editorial[year][prop];}
+function edPosts(year,prop,mi){var o=edObj(year,prop);if(!Array.isArray(o[mi]))o[mi]=[];return o[mi];}
+function edSetProp(p){edProp=p;anR();}
+function edSetYear(y){edYear=y;anR();}
+function edSetMi(mi){edMi=parseInt(mi,10);anR();}
+function edSetView(v){edView=v;anR();}
+function edSetFil(f){edFil=f;anR();}
+function edCatsUsed(year,prop,mi){var set={};ED_CATS_DEFAULT.forEach(function(c){set[c]=1;});edPosts(year,prop,mi).forEach(function(p){if(p.cat)set[p.cat]=1;});return Object.keys(set);}
+function edNewPost(day){_edPost={day:day||1,slot:1,t:'',cat:ED_CATS_DEFAULT[0],kw:'',vol:'',dif:'Baixa',pri:2,status:'rascunho',_isNew:true};edPostModalOpen();}
+function edEditPost(idx){var posts=edPosts(edCurYear(),edCurProp(),edCurMi());_edPost=Object.assign({},posts[idx]);_edPost._idx=idx;edPostModalOpen();}
+function edDelPost(idx){if(!confirm('Remover esta pauta?'))return;var posts=edPosts(edCurYear(),edCurProp(),edCurMi());posts.splice(idx,1);sv();anR();}
+function edPostModalOpen(){
+  var o=document.createElement('div');o.className='ov';o.id='ed-post-ov';
+  o.innerHTML='<div class="mx" style="width:520px;max-width:96vw"><div id="ed-post-body"></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_edPost=null;}});
+  edPostModalBody();
+}
+function edPostModalBody(){
+  var p=_edPost,tD=dIM(Number(edCurYear()),edCurMi()),cats=edCatsUsed(edCurYear(),edCurProp(),edCurMi());
+  var dayOpts='';for(var d=1;d<=tD;d++)dayOpts+='<option value="'+d+'"'+(p.day===d?' selected':'')+'>'+d+'</option>';
+  var catOpts=cats.map(function(c){return '<option value="'+anEsc(c)+'"'+(p.cat===c?' selected':'')+'>'+anEsc(c)+'</option>';}).join('');
+  var difOpts=['Baixa','Média','Alta'].map(function(d){return '<option value="'+d+'"'+(p.dif===d?' selected':'')+'>'+d+'</option>';}).join('');
+  var priOpts=[1,2,3].map(function(n){return '<option value="'+n+'"'+(p.pri===n?' selected':'')+'>P'+n+(n===1?' (alta)':n===3?' (baixa)':'')+'</option>';}).join('');
+  var statusOpts=ED_STATUS.map(function(s){return '<option value="'+s.k+'"'+(p.status===s.k?' selected':'')+'>'+s.l+'</option>';}).join('');
+  var h='<h4 style="display:flex;align-items:center;gap:7px"><i class="ti ti-notebook" style="color:var(--primary)"></i> '+(p._isNew?'Nova pauta':'Editar pauta')+' — '+propLabel(edCurProp())+'</h4>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--navy)">Dia</label><select class="fsel" style="width:100%" id="ed-f-day">'+dayOpts+'</select></div>'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--navy)">Turno</label><select class="fsel" style="width:100%" id="ed-f-slot"><option value="1"'+(p.slot===1?' selected':'')+'>Manhã</option><option value="2"'+(p.slot===2?' selected':'')+'>Tarde</option></select></div>'
+    +'</div>'
+    +'<div style="margin-top:10px"><label style="font-size:11px;font-weight:600;color:var(--navy)">Título da pauta</label><input id="ed-f-t" type="text" class="hin" style="width:100%;text-align:left;padding:7px 10px" value="'+anEsc(p.t||'')+'" placeholder="Ex: 5 dicas para economizar no mercado"></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--navy)">Categoria</label><select class="fsel" style="width:100%" id="ed-f-cat">'+catOpts+'</select><input id="ed-f-cat-new" type="text" class="hin" style="width:100%;text-align:left;padding:6px 10px;margin-top:4px;font-size:11px" placeholder="ou crie uma categoria nova…"></div>'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--navy)">Status</label><select class="fsel" style="width:100%" id="ed-f-status">'+statusOpts+'</select></div>'
+    +'</div>'
+    +'<div style="margin-top:10px"><label style="font-size:11px;font-weight:600;color:var(--navy)">Palavra-chave (SEO)</label><input id="ed-f-kw" type="text" class="hin" style="width:100%;text-align:left;padding:7px 10px" value="'+anEsc(p.kw||'')+'" placeholder="Ex: como economizar no mercado"></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px">'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--navy)">Volume/mês</label><input id="ed-f-vol" type="number" class="hin" style="width:100%;padding:7px 10px" value="'+(p.vol||'')+'" placeholder="—"></div>'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--navy)">Dificuldade</label><select class="fsel" style="width:100%" id="ed-f-dif">'+difOpts+'</select></div>'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--navy)">Prioridade</label><select class="fsel" style="width:100%" id="ed-f-pri">'+priOpts+'</select></div>'
+    +'</div>'
+    +'<div class="mbb" style="margin-top:14px">'+(p._isNew?'':'<button class="an-btn" style="color:var(--danger);margin-right:auto" onclick="edDelPost('+p._idx+');document.getElementById(\'ed-post-ov\').remove();_edPost=null">Excluir</button>')
+    +'<button onclick="document.getElementById(\'ed-post-ov\').remove();_edPost=null">Cancelar</button><button class="pr" onclick="edPostSave()"><i class="ti ti-check" style="font-size:11px"></i> Salvar</button></div>';
+  document.getElementById('ed-post-body').innerHTML=h;
+}
+function edPostSave(){
+  var p=_edPost;
+  var catNew=(document.getElementById('ed-f-cat-new').value||'').trim();
+  p.day=parseInt(document.getElementById('ed-f-day').value,10);
+  p.slot=parseInt(document.getElementById('ed-f-slot').value,10);
+  p.t=(document.getElementById('ed-f-t').value||'').trim();
+  p.cat=catNew||document.getElementById('ed-f-cat').value;
+  p.status=document.getElementById('ed-f-status').value;
+  p.kw=(document.getElementById('ed-f-kw').value||'').trim();
+  p.vol=document.getElementById('ed-f-vol').value?Number(document.getElementById('ed-f-vol').value):null;
+  p.dif=document.getElementById('ed-f-dif').value;
+  p.pri=parseInt(document.getElementById('ed-f-pri').value,10);
+  if(!p.t){toast('Dê um título para a pauta.','ti-alert-circle');return;}
+  var posts=edPosts(edCurYear(),edCurProp(),edCurMi());
+  var isNew=p._isNew,idx=p._idx;delete p._isNew;delete p._idx;
+  if(isNew)posts.push(p);else posts[idx]=p;
+  sv();document.getElementById('ed-post-ov').remove();_edPost=null;anR();
+  toast(isNew?'Pauta adicionada.':'Pauta atualizada.','ti-notebook');
+}
+function edStatusColor(k){var s=ED_STATUS.find(function(x){return x.k===k;});return s?s.c:'var(--text-secondary)';}
+function edStatusLabel(k){var s=ED_STATUS.find(function(x){return x.k===k;});return s?s.l:k;}
 function hCON(){
-  return pageHeader('Conteúdo','Ranking e performance dos conteúdos')
-    +`<div class="empty-state large"><i class="ti ti-pencil ti-2x"></i><p>Sem conteúdos cadastrados</p><span>Registre conteúdos produzidos na aba Plano de Execução</span></div>`;
+  anInit();
+  var prop=edCurProp(),year=edCurYear(),mi=edCurMi(),tD=dIM(Number(year),mi);
+  var posts=edPosts(year,prop,mi);
+  var propChips='<div class="an-seg" style="margin-bottom:14px;flex-wrap:wrap">'+AN_PROPS.filter(function(p){return p.k!=='all';}).map(function(p){return '<button class="an-seg-btn'+(prop===p.k?' active':'')+'" onclick="edSetProp(\''+p.k+'\')"><i class="ti '+p.ic+'"></i>'+p.l+'</button>';}).join('')+'</div>';
+  var years=[];var nowY=new Date().getFullYear();for(var y=nowY-1;y<=nowY+1;y++)years.push(String(y));if(years.indexOf(year)<0)years.push(year);years.sort();
+  var ySel='<select class="fsel" onchange="edSetYear(this.value)">'+years.map(function(y){return '<option'+(y===year?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var moSel='<select class="fsel" onchange="edSetMi(this.value)">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+year+'</option>';}).join('')+'</select>';
+  var h=pageHeader('Conteúdo','Calendário editorial — pautas de conteúdo por site/app');
+  h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="edNewPost(1)"><i class="ti ti-plus"></i> Nova pauta</button></div></div>';
+  h+=propChips;
+  if(!posts.length){
+    h+='<div class="empty-state large"><i class="ti ti-notebook ti-2x"></i><p>Sem pautas cadastradas em '+AN_MES_LONG[mi]+'/'+year+'</p><span>'+propLabel(prop)+' · clique em "Nova pauta" para começar a planejar o conteúdo deste mês</span></div>';
+    return h;
+  }
+  var tVol=posts.reduce(function(s,p){return s+(Number(p.vol)||0);},0);
+  var uKw=posts.filter(function(p){return p.kw;}).map(function(p){return p.kw;});
+  var uniqKw=Array.from(new Set(uKw)).length;
+  var pBx=posts.length?Math.round(posts.filter(function(p){return p.dif==='Baixa';}).length/posts.length*100):0;
+  var pubd=posts.filter(function(p){return p.status==='publicado';}).length;
+  h+='<div class="cc-stats"><div class="cc-st"><div class="sl">Pautas</div><div class="sv">'+posts.length+'</div><div class="ss">'+AN_MES_LONG[mi]+'/'+year+'</div></div>'
+    +'<div class="cc-st"><div class="sl">Publicadas</div><div class="sv">'+pubd+'</div><div class="ss">de '+posts.length+' pautas</div></div>'
+    +'<div class="cc-st"><div class="sl">Keywords únicas</div><div class="sv">'+uniqKw+'</div><div class="ss">com palavra-chave definida</div></div>'
+    +'<div class="cc-st"><div class="sl">Vol. potencial</div><div class="sv">'+fN(tVol)+'</div><div class="ss">buscas/mês somadas</div></div>'
+    +'<div class="cc-st"><div class="sl">% Dific. baixa</div><div class="sv">'+pBx+'%</div><div class="ss">maior chance de rankear</div></div></div>';
+  h+='<div class="cc-tabs"><button class="cc-tb '+(edView==='cal'?'a':'')+'" onclick="edSetView(\'cal\')"><i class="ti ti-calendar-event" style="font-size:10px"></i> Calendário</button><button class="cc-tb '+(edView==='list'?'a':'')+'" onclick="edSetView(\'list\')"><i class="ti ti-list" style="font-size:10px"></i> Lista</button></div>';
+  var cats=edCatsUsed(year,prop,mi);
+  h+='<div class="cc-fil"><button class="cc-fb '+(edFil==='all'?'a':'')+'" onclick="edSetFil(\'all\')">Todas</button>'+cats.map(function(c){return '<button class="cc-fb '+(edFil===c?'a':'')+'" onclick="edSetFil(\''+anEsc(c).replace(/'/g,"\\'")+'\')">'+anEsc(c)+'</button>';}).join('')+'</div>';
+  var ps=edFil==='all'?posts:posts.filter(function(p){return p.cat===edFil;});
+  var catColorOf=(function(){var palette=['cm','ca','cb','cr','ce','cl','c35','cc'],map={};cats.forEach(function(c,i){map[c]=palette[i%palette.length];});return function(c){return map[c]||'';};})();
+  if(edView==='cal'){
+    var first=new Date(Number(year),mi,1),startDow=(first.getDay()+6)%7; // segunda=0
+    h+='<div class="cc-cg">';
+    ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].forEach(function(d){h+='<div class="cc-ch">'+d+'</div>';});
+    for(var e=0;e<startDow;e++)h+='<div class="cc-cd emp"></div>';
+    for(var d2=1;d2<=tD;d2++){
+      var dp=ps.filter(function(p){return p.day===d2;});
+      h+='<div class="cc-cd"><div class="dn">'+d2+'</div>';
+      dp.forEach(function(p,pidx){var realIdx=posts.indexOf(p);h+='<span class="cc-pk '+catColorOf(p.cat)+'" style="cursor:pointer" title="'+anEsc(p.kw||'')+(p.vol?' ('+fN(p.vol)+'/mês)':'')+' · '+edStatusLabel(p.status)+'" onclick="edEditPost('+realIdx+')">'+(p.pri===1?'★ ':'')+anEsc(p.t)+'</span>';});
+      h+='<span class="cc-pk" style="cursor:pointer;background:transparent;border:1.5px dashed rgba(0,0,0,.12);color:var(--text-secondary)" onclick="edNewPost('+d2+')"><i class="ti ti-plus" style="font-size:9px"></i> pauta</span>';
+      h+='</div>';
+    }
+    var totalCells=startDow+tD,rem=(7-(totalCells%7))%7;for(var e2=0;e2<rem;e2++)h+='<div class="cc-cd emp"></div>';
+    h+='</div>';
+  }else{
+    h+='<div style="overflow-x:auto"><table class="cc-tbl"><tr><th>Dia</th><th>Turno</th><th>Título</th><th>Categoria</th><th>Keyword</th><th>Vol.</th><th>Dific.</th><th>P</th><th>Status</th><th></th></tr>';
+    ps.slice().sort(function(a,b){return a.day-b.day||a.slot-b.slot;}).forEach(function(p){
+      var realIdx=posts.indexOf(p);
+      var dc=p.dif==='Baixa'?'var(--success)':p.dif==='Média'?'var(--warning)':'var(--danger)';
+      h+='<tr style="cursor:pointer" onclick="edEditPost('+realIdx+')"><td style="font-weight:600">'+p.day+'/'+HMESES[mi]+'</td><td>'+(p.slot===1?'Manhã':'Tarde')+'</td><td style="max-width:220px">'+anEsc(p.t)+'</td><td><span class="cc-pk '+catColorOf(p.cat)+'" style="display:inline;white-space:nowrap">'+anEsc(p.cat)+'</span></td><td style="color:var(--text-secondary);font-size:9px">'+anEsc(p.kw||'—')+'</td><td style="font-weight:600">'+(p.vol?fN(p.vol):'—')+'</td><td style="color:'+dc+';font-weight:600">'+(p.dif||'—')+'</td><td style="font-weight:700;color:'+(p.pri===1?'var(--danger)':'var(--text-secondary)')+'">P'+p.pri+'</td><td><span style="color:'+edStatusColor(p.status)+';font-weight:600;font-size:10px">'+edStatusLabel(p.status)+'</span></td><td><button class="an-ic-btn del" onclick="event.stopPropagation();edDelPost('+realIdx+')"><i class="ti ti-trash" style="font-size:11px"></i></button></td></tr>';
+    });
+    h+='</table></div>';
+  }
+  return h;
 }
 
 function clearAllHDS(){
@@ -2771,6 +2901,7 @@ function initDashCharts(){
   setTimeout(function(){
     var cv=document.getElementById('cv-receita');
     if(cv&&typeof Chart!=='undefined'){
+      var existing=Chart.getChart(cv);if(existing)existing.destroy(); // evita acumular instâncias a cada navegação (causa de lentidão progressiva)
       var d=gDSData(hYear,'admgr');
       var vals=(d['receita']||[]).map(function(v){return Number(v)||0;});
       if(vals.some(function(v){return v>0;})){
@@ -2779,6 +2910,7 @@ function initDashCharts(){
     }
     var cd=document.getElementById('cv-donut');
     if(cd&&typeof Chart!=='undefined'){
+      var existing2=Chart.getChart(cd);if(existing2)existing2.destroy(); // idem
       var aq=gDSData(hYear,'aquis');
       var labels=[],vals2=[],colors=['#16C79A','#008B8B','#0B2239','#F59E0B','#EF4444','#7A8797'];
       HDS.find(function(x){return x.id==='aquis';}).metrics.forEach(function(m){
@@ -2973,7 +3105,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -3161,20 +3293,22 @@ function anGoalProgress(){
   var mSel='<select class="fsel" onchange="anSetGoalMetric(this.value)" title="Métrica da meta">'+sec.metrics.map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="anSetGoalMonth(this.value)" title="Mês da meta">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select>';
   var setBtn='<button class="an-btn prim" onclick="anMGoalEdit('+mi+')"><i class="ti ti-target"></i> '+(goal>0?'Editar meta':'Definir meta')+'</button>';
-  var prevTxt='<div class="an-gp-pair"><span>Mês anterior ('+(mi>0?HMESES[mi-1]:'—')+')</span><b>'+(prevVal!=null?anFmt(prevVal,meta.fmt):'—')+'</b></div>';
+  // mesma ordem e estilo de "pill" usado nos cards de métrica (Realizado | Mês anterior | Meta | Falta | Projeção do mês)
+  function pair(lbl,val,color){return '<div class="an-gp-pair"><span>'+lbl+'</span><b'+(color?' style="color:'+color+'"':'')+'>'+val+'</b></div>';}
   var right;
   if(goal>0){
     var falta=goal-realNum;
-    var projTxt=projVal!=null?('<div class="an-gp-pair"><span>Projeção do mês</span><b style="color:'+projCol+'">'+anFmt(projVal,meta.fmt)+(projPct!=null?' ('+projPct.toFixed(0)+'%)':'')+'</b></div>'):'';
-    right='<div class="an-gp-nums"><div class="an-gp-pair"><span>Realizado</span><b>'+anFmt(realNum,meta.fmt)+'</b></div>'
-      +prevTxt
-      +'<div class="an-gp-pair"><span>Meta</span><b>'+anFmt(goal,meta.fmt)+'</b></div>'
-      +'<div class="an-gp-pair"><span>'+(falta>0?'Falta':'Excedente')+'</span><b style="color:'+col+'">'+anFmt(Math.abs(falta),meta.fmt)+'</b></div>'
-      +projTxt
+    right='<div class="an-gp-nums">'
+      +pair('Realizado',anFmt(realNum,meta.fmt))
+      +pair('Mês anterior ('+(mi>0?HMESES[mi-1]:'—')+')',prevVal!=null?anFmt(prevVal,meta.fmt):'—')
+      +pair('Meta',anFmt(goal,meta.fmt))
+      +pair((falta>0?'Falta':'Excedente'),anFmt(Math.abs(falta),meta.fmt),col)
+      +(projVal!=null?pair('Projeção do mês',anFmt(projVal,meta.fmt)+(projPct!=null?' ('+projPct.toFixed(0)+'%)':''),projCol):'')
       +'<div class="an-gp-pct" style="color:'+col+'">'+pct.toFixed(0)+'%</div></div>';
   }else{
-    right='<div class="an-gp-nums"><div class="an-gp-pair"><span>Realizado</span><b>'+anFmt(realNum,meta.fmt)+'</b></div>'
-      +prevTxt
+    right='<div class="an-gp-nums">'
+      +pair('Realizado',anFmt(realNum,meta.fmt))
+      +pair('Mês anterior ('+(mi>0?HMESES[mi-1]:'—')+')',prevVal!=null?anFmt(prevVal,meta.fmt):'—')
       +'<div style="font-size:11.5px;color:var(--text-secondary);align-self:center">Escolha a métrica e o mês acima e defina a meta para acompanhar o progresso.</div></div>';
   }
   var projNote=(goal>0&&isCurMonth&&projVal==null)?'<div class="an-card-sub" style="margin-top:6px"><i class="ti ti-info-circle" style="font-size:11px"></i> Projeção indisponível para esta métrica (disponível para métricas acumulativas como cliques/impressões/sessões/receita).</div>':'';
@@ -3889,7 +4023,7 @@ async function anFxEnsure(){
 function anFxToBRL(usd){var r=anFxRate();return(usd==null||r==null)?null:usd*r;}
 
 
-var AN_REV_DEFAULT=['AdSense','Ad Manager','UOL Afiliados','Indoleads','DGMax','Cofrinho'];
+var AN_REV_DEFAULT=['UOL Afiliados','Indoleads','DGMax','Cofrinho']; // AdSense/Ad Manager saíram daqui: agora são lidos automaticamente das próprias abas
 var anRevSort={by:null,dir:'desc'}, _anRevMan=null, _anRevImp=null;
 function anRevObj(year,prop){var s=anStore();s.rev[year]=s.rev[year]||{};s.rev[year][prop]=s.rev[year][prop]||{};return s.rev[year][prop];}
 function anRevArr(year,prop,net){var o=anRevObj(year,prop);if(!Array.isArray(o[net]))o[net]=Array(12).fill(null);return o[net];}
@@ -3901,8 +4035,29 @@ function anRevNetworksAll(year,prop){var set={};AN_REV_DEFAULT.forEach(function(
 function anRevMonths(year,prop){var o=anRevObj(year,prop),set={};Object.keys(o).forEach(function(n){(o[n]||[]).forEach(function(v,i){if(v!=null)set[i]=1;});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
 function anRevHasAny(year,prop){return anRevMonths(year,prop).length>0;}
 function anRevLastCol(){var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();var ms=anRevMonths(anYear,anProp);return ms.length?ms[ms.length-1]:11;}
-// total em R$: redes em dólar (AdSense/Ad Manager) são convertidas pela cotação do dia antes de somar com as demais (já em R$)
-function anRevTotal(year,prop,mi){var o=anRevObj(year,prop),s=0,any=false,missingFx=false;Object.keys(o).forEach(function(n){var raw=anRevVal(year,prop,n,mi);if(raw==null)return;if(anIsUsdNet(n)){var brl=anFxToBRL(raw);if(brl==null){missingFx=true;return;}s+=brl;any=true;}else{s+=Number(raw);any=true;}});if(missingFx&&!any)return null;return any?s:null;}
+// total em R$: soma (1) AdSense e Ad Manager importados/lançados em suas próprias abas (convertidos de USD
+// para BRL pela cotação do dia) e (2) as demais redes lançadas manualmente na tela Receitas (já em R$).
+// AdSense/Ad Manager são contas únicas (não têm corte por propriedade no sistema) — contam na visão
+// consolidada ("Todos os Sites") e em "Guardar Dinheiro" (propriedade onde o usuário sempre os lançou),
+// e ficam de fora das demais propriedades específicas para não inflar números de outros sites.
+// Linhas chamadas "AdSense"/"Ad Manager" lançadas manualmente na tela Receitas são ignoradas para não somar
+// em duplicidade com as abas dedicadas.
+var AN_ADS_PROP='gd'; // propriedade à qual a receita de AdSense/Ad Manager é atribuída
+function anRevTotal(year,prop,mi){
+  var s=0,any=false;
+  if(prop==='all'||prop===AN_ADS_PROP){
+    var admUsd=anAdsSumDFor('adm',year,mi,'rec'),adsUsd=anAdsSumDFor('ads',year,mi,'rec');
+    if(admUsd!=null){var b1=anFxToBRL(admUsd);if(b1!=null){s+=b1;any=true;}}
+    if(adsUsd!=null){var b2=anFxToBRL(adsUsd);if(b2!=null){s+=b2;any=true;}}
+  }
+  var o=anRevObj(year,prop);
+  Object.keys(o).forEach(function(n){
+    if(anIsUsdNet(n))return; // ignora linhas legadas "AdSense"/"Ad Manager" lançadas manualmente — já contadas acima
+    var raw=anRevVal(year,prop,n,mi);if(raw==null)return;
+    s+=Number(raw);any=true;
+  });
+  return any?s:null;
+}
 function anRevSessions(year,prop,mi){
   if(prop==='all'){var t=0,any=false;AN_REAL.forEach(function(pr){var a=anSeries(year,'traf',pr,'sessoes_tot');if(a[mi]!=null){t+=Number(a[mi]);any=true;}});return any?t:null;}
   var arr=anSeries(year,'traf',prop,'sessoes_tot');return arr[mi]!=null?Number(arr[mi]):null;
@@ -3922,33 +4077,42 @@ function anRevView(){
 }
 function anRevPivot(){
   var lastCol=anRevLastCol(),months=[];for(var i=0;i<=lastCol;i++)months.push(i);
-  var nets=anRevNetworks(anYear,anProp).filter(function(n){return months.some(function(mi){return anRevVal(anYear,anProp,n,mi)!=null;});});
-  if(!nets.length)return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-cash"></i> Receita por rede · '+anYear+'</div></div><div class="an-empty"><i class="ti ti-cash"></i><p>Sem receita lançada para '+propLabel(anProp)+' em '+anYear+'</p><span>Clique em "Inserir manual" e preencha AdSense, Ad Manager, UOL, Indoleads, DGMax, Cofrinho… O RPM unificado é calculado com as sessões do Tráfego.</span></div>';
+  var showAds=(anProp==='all'||anProp===AN_ADS_PROP); // AdSense/Ad Manager só aparecem na visão consolidada ou em Guardar Dinheiro
+  var nets=anRevNetworks(anYear,anProp).filter(function(n){return!anIsUsdNet(n)&&months.some(function(mi){return anRevVal(anYear,anProp,n,mi)!=null;});}); // exclui linhas legadas AdSense/Ad Manager lançadas manualmente
+  if(!nets.length&&!showAds)return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-cash"></i> Receita por rede · '+anYear+'</div></div><div class="an-empty"><i class="ti ti-cash"></i><p>Sem receita lançada para '+propLabel(anProp)+' em '+anYear+'</p><span>Clique em "Inserir manual" e preencha UOL, Indoleads, DGMax, Cofrinho… O RPM unificado é calculado com as sessões do Tráfego.</span></div>';
   var effBy=anRevSort.by===null?String(lastCol):anRevSort.by;
-  function sortKey(n){if(effBy==='name')return(n||'').toLowerCase();var mv=anRevValBRL(anYear,anProp,n,Number(effBy));return mv==null?-Infinity:Number(mv);} // ordena pelo valor já convertido p/ R$ (comparável entre redes)
+  function sortKey(n){if(effBy==='name')return(n||'').toLowerCase();var mv=anRevVal(anYear,anProp,n,Number(effBy));return mv==null?-Infinity:Number(mv);}
   nets.sort(function(a,b){var ka=sortKey(a),kb=sortKey(b);if(typeof ka==='string')return anRevSort.dir==='asc'?ka.localeCompare(kb):kb.localeCompare(ka);return anRevSort.dir==='asc'?ka-kb:kb-ka;});
   function arr(by){var on=(anRevSort.by===by)||(anRevSort.by===null&&by===String(lastCol));return on?(anRevSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
   function th(lbl,by,cls,style){var on=(anRevSort.by===by)||(anRevSort.by===null&&by===String(lastCol));return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'"'+(style?' style="'+style+'"':'')+' onclick="anRevSortSet(\''+by+'\')">'+lbl+arr(by)+'</th>';}
   var head='<tr>'+th('Rede','name','stick','text-align:left')+months.map(function(mi){return th(HMESES[mi]+'/'+anYear.slice(2),String(mi),(mi===lastCol?'on':''));}).join('')+'<th>Total ano (R$)</th></tr>';
-  var fx=anFxRate(),hasUsdNet=nets.some(anIsUsdNet);
-  var body=nets.map(function(n){var tot=0,isUsd=anIsUsdNet(n),fmt=isUsd?'usd':'money';
-    var tds=months.map(function(mi){var v=anRevVal(anYear,anProp,n,mi);if(v!=null)tot+=Number(v);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,fmt))+'</td>';}).join('');
-    var rowEnd='<td style="font-weight:700">'+anShort(tot,fmt)+'</td>';
-    var mainRow='<tr><td class="stick" style="text-align:left;font-weight:600">'+anEsc(n)+(isUsd?' <span class="an-pill" style="font-size:9px;padding:1px 5px">US$</span>':'')+'</td>'+tds+rowEnd+'</tr>';
-    if(!isUsd)return mainRow;
-    // linha auxiliar mostrando o equivalente em R$ pela cotação do dia, já que o total geral soma tudo em R$
-    var totBRL=0,anyBRL=false;
-    var tdsBRL=months.map(function(mi){var vb=anRevValBRL(anYear,anProp,n,mi);if(vb!=null){totBRL+=vb;anyBRL=true;}return '<td'+(mi===lastCol?' class="on"':'')+' style="color:var(--text-secondary);font-size:11px">'+(vb==null?'—':anShort(vb,'money'))+'</td>';}).join('');
-    var convRow='<tr><td class="stick" style="text-align:left;font-size:11px;color:var(--text-secondary);padding-top:0">↳ em R$ (cotação do dia)</td>'+tdsBRL+'<td style="font-size:11px;color:var(--text-secondary)">'+(anyBRL?anShort(totBRL,'money'):'—')+'</td></tr>';
-    return mainRow+convRow;
+  var fx=anFxRate();
+  // linhas automáticas: AdSense e Ad Manager, lidas direto das próprias abas (somente leitura aqui)
+  var autoRows='';
+  if(showAds){
+    [['adm','AdSense'],['ads','Ad Manager']].forEach(function(pair){
+      var src=pair[0],lbl=pair[1];
+      var hasAny=months.some(function(mi){return anAdsSumDFor(src,anYear,mi,'rec')!=null;});
+      if(!hasAny)return;
+      var tot=0,totBRL=0,anyBRL=false;
+      var tds=months.map(function(mi){var v=anAdsSumDFor(src,anYear,mi,'rec');if(v!=null)tot+=v;return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,'usd'))+'</td>';}).join('');
+      var tdsBRL=months.map(function(mi){var v=anAdsSumDFor(src,anYear,mi,'rec'),vb=v!=null?anFxToBRL(v):null;if(vb!=null){totBRL+=vb;anyBRL=true;}return '<td'+(mi===lastCol?' class="on"':'')+' style="color:var(--text-secondary);font-size:11px">'+(vb==null?'—':anShort(vb,'money'))+'</td>';}).join('');
+      autoRows+='<tr><td class="stick" style="text-align:left;font-weight:600">'+lbl+' <span class="an-pill" style="font-size:9px;padding:1px 5px">US$ · automático</span></td>'+tds+'<td style="font-weight:700">'+anShort(tot,'usd')+'</td></tr>';
+      autoRows+='<tr><td class="stick" style="text-align:left;font-size:11px;color:var(--text-secondary);padding-top:0">↳ em R$ (cotação do dia)</td>'+tdsBRL+'<td style="font-size:11px;color:var(--text-secondary)">'+(anyBRL?anShort(totBRL,'money'):'—')+'</td></tr>';
+    });
+  }
+  var body=nets.map(function(n){var tot=0;
+    var tds=months.map(function(mi){var v=anRevVal(anYear,anProp,n,mi);if(v!=null)tot+=Number(v);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,'money'))+'</td>';}).join('');
+    return '<tr><td class="stick" style="text-align:left;font-weight:600">'+anEsc(n)+'</td>'+tds+'<td style="font-weight:700">'+anShort(tot,'money')+'</td></tr>';
   }).join('');
   var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">Total redes (R$)</td>'+months.map(function(mi){var v=anRevTotal(anYear,anProp,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,'money'))+'</td>';}).join('')+'<td style="font-weight:700">'+anShort((function(){var t=0;months.forEach(function(mi){var v=anRevTotal(anYear,anProp,mi);if(v!=null)t+=v;});return t;})(),'money')+'</td></tr>';
   var rpmRow='<tr class="an-camp-tot an-rev-rpm"><td class="stick" style="text-align:left"><i class="ti ti-bolt" style="font-size:12px"></i> RPM unificado (R$)</td>'+months.map(function(mi){var v=anRevRPM(anYear,anProp,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anFmt(v,'money'))+'</td>';}).join('')+'<td></td></tr>';
-  var fxNote=hasUsdNet?('<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-currency-dollar" style="font-size:12px"></i> Cotação do dólar usada na conversão: '+(fx?('US$ 1 = R$ '+fx.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:4})):'buscando…')+' <button class="an-btn" style="padding:1px 8px;font-size:11px" onclick="anFxRefresh()"><i class="ti ti-refresh" style="font-size:10px"></i> Atualizar</button></div>'):'';
-  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-cash"></i> Receita por rede · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+nets.length+' redes · RPM unificado = (todas as redes, convertidas p/ R$, ÷ sessões) × 1000</div></div>'
-    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+rpmRow+'</tbody></table></div>'
+  var fxNote=showAds?('<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-currency-dollar" style="font-size:12px"></i> Cotação do dólar usada na conversão: '+(fx?('US$ 1 = R$ '+fx.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:4})):'buscando…')+' <button class="an-btn" style="padding:1px 8px;font-size:11px" onclick="anFxRefresh()"><i class="ti ti-refresh" style="font-size:10px"></i> Atualizar</button></div>'):'';
+  var adsNote=showAds?'<div class="an-card-sub" style="margin-top:4px"><i class="ti ti-info-circle" style="font-size:12px"></i> AdSense e Ad Manager são lidos automaticamente do que você importa/lança nas abas próprias — não lance esses dois aqui, para não duplicar.</div>':'';
+  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-cash"></i> Receita por rede · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+(nets.length+(showAds?2:0))+' redes · RPM unificado = (todas as redes, convertidas p/ R$, ÷ sessões) × 1000</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+autoRows+body+totRow+rpmRow+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:12px"></i> Sessões vêm da aba Tráfego. Preencha o Tráfego do mesmo mês/propriedade para o RPM aparecer.</div>'
-    +fxNote;
+    +adsNote+fxNote;
 }
 function anFxRefresh(){var s=anStore();s.fx={};anFxEnsure().then(function(){anR();});toast('Atualizando cotação do dólar…','ti-refresh');}
 function anRevManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}_anRevMan={};
@@ -3956,11 +4120,18 @@ function anRevManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade e
   o.innerHTML='<div class="mx" style="width:900px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-revman-body" style="overflow:auto;flex:1;min-height:0"></div></div>';
   document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anRevMan=null;}});anRevManBody();}
 function anRevManBody(){
-  var nets=anRevNetworksAll(anYear,anProp),lastCol=anRevLastCol(),months=[];for(var i=0;i<=lastCol;i++)months.push(i);
+  var allNets=anRevNetworksAll(anYear,anProp),lastCol=anRevLastCol(),months=[];for(var i=0;i<=lastCol;i++)months.push(i);
+  var legacyAds=allNets.filter(anIsUsdNet); // "AdSense"/"Ad Manager" lançados manualmente antes desta mudança
+  var nets=allNets.filter(function(n){return!anIsUsdNet(n);});
   var h='<h4 style="display:flex;align-items:center;gap:7px"><i class="ti ti-cash" style="color:var(--primary)"></i> Receita por rede — '+propLabel(anProp)+' · '+anYear+'</h4>';
-  h+='<p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px;line-height:1.5">Lance o valor na moeda original de cada rede: <b>AdSense e Ad Manager em dólar (US$)</b>, demais redes (UOL, Indoleads, DGMax, Cofrinho…) em real (R$). O sistema converte USD→BRL automaticamente pela cotação do dia ao somar o total. Salva no Supabase.</p>';
+  h+='<p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px;line-height:1.5">Lance aqui as redes em real (R$): UOL Afiliados, Indoleads, DGMax, Cofrinho… <b>AdSense e Ad Manager não são lançados aqui</b> — eles entram automaticamente a partir do que você importa/insere nas próprias abas, já convertidos de dólar para real pela cotação do dia. Salva no Supabase.</p>';
+  if(legacyAds.length){
+    h+='<div class="an-card-sub" style="background:rgba(245,158,11,.08);border-radius:8px;padding:8px 10px;margin-bottom:10px"><i class="ti ti-alert-triangle" style="font-size:12px;color:var(--warning)"></i> Encontrei lançamentos antigos de <b>'+legacyAds.map(anEsc).join(', ')+'</b> aqui. Eles não entram mais no total (para não duplicar com as abas automáticas). '
+      +legacyAds.map(function(n){var ne=anEsc(n).replace(/'/g,"\\'");return '<button class="an-btn" style="padding:1px 8px;font-size:11px;margin:4px 4px 0 0" onclick="anRevDelNet(\''+ne+'\');anRevManBody()"><i class="ti ti-trash" style="font-size:10px"></i> Remover '+anEsc(n)+'</button>';}).join('')
+      +'</div>';
+  }
   h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl"><thead><tr><th style="text-align:left">Rede</th>'+months.map(function(mi){return '<th>'+HMESES[mi]+'</th>';}).join('')+'<th></th></tr></thead><tbody>';
-  nets.forEach(function(n){var ne=anEsc(n).replace(/'/g,"\\'"),isUsd=anIsUsdNet(n);h+='<tr><td style="text-align:left;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(n)+'">'+anEsc(n)+' <span class="an-pill" style="font-size:9px;padding:1px 5px">'+(isUsd?'US$':'R$')+'</span></td>'+months.map(function(mi){var v=anRevVal(anYear,anProp,n,mi);return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anRevSet(anYear,anProp,\''+ne+'\','+mi+',this.value);sv()"></td>';}).join('')+'<td><button class="an-ic-btn del" title="Remover" onclick="anRevDelNet(\''+ne+'\')"><i class="ti ti-trash"></i></button></td></tr>';});
+  nets.forEach(function(n){var ne=anEsc(n).replace(/'/g,"\\'");h+='<tr><td style="text-align:left;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(n)+'">'+anEsc(n)+' <span class="an-pill" style="font-size:9px;padding:1px 5px">R$</span></td>'+months.map(function(mi){var v=anRevVal(anYear,anProp,n,mi);return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anRevSet(anYear,anProp,\''+ne+'\','+mi+',this.value);sv()"></td>';}).join('')+'<td><button class="an-ic-btn del" title="Remover" onclick="anRevDelNet(\''+ne+'\')"><i class="ti ti-trash"></i></button></td></tr>';});
   h+='</tbody></table></div><div class="mbb"><button onclick="anRevAddNet()"><i class="ti ti-plus" style="font-size:11px"></i> Adicionar rede</button>'
     +'<button class="pr" onclick="document.getElementById(\'an-revman-ov\').remove();_anRevMan=null;anR()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
   document.getElementById('an-revman-body').innerHTML=h;
@@ -4115,6 +4286,8 @@ function anSeoDecay(mi){
    ═══════════════════════════════════════════════════════════════ */
 var PGDEV_LIST=[{k:'mobile',l:'Celular',ic:'ti-device-mobile'},{k:'desktop',l:'Computador',ic:'ti-device-desktop'},{k:'tablet',l:'Tablet',ic:'ti-device-tablet'}];
 var pgDevMi=null,pgDevImportDevice='mobile',_anPgDevImp=null;
+var pgDevSort={by:'gap',dir:'desc'}; // by = 'name' | 'gap' | chave de dispositivo (mobile/desktop/tablet)
+function pgDevSortSet(by){if(pgDevSort.by===by)pgDevSort.dir=pgDevSort.dir==='asc'?'desc':'asc';else{pgDevSort.by=by;pgDevSort.dir=(by==='name')?'asc':(by==='gap'?'desc':'asc');}anR();}
 function pgDevObj(year,prop){var s=anStore();s.pgdev[year]=s.pgdev[year]||{};s.pgdev[year][prop]=s.pgdev[year][prop]||{};return s.pgdev[year][prop];}
 function pgDevRows(year,prop,device,mi){var o=pgDevObj(year,prop);return(o[device]&&o[device][mi])?o[device][mi]:[];}
 function pgDevMonths(year,prop){var o=pgDevObj(year,prop),set={};PGDEV_LIST.forEach(function(d){Object.keys(o[d.k]||{}).forEach(function(mi){set[mi]=1;});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
@@ -4176,21 +4349,30 @@ function pgDevView(){
     var bestD=null,worstD=null;devsWithData.forEach(function(d){if(pos[d.k]==null)return;if(bestD==null||pos[d.k]<pos[bestD])bestD=d.k;if(worstD==null||pos[d.k]>pos[worstD])worstD=d.k;});
     return{n:n,pos:pos,gap:gap,bestD:bestD,worstD:worstD};
   });
-  rows=rows.filter(function(r){return r.gap!=null;}).sort(function(a,b){return b.gap-a.gap;});
+  rows=rows.filter(function(r){return r.gap!=null;});
+  var sBy=pgDevSort.by,sDir=pgDevSort.dir;
+  rows.sort(function(a,b){
+    if(sBy==='name'){var na=(a.n||'').toLowerCase(),nb=(b.n||'').toLowerCase();return sDir==='asc'?na.localeCompare(nb):nb.localeCompare(na);}
+    var va=sBy==='gap'?a.gap:a.pos[sBy],vb=sBy==='gap'?b.gap:b.pos[sBy];
+    if(va==null)va=sDir==='asc'?Infinity:-Infinity;if(vb==null)vb=sDir==='asc'?Infinity:-Infinity;
+    return sDir==='asc'?va-vb:vb-va;
+  });
   if(!rows.length){
     h+='<div class="an-card"><div class="an-empty"><i class="ti ti-devices"></i><p>Nenhuma página em comum entre os dispositivos importados</p><span>Preciso da mesma página presente em pelo menos 2 dispositivos para calcular a diferença.</span></div></div>';
     return h;
   }
-  var worst=rows[0],lBest=PGDEV_LIST.find(function(d){return d.k===worst.bestD;}),lWorst=PGDEV_LIST.find(function(d){return d.k===worst.worstD;});
+  var worst=rows.slice().sort(function(a,b){return b.gap-a.gap;})[0],lBest=PGDEV_LIST.find(function(d){return d.k===worst.bestD;}),lWorst=PGDEV_LIST.find(function(d){return d.k===worst.worstD;});
   var insight=worst.gap>=4?('<div class="seg-insight" style="border-left:3px solid var(--warning)"><i class="ti ti-devices" style="color:var(--warning)"></i><div><div class="seg-ins-t">Maior diferença entre dispositivos</div><div class="seg-ins-x">Em <b>'+anEsc(worst.n)+'</b>: posição <b>'+worst.pos[worst.bestD].toFixed(1).replace('.',',')+'</b> em '+(lBest?lBest.l:worst.bestD)+' vs <b>'+worst.pos[worst.worstD].toFixed(1).replace('.',',')+'</b> em '+(lWorst?lWorst.l:worst.worstD)+' — '+worst.gap.toFixed(1).replace('.',',')+' posições pior. Vale revisar conteúdo e experiência nesse dispositivo.</div></div></div>'):'';
   var body=rows.map(function(r){var c=r.gap>=4?'var(--danger)':r.gap<=-4?'var(--success)':'var(--warning)';
     return '<tr><td class="stick" style="text-align:left;max-width:300px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.n)+'">'+anEsc(r.n)+'</td>'
       +devsWithData.map(function(d){var v=r.pos[d.k];return '<td>'+(v!=null?v.toFixed(1).replace('.',','):'—')+'</td>';}).join('')
       +'<td class="on" style="color:'+c+';font-weight:700">'+r.gap.toFixed(1).replace('.',',')+'</td></tr>';
   }).join('');
-  var devCols=devsWithData.map(function(d){return '<th>Posição ('+d.l+')</th>';}).join('');
-  return h+insight+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-devices"></i> Páginas por Dispositivo · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+rows.length+' páginas · dispositivos: '+devsWithData.map(function(d){return d.l;}).join(', ')+' · ordenado pela maior diferença entre dispositivos</div></div>'
-    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Página</th>'+devCols+'<th class="on">Diferença</th></tr></thead><tbody>'+body+'</tbody></table></div>'
+  function pgDevArrow(by){return pgDevSort.by===by?(pgDevSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
+  function pgDevTh(lbl,by,cls,style){var on=pgDevSort.by===by;return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'"'+(style?' style="'+style+'"':'')+' onclick="pgDevSortSet(\''+by+'\')">'+lbl+pgDevArrow(by)+'</th>';}
+  var devCols=devsWithData.map(function(d){return pgDevTh('Posição ('+d.l+')',d.k);}).join('');
+  return h+insight+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-devices"></i> Páginas por Dispositivo · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+rows.length+' páginas · dispositivos: '+devsWithData.map(function(d){return d.l;}).join(', ')+' · clique no cabeçalho para ordenar</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr>'+pgDevTh('Página','name','stick','text-align:left')+devCols+pgDevTh('Diferença','gap','on')+'</tr></thead><tbody>'+body+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-bulb" style="font-size:12px"></i> Diferença = maior posição menos menor posição entre os dispositivos importados. Priorize revisar conteúdo/experiência nas páginas com maior diferença.</div></div>';
 }
 
@@ -4313,6 +4495,9 @@ function anAdsValD(year,mi,mk,di){var o=anAdsObj(year,mi);return Array.isArray(o
 function anAdsDaysWith(year,mi){var o=anAdsObj(year,mi),set={};anAdsCurMetrics().forEach(function(m){(o[m.k]||[]).forEach(function(v,i){if(v!=null&&v!=='')set[i]=1;});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
 function anAdsHasAny(year,mi){return anAdsDaysWith(year,mi).length>0;}
 function anAdsSumD(year,mi,mk){var a=anAdsArr(year,mi,mk),s=0,any=false;a.forEach(function(v){if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
+// versão "pura" (não depende do estado global anAdsSrc) — soma direto de s.adm/s.ads, usada pela Receita Total
+// para puxar AdSense + Ad Manager simultaneamente, independente de qual aba o usuário está navegando
+function anAdsSumDFor(src,year,mi,mk){var s=anStore();var b=src==='adm'?s.adm:s.ads;var month=((b[year]||{})[mi])||{};var arr=Array.isArray(month[mk])?month[mk]:[];var sum=0,any=false;arr.forEach(function(v){if(v!=null&&v!==''){sum+=Number(v);any=true;}});return any?sum:null;}
 function anAdsMonthTotal(year,mi,mk){var meta=anAdsMeta(mk);
   if(meta.kind==='sum')return anAdsSumD(year,mi,mk);
   if(meta.kind==='rate'){var den=anAdsSumD(year,mi,meta.den),num=anAdsSumD(year,mi,meta.num);if(den&&den>0&&num!=null)return num/den*meta.mult;
@@ -4496,11 +4681,15 @@ function anAdsManBody(){
   var h='<h4 style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><i class="ti ti-ad-2" style="color:var(--primary)"></i> '+anAdsLabel()+' diário'
     +'<select class="fsel" style="margin-left:auto" onchange="_anAdsMan.mi=parseInt(this.value);anAdsManBody()">';
   for(var i=2;i<12;i++)h+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anAdsYear+'</option>';
-  h+='</select></h4><p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px">Preencha os dias de '+AN_MES_LONG[mi]+'. Salva automaticamente no Supabase.</p>';
-  h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl"><thead><tr><th>Dia</th>'+anAdsCurMetrics().map(function(m){return '<th>'+m.l+'</th>';}).join('')+'</tr></thead><tbody>';
-  for(var d=0;d<tD;d++){h+='<tr><td style="font-weight:600">'+(d+1)+'</td>'+anAdsCurMetrics().map(function(m){var v=anAdsValD(anAdsYear,mi,m.k,d);return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anAdsSet(anAdsYear,'+mi+',\''+m.k+'\','+d+',this.value);sv()"></td>';}).join('')+'</tr>';}
-  h+='</tbody></table></div><div class="mbb"><button onclick="anAdsImportOpen()"><i class="ti ti-upload" style="font-size:11px"></i> Importar CSV</button><button class="pr" onclick="document.getElementById(\'an-adsman-ov\').remove();_anAdsMan=null;R()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
+  h+='</select></h4><p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px">Preencha os dias de '+AN_MES_LONG[mi]+'. O total do mês (linha destacada no fim) atualiza a cada edição — use para confirmar se o resultado do mês está correto. Salva automaticamente no Supabase.</p>';
+  h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl" id="an-adsman-table"><thead><tr><th>Dia</th>'+anAdsCurMetrics().map(function(m){return '<th>'+m.l+'</th>';}).join('')+'</tr></thead><tbody>';
+  for(var d=0;d<tD;d++){h+='<tr><td style="font-weight:600">'+(d+1)+'</td>'+anAdsCurMetrics().map(function(m){var v=anAdsValD(anAdsYear,mi,m.k,d);return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anAdsSet(anAdsYear,'+mi+',\''+m.k+'\','+d+',this.value);sv();anAdsManUpdateTotal()"></td>';}).join('')+'</tr>';}
+  h+='</tbody><tfoot><tr id="an-adsman-totrow" class="an-camp-tot"><td style="font-weight:700">Total / Mês</td>'+anAdsCurMetrics().map(function(m){return '<td data-mk="'+m.k+'" style="font-weight:700">'+anShort(anAdsMonthTotal(anAdsYear,mi,m.k),m.fmt)+'</td>';}).join('')+'</tr></tfoot></table></div><div class="mbb"><button onclick="anAdsImportOpen()"><i class="ti ti-upload" style="font-size:11px"></i> Importar CSV</button><button class="pr" onclick="document.getElementById(\'an-adsman-ov\').remove();_anAdsMan=null;R()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
   document.getElementById('an-adsman-body').innerHTML=h;
+}
+function anAdsManUpdateTotal(){
+  if(!_anAdsMan)return;var mi=_anAdsMan.mi,row=document.getElementById('an-adsman-totrow');if(!row)return;
+  anAdsCurMetrics().forEach(function(m){var cell=row.querySelector('td[data-mk="'+m.k+'"]');if(cell)cell.textContent=anShort(anAdsMonthTotal(anAdsYear,mi,m.k),m.fmt);});
 }
 
 /* ── Página AdSense ── */
@@ -4526,6 +4715,10 @@ function hADSENSE(){
    Mesmas propriedades das demais abas · dados em ac.an.pages
    ═══════════════════════════════════════════════════════════════ */
 var anPgSort={by:null,dir:'desc'};
+var anPgShowCount=100; // Top Páginas pode acumular muitas páginas (anos de histórico); renderiza só as N primeiras por padrão, com "Carregar mais", para a tabela não ficar pesada/lenta de rolar
+var anPgShowCtx=null; // 'ano|propriedade' da última renderização — usado para resetar a paginação ao trocar de contexto
+function anPgShowMore(){anPgShowCount+=100;anR();}
+function anPgResetShowCount(){anPgShowCount=100;} // chamado ao trocar métrica/ordenação, para não manter um corte que não faz mais sentido
 var anPgMetric='ses';
 var _anPgImp=null,_anPgMan=null;
 var PG_METRICS=[{k:'ses',l:'Sessões',fmt:'int'},{k:'rec',l:'Receita',fmt:'money'},{k:'rpm',l:'RPM (R$/1k sessões)',fmt:'money',derived:true}];
@@ -4533,7 +4726,7 @@ var AN_PG_VAL=[['sessões','sessoes','sessions'],['visualizações','visualizaco
 var AN_PG_REV=['receita total de anúncios','receita de anúncios do editor','publisher ad revenue','total ad revenue','receita de anúncios','receita de anuncios','ad revenue','receita total','receita','earnings'];
 function anPgMeta(mk){return PG_METRICS.find(function(m){return m.k===mk;})||{k:mk,l:mk,fmt:'int'};}
 function anPgCurMetric(){if(!PG_METRICS.some(function(m){return m.k===anPgMetric;}))anPgMetric='ses';return anPgMetric;}
-function anPgSetMetric(mk){anPgMetric=mk;anR();}
+function anPgSetMetric(mk){anPgMetric=mk;anPgResetShowCount();anR();}
 function anPgObj(year,prop){var s=anStore();s.pages[year]=s.pages[year]||{};s.pages[year][prop]=s.pages[year][prop]||{};return s.pages[year][prop];}
 function anPgRec(year,prop,name){var o=anPgObj(year,prop),r=o[name];if(Array.isArray(r)){r={ses:r};o[name]=r;}else if(!r||typeof r!=='object'){r={};o[name]=r;}return r;}
 function anPgArr(year,prop,name,mk){var r=anPgRec(year,prop,name);if(!Array.isArray(r[mk]))r[mk]=Array(12).fill(null);return r[mk];}
@@ -4546,7 +4739,7 @@ function anPgLastCol(){var now=new Date();if(String(now.getFullYear())===String(
 function anPgTotal(year,prop,mk,mi){if(mk==='rpm'){var rec=anPgTotal(year,prop,'rec',mi),ses=anPgTotal(year,prop,'ses',mi);return(rec!=null&&ses!=null&&ses>0)?rec/ses*1000:null;}var o=anPgObj(year,prop),s=0,any=false;Object.keys(o).forEach(function(n){var v=anPgVal(year,prop,n,mk,mi);if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
 function anPgVarp(year,prop,name,mk,lastCol){var cur=anPgVal(year,prop,name,mk,lastCol),prev=lastCol>0?anPgVal(year,prop,name,mk,lastCol-1):null;if(cur==null||prev==null||Number(prev)===0)return null;return(Number(cur)-Number(prev))/Math.abs(Number(prev))*100;}
 function anPgVarCell(varp){if(varp==null)return '<span class="an-na">—</span>';var c=varp>=5?'var(--success)':varp>=-5?'var(--warning)':'var(--danger)';var a=varp>=0?'▲':'▼';return '<span style="color:'+c+';font-weight:700">'+(varp>=0?'+':'')+varp.toFixed(0)+'% '+a+'</span>';}
-function anPgSortSet(by){if(anPgSort.by===by)anPgSort.dir=anPgSort.dir==='asc'?'desc':'asc';else{anPgSort.by=by;anPgSort.dir=(by==='name'?'asc':'desc');}anR();}
+function anPgSortSet(by){if(anPgSort.by===by)anPgSort.dir=anPgSort.dir==='asc'?'desc':'asc';else{anPgSort.by=by;anPgSort.dir=(by==='name'?'asc':'desc');}anPgResetShowCount();anR();}
 
 /* ── Pivot página × meses ── */
 function anPgProjFactor(lastCol){
@@ -4557,6 +4750,7 @@ function anPgProjFactor(lastCol){
   return tD/dE;
 }
 function anPgPivot(){
+  var ctx=anYear+'|'+anProp;if(anPgShowCtx!==ctx){anPgShowCtx=ctx;anPgShowCount=100;} // troca de ano/propriedade reseta a paginação
   var o=anPgObj(anYear,anProp),lastCol=anPgLastCol();
   var months=[];for(var i=0;i<=lastCol;i++)months.push(i);
   var mk=anPgCurMetric(),meta=anPgMeta(mk);
@@ -4605,7 +4799,8 @@ function anPgPivot(){
     +months.map(function(mi){return th(HMESES[mi]+'/'+anYear.slice(2),String(mi),(mi===lastCol?'on':''));}).join('')
     +(projFactor?'<th class="on">Projeção</th>':'')
     +th('Variação','var','on')+'</tr>';
-  var body=names.map(function(n){
+  var totalNames=names.length,visibleNames=names.slice(0,anPgShowCount);
+  var body=visibleNames.map(function(n){
     var lastV=valAt(n,lastCol),pv=projOf(lastV);
     return '<tr><td class="stick" style="text-align:left;font-weight:600;max-width:340px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(n)+'">'+anEsc(n)+'</td>'
       +months.map(function(mi){var v=valAt(n,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
@@ -4620,9 +4815,13 @@ function anPgPivot(){
     +(projFactor?'<td class="on">'+(totPv==null?'<span class="an-na">—</span>':anShort(totPv,meta.fmt))+'</td>':'')
     +'<td class="on">'+anPgVarCell(totVar)+'</td></tr>';
   var projNote=projFactor?' · projeção estima o fechamento de '+HMESES[lastCol]+' com base nos dias já decorridos':'';
-  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por página e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' páginas · variação = '+HMESES[lastCol]+' vs '+(lastCol>0?HMESES[lastCol-1]:'—')+projNote+'</div></div>'
+  var moreNote=totalNames>visibleNames.length
+    ?'<div class="an-card-sub" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span>Mostrando '+visibleNames.length+' de '+totalNames+' páginas</span><button class="an-btn" onclick="anPgShowMore()"><i class="ti ti-chevron-down" style="font-size:11px"></i> Carregar mais 100</button></div>'
+    :'';
+  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por página e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+totalNames+' páginas · variação = '+HMESES[lastCol]+' vs '+(lastCol>0?HMESES[lastCol-1]:'—')+projNote+'</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div>'
-    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Clique no cabeçalho para ordenar (inclusive por Variação) · RPM = receita ÷ sessões × 1000</div>';
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Clique no cabeçalho para ordenar (inclusive por Variação) · RPM = receita ÷ sessões × 1000</div>'
+    +moreNote;
 }
 function anPgControls(){
   var years=anYears(),mk=anPgCurMetric();
@@ -4927,9 +5126,13 @@ function anDashKpiCard(label,icon,st,fmt,inv,yoy){
   var vh=st.varp==null?'<span class="an-var flat">—</span>':'<span class="an-var '+sem+'">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%'+(st.isProj?projTag:'')+'</span>';
   var yoyH='';
   if(yoy!=null){var ysem=anSemaphore(inv?-yoy:yoy),yc=anSemColor(ysem);yoyH='<span class="an-pill" title="vs mesmo mês do ano anterior">YoY: <b style="color:'+yc+'">'+(yoy>=0?'+':'')+yoy.toFixed(0)+'%</b></span>';}
+  // % Realizado vs Projeção: quanto do que se espera fechar o mês já foi atingido até agora (só faz sentido quando há projeção, isto é, mês em andamento)
+  var realVsProjH='';
+  if(st.isProj&&st.proj!=null&&st.proj!==0&&st.cur!=null){var rvp=st.cur/st.proj*100;realVsProjH='<span class="an-pill" title="Realizado até agora ÷ projeção de fechamento do mês">Realizado/Proj.: <b style="color:var(--navy)">'+rvp.toFixed(0)+'%</b></span>';}
+  var projH=(st.proj!=null&&st.isProj)?'<span class="an-pill">Projeção: <b>'+anShort(st.proj,fmt)+'</b></span>':'';
   return '<div class="an-mcard"><div class="an-mcard-top"><div class="an-mcard-lbl"><i class="ti '+icon+'" style="font-size:13px;color:var(--primary);margin-right:5px"></i>'+label+'</div><span class="an-dot" style="background:'+anSemColor(sem)+'"></span></div>'
     +'<div class="an-mcard-valrow"><span class="an-mcard-val">'+(st.cur==null?'—':anFmt(st.cur,fmt))+'</span>'+vh+'</div>'
-    +'<div class="an-mcard-foot"><span class="an-pill">Mês ant.: <b>'+(st.prev==null?'—':anShort(st.prev,fmt))+'</b></span>'+yoyH+(st.idx!=null?'<span class="an-pill">'+HMESES[st.idx]+'/'+String(anYear).slice(2)+'</span>':'')+'</div></div>';
+    +'<div class="an-mcard-foot"><span class="an-pill">Mês ant.: <b>'+(st.prev==null?'—':anShort(st.prev,fmt))+'</b></span>'+projH+realVsProjH+yoyH+(st.idx!=null?'<span class="an-pill">'+HMESES[st.idx]+'/'+String(anYear).slice(2)+'</span>':'')+'</div></div>';
 }
 function anDashAlerts(year){
   var out=[];
@@ -4954,13 +5157,15 @@ function anDashOpps(year){
 function anDashMetas(year){
   var s=anStore(),out=[],g=s.mgoals[year]||{};
   var now=new Date(),curY=String(now.getFullYear())===String(year),curMi=now.getMonth();
-  Object.keys(g).forEach(function(sec){Object.keys(g[sec]).forEach(function(pr){Object.keys(g[sec][pr]).forEach(function(mk){Object.keys(g[sec][pr][mk]).forEach(function(mik){var goal=g[sec][pr][mk][mik];if(!goal||goal<=0)return;var mi=Number(mik);var real=anSeries(year,sec,pr,mk)[mi];var realN=(real==null||real==='')?0:Number(real);var meta=anMeta(sec,mk);
-    var isCur=curY&&mi===curMi,proj=realN,status;
-    if(isCur){var el=dElapsed(Number(year),mi),tot=dIM(Number(year),mi);
-      if(meta.fmt==='int'||meta.fmt==='money'){proj=el>0?realN/el*tot:realN;}else{proj=realN;}
-      status=proj>=goal*0.97?'ritmo':(proj<goal*0.9?'risco':'atencao');}
-    else{status=realN>=goal?'batida':'naobatida';proj=realN;}
-    out.push({sec:sec,pr:pr,mk:mk,mi:mi,goal:goal,real:realN,proj:proj,isCur:isCur,status:status,fmt:meta.fmt,label:meta.l,secL:(AN_SECTIONS[sec]?AN_SECTIONS[sec].l:sec)});});});});});
+  if(!curY)return out; // "Metas do mês" só mostra o mês atual — anos diferentes do ano corrente não têm "mês atual" aqui
+  Object.keys(g).forEach(function(sec){Object.keys(g[sec]).forEach(function(pr){Object.keys(g[sec][pr]).forEach(function(mk){Object.keys(g[sec][pr][mk]).forEach(function(mik){
+    var mi=Number(mik);if(mi!==curMi)return; // só o mês atual
+    var goal=g[sec][pr][mk][mik];if(!goal||goal<=0)return;var real=anSeries(year,sec,pr,mk)[mi];var realN=(real==null||real==='')?0:Number(real);var meta=anMeta(sec,mk);
+    var proj=realN,status;
+    var el=dElapsed(Number(year),mi),tot=dIM(Number(year),mi);
+    if(meta.fmt==='int'||meta.fmt==='money'){proj=el>0?realN/el*tot:realN;}else{proj=realN;}
+    status=proj>=goal*0.97?'ritmo':(proj<goal*0.9?'risco':'atencao');
+    out.push({sec:sec,pr:pr,mk:mk,mi:mi,goal:goal,real:realN,proj:proj,isCur:true,status:status,fmt:meta.fmt,label:meta.l,secL:(AN_SECTIONS[sec]?AN_SECTIONS[sec].l:sec)});});});});});
   out.sort(function(a,b){var ra={risco:0,atencao:1,naobatida:2,ritmo:3,batida:4};var ka=ra[a.status],kb=ra[b.status];if(ka!==kb)return ka-kb;return(a.real/a.goal)-(b.real/b.goal);});
   return out;
 }
