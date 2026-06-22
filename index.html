@@ -2526,15 +2526,16 @@ function hSEO(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
   var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['seg','Segmentos','ti-chart-donut'],['pgdev','Páginas/Disp.','ti-devices'],['qdev','Consultas/Disp.','ti-search'],['vel','Velocidade','ti-gauge']];
   var bar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(seoTab===t[0]?' active':'')+'" onclick="seoSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
+  var clearBtn='<button class="an-btn" style="color:var(--danger)" onclick="anDevDataClearConfirm()"><i class="ti ti-trash"></i> Limpar dados</button>';
   if(seoTab==='busca'){
     anSection='gsc';
-    return pageHeader('SEO','Busca · Search Console (cliques, impressões, CTR, posição) — por site/app')+'<div class="an-root">'+bar+anPropChips()+anSectionBody()+'</div>';
+    return pageHeader('SEO','Busca · Search Console (cliques, impressões, CTR, posição) — por site/app')+'<div class="an-root">'+bar+'<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'+clearBtn+'</div>'+anPropChips()+anSectionBody()+'</div>';
   }
   if(seoTab==='opp'){
-    return pageHeader('SEO','Oportunidades e decaimento · Search Console')+'<div class="an-root">'+bar+anPropChips()+anSeoView()+'</div>';
+    return pageHeader('SEO','Oportunidades e decaimento · Search Console')+'<div class="an-root">'+bar+'<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'+clearBtn+'</div>'+anPropChips()+anSeoView()+'</div>';
   }
   if(seoTab==='seg'){
-    return pageHeader('SEO','Segmentos · dispositivo, país e aspecto da pesquisa')+'<div class="an-root">'+bar+anPropChips()+anSegView()+'</div>';
+    return pageHeader('SEO','Segmentos · dispositivo, país e aspecto da pesquisa')+'<div class="an-root">'+bar+'<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'+clearBtn+'</div>'+anPropChips()+anSegView()+'</div>';
   }
   if(seoTab==='pgdev'){
     var pgSub='<div class="an-seg" style="margin-bottom:14px"><button class="an-seg-btn'+(pgDevSubTab==='mensal'?' active':'')+'" onclick="pgDevSetSubTab(\'mensal\')"><i class="ti ti-calendar"></i>Visão mensal</button><button class="an-seg-btn'+(pgDevSubTab==='diario'?' active':'')+'" onclick="pgDevSetSubTab(\'diario\')"><i class="ti ti-chart-line"></i>Acompanhamento diário</button><button class="an-seg-btn" style="margin-left:auto;color:var(--danger)" onclick="anDevDataClearConfirm()"><i class="ti ti-trash"></i>Limpar dados</button></div>';
@@ -2545,7 +2546,7 @@ function hSEO(){
     return pageHeader('SEO','Consultas por Dispositivo · posição Celular vs Computador vs Tablet por palavra-chave')+'<div class="an-root">'+bar+anPropChips()+qSub+(qDevSubTab==='diario'?qDevDView():qDevView())+'</div>';
   }
   anSection='cwv';
-  return pageHeader('SEO','Velocidade · Core Web Vitals')+'<div class="an-root">'+bar+anPropChips()+anSectionBody()+'</div>';
+  return pageHeader('SEO','Velocidade · Core Web Vitals')+'<div class="an-root">'+bar+'<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'+clearBtn+'</div>'+anPropChips()+anSectionBody()+'</div>';
 }
 var monTab='rede';
 function monSetTab(t){monTab=t;rHub(document.getElementById('app'));}
@@ -4740,11 +4741,17 @@ function qDevDView(){
 
 /* ── Limpar dados de Páginas/Disp. e Consultas/Disp. (mensal + diário, todas propriedades) — só o histórico de uploads dessas duas telas; nada mais no sistema é afetado ── */
 function anDevDataClearConfirm(){
-  if(!confirm('Isso vai apagar TODOS os dados já importados em "Páginas por Dispositivo" e "Consultas por Dispositivo" — mensal e diário, de todas as propriedades e meses. Os outros dados do dashboard (Tráfego, SEO Busca, AdSense, Receitas etc.) não são afetados. Quer continuar?'))return;
-  var s=anStore();s.pgdev={};s.pgdevd={};s.qdev={};s.qdevd={};
-  pgDevFilter='';qDevFilter='';pgDevDFilter='';pgDevDDay=null;qDevDDay=null;pgDevMi=null;qDevMi=null;
+  if(!confirm('Isso vai apagar TODOS os dados já importados em: Páginas por Dispositivo, Consultas por Dispositivo (mensal e diário), Busca (números mensais, Consultas/Páginas, Segmentos) e Velocidade (Core Web Vitals) — de todas as propriedades, anos e meses. Os outros dados do dashboard (Tráfego, Usuários, AdSense, Receitas etc.) não são afetados. Quer continuar?'))return;
+  var s=anStore();
+  s.pgdev={};s.pgdevd={};s.qdev={};s.qdevd={}; // Páginas/Disp. e Consultas/Disp.
+  s.seo={};s.seodim={};s.seoseg={}; // Busca: Consultas/Páginas detalhadas (Oportunidades/Decaimento/Impressão) + Segmentos
+  Object.keys(s.data||{}).forEach(function(year){ // Busca: números mensais agregados + Velocidade (Core Web Vitals)
+    if(s.data[year]['gsc'])delete s.data[year]['gsc'];
+    if(s.data[year]['cwv'])delete s.data[year]['cwv'];
+  });
+  pgDevFilter='';qDevFilter='';pgDevDFilter='';pgDevDDay=null;qDevDDay=null;pgDevMi=null;qDevMi=null;anSeoMi=null;segMi=null;
   sv();anR();
-  toast('Dados de Páginas/Disp. e Consultas/Disp. apagados. Pode subir os arquivos de novo.','ti-trash');
+  toast('Dados de Busca, Velocidade, Páginas/Disp. e Consultas/Disp. apagados. Pode subir os arquivos de novo.','ti-trash');
 }
 
 /* ── Dashboard: maior diferença entre dispositivos (Páginas por Dispositivo), varrendo TODAS as propriedades ── */
