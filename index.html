@@ -2530,7 +2530,8 @@ function hSEO(){
     return pageHeader('SEO','Segmentos · dispositivo, país e aspecto da pesquisa')+'<div class="an-root">'+bar+anPropChips()+anSegView()+'</div>';
   }
   if(seoTab==='pgdev'){
-    return pageHeader('SEO','Páginas por Dispositivo · posição Celular vs Computador')+'<div class="an-root">'+bar+anPropChips()+pgDevView()+'</div>';
+    var pgSub='<div class="an-seg" style="margin-bottom:14px"><button class="an-seg-btn'+(pgDevSubTab==='mensal'?' active':'')+'" onclick="pgDevSetSubTab(\'mensal\')"><i class="ti ti-calendar"></i>Visão mensal</button><button class="an-seg-btn'+(pgDevSubTab==='diario'?' active':'')+'" onclick="pgDevSetSubTab(\'diario\')"><i class="ti ti-chart-line"></i>Acompanhamento diário</button></div>';
+    return pageHeader('SEO','Páginas por Dispositivo · posição Celular vs Computador vs Tablet')+'<div class="an-root">'+bar+anPropChips()+pgSub+(pgDevSubTab==='diario'?pgDevDView():pgDevView())+'</div>';
   }
   anSection='cwv';
   return pageHeader('SEO','Velocidade · Core Web Vitals')+'<div class="an-root">'+bar+anPropChips()+anSectionBody()+'</div>';
@@ -3105,7 +3106,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -4286,6 +4287,8 @@ function anSeoDecay(mi){
    ═══════════════════════════════════════════════════════════════ */
 var PGDEV_LIST=[{k:'mobile',l:'Celular',ic:'ti-device-mobile'},{k:'desktop',l:'Computador',ic:'ti-device-desktop'},{k:'tablet',l:'Tablet',ic:'ti-device-tablet'}];
 var pgDevMi=null,pgDevImportDevice='mobile',_anPgDevImp=null;
+var pgDevSubTab='mensal'; // 'mensal' (já existente) ou 'diario' (acompanhamento dia a dia)
+function pgDevSetSubTab(t){pgDevSubTab=t;anR();}
 var pgDevSort={by:'gap',dir:'desc'}; // by = 'name' | 'gap' | chave de dispositivo (mobile/desktop/tablet)
 function pgDevSortSet(by){if(pgDevSort.by===by)pgDevSort.dir=pgDevSort.dir==='asc'?'desc':'asc';else{pgDevSort.by=by;pgDevSort.dir=(by==='name')?'asc':(by==='gap'?'desc':'asc');}anR();}
 function pgDevObj(year,prop){var s=anStore();s.pgdev[year]=s.pgdev[year]||{};s.pgdev[year][prop]=s.pgdev[year][prop]||{};return s.pgdev[year][prop];}
@@ -4374,6 +4377,126 @@ function pgDevView(){
   return h+insight+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-devices"></i> Páginas por Dispositivo · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+rows.length+' páginas · dispositivos: '+devsWithData.map(function(d){return d.l;}).join(', ')+' · clique no cabeçalho para ordenar</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr>'+pgDevTh('Página','name','stick','text-align:left')+devCols+pgDevTh('Diferença','gap','on')+'</tr></thead><tbody>'+body+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-bulb" style="font-size:12px"></i> Diferença = maior posição menos menor posição entre os dispositivos importados. Priorize revisar conteúdo/experiência nas páginas com maior diferença.</div></div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PÁGINAS POR DISPOSITIVO · DIÁRIO — mesma ideia do mensal, mas com um valor por
+   dia em vez de por mês, para acompanhar a variação de posição das top páginas
+   dia a dia. Mesmo processo de coleta: no Search Console, filtrar por dispositivo
+   na aba "Dispositivos" e exportar "Páginas" — só que repetindo todo dia, com o
+   período do relatório ajustado para aquele dia específico.
+   armazenamento: s.pgdevd[year][mi][device][day] = [{q,c,i,p}] (mesmo formato de anSeoParse)
+   ═══════════════════════════════════════════════════════════════ */
+var pgDevDDevice='mobile',pgDevDTop=10,_anPgDevDImp=null;
+function pgDevDObj(year,prop){var s=anStore();s.pgdevd[year]=s.pgdevd[year]||{};s.pgdevd[year][prop]=s.pgdevd[year][prop]||{};return s.pgdevd[year][prop];}
+function pgDevDRows(year,prop,device,mi,day){var o=pgDevDObj(year,prop);return(o[device]&&o[device][mi]&&o[device][mi][day])?o[device][mi][day]:[];}
+function pgDevDDaysWith(year,prop,device,mi){var o=pgDevDObj(year,prop);var m=(o[device]||{})[mi]||{};return Object.keys(m).map(Number).sort(function(a,b){return a-b;});}
+function pgDevDDevicesWithData(year,prop,mi){return PGDEV_LIST.filter(function(d){return pgDevDDaysWith(year,prop,d.k,mi).length>0;});}
+function pgDevDSetDevice(d){pgDevDDevice=d;anR();}
+function pgDevDSetTop(n){pgDevDTop=parseInt(n,10);anR();}
+function pgDevDImportOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica para importar.','ti-info-circle');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});pgDevDPreview(rows,f.name);}catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});pgDevDPreview(rows,f.name);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function pgDevDPreview(rows,fname){
+  var p=anSeoParse(rows);if(!p.rows.length){toast('Não reconheci o arquivo. Use o export "Páginas" do Search Console (filtrado por dispositivo e por 1 dia).','ti-alert-circle');return;}
+  var now=new Date(),defYear=String(now.getFullYear()),defMi=now.getMonth(),defDay=now.getDate();
+  _anPgDevDImp={parsed:p,device:pgDevDDevice};
+  var devSel='<select class="fsel" id="an-pgdevd-device" onchange="_anPgDevDImp.device=this.value">'+PGDEV_LIST.map(function(d){return '<option value="'+d.k+'"'+(d.k===pgDevDDevice?' selected':'')+'>'+d.l+'</option>';}).join('')+'</select>';
+  var msel='<select class="fsel" id="an-pgdevd-mi">';for(var i=0;i<12;i++)msel+='<option value="'+i+'"'+(i===defMi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+defYear+'</option>';msel+='</select>';
+  var dsel='<select class="fsel" id="an-pgdevd-day">';var tD=dIM(Number(defYear),defMi);for(var d2=1;d2<=tD;d2++)dsel+='<option value="'+d2+'"'+(d2===defDay?' selected':'')+'>'+d2+'</option>';dsel+='</select>';
+  var o=document.createElement('div');o.className='ov';o.id='an-pgdevdimp-ov';
+  o.innerHTML='<div class="mx" style="width:560px;max-width:96vw"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar Páginas por Dispositivo (diário) — '+propLabel(anProp)+'</h4>'
+    +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br><strong>'+p.rows.length+'</strong> páginas com cliques, impressões e posição.</p>'
+    +'<p style="font-size:11px;color:var(--text-secondary);margin:0 0 10px;line-height:1.5"><i class="ti ti-info-circle" style="font-size:12px"></i> No Search Console: filtre por dispositivo e ajuste o período do relatório para o dia exato antes de exportar "Páginas".</p>'
+    +'<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Dispositivo deste arquivo</div>'+devSel
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">'
+    +'<div><div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Mês</div>'+msel+'</div>'
+    +'<div><div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Dia</div>'+dsel+'</div></div>'
+    +'<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'an-pgdevdimp-ov\').remove();_anPgDevDImp=null">Cancelar</button><button class="pr" onclick="pgDevDApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anPgDevDImp=null;}});
+  document.getElementById('an-pgdevd-mi').onchange=function(){var mi2=parseInt(this.value,10),tD2=dIM(Number(defYear),mi2),sel=document.getElementById('an-pgdevd-day'),cur=sel.value,html='';for(var k=1;k<=tD2;k++)html+='<option value="'+k+'"'+(String(k)===cur?' selected':'')+'>'+k+'</option>';sel.innerHTML=html;};
+}
+function pgDevDApply(){
+  if(!_anPgDevDImp)return;
+  var device=document.getElementById('an-pgdevd-device').value,mi=parseInt(document.getElementById('an-pgdevd-mi').value,10),day=parseInt(document.getElementById('an-pgdevd-day').value,10);
+  var year=new Date().getFullYear(); // o ano não é selecionável no modal (segue o ano corrente); ajustável depois direto no objeto se precisar de ano retroativo
+  var o=pgDevDObj(String(year),anProp);o[device]=o[device]||{};o[device][mi]=o[device][mi]||{};o[device][mi][day]=_anPgDevDImp.parsed.rows;
+  sv();document.getElementById('an-pgdevdimp-ov').remove();_anPgDevDImp=null;pgDevDDevice=device;anR();
+  toast('Páginas ('+(PGDEV_LIST.find(function(d){return d.k===device;})||{}).l+') importadas — dia '+day+'/'+AN_MES_LONG[mi]+'.','ti-file-import');
+}
+// top N páginas do mês por MELHOR posição média (mais perto de 1) entre os dias já importados, para o dispositivo ativo
+function pgDevDTopPages(year,prop,device,mi,topN){
+  var days=pgDevDDaysWith(year,prop,device,mi);
+  var sums={},counts={};
+  days.forEach(function(day){pgDevDRows(year,prop,device,mi,day).forEach(function(r){if(r.p==null)return;sums[r.q]=(sums[r.q]||0)+r.p;counts[r.q]=(counts[r.q]||0)+1;});});
+  var avgs=Object.keys(sums).map(function(q){return{q:q,avg:sums[q]/counts[q],n:counts[q]};});
+  avgs.sort(function(a,b){return a.avg-b.avg;}); // menor posição média = melhor, fica no topo
+  return avgs.slice(0,topN).map(function(x){return x.q;});
+}
+function pgDevDLineChart(year,prop,device,mi,pages,days){
+  if(!days.length||!pages.length)return '<div class="an-empty"><i class="ti ti-chart-line"></i><p>Sem dados suficientes para o gráfico</p></div>';
+  var palette=['#16C79A','#008B8B','#0B2239','#F59E0B','#EF4444','#7A8797','#9333EA','#0EA5E9','#DB2777','#65A30D'];
+  var maxPos=1;pages.forEach(function(q){days.forEach(function(day){var rows=pgDevDRows(year,prop,device,mi,day);var r=rows.find(function(x){return x.q===q;});if(r&&r.p!=null)maxPos=Math.max(maxPos,r.p);});});
+  maxPos=Math.ceil(maxPos/5)*5||5; // arredonda pra cima em múltiplos de 5, mínimo 5
+  var padL=34,padR=10,padTop=14,padBot=28,plotH=220,stepX=Math.max(34,(720-padL-padR)/Math.max(1,days.length-1)),W=padL+padR+stepX*Math.max(1,days.length-1);
+  var baseY=padTop+plotH;
+  function yOf(pos){return padTop+((pos-1)/(maxPos-1))*plotH;} // posição 1 fica no topo (yOf menor), maxPos fica na base
+  var svg='<line x1="'+padL+'" y1="'+padTop+'" x2="'+padL+'" y2="'+baseY+'" stroke="var(--bd)" stroke-width="1"/>';
+  svg+='<line x1="'+padL+'" y1="'+baseY+'" x2="'+(W-padR)+'" y2="'+baseY+'" stroke="var(--bd)" stroke-width="1"/>';
+  [1,Math.round(maxPos/2),maxPos].forEach(function(p){var y=yOf(p);svg+='<text x="'+(padL-6)+'" y="'+(y+3)+'" text-anchor="end" font-size="8" fill="var(--tx3)">'+p+'</text>';svg+='<line x1="'+padL+'" y1="'+y+'" x2="'+(W-padR)+'" y2="'+y+'" stroke="var(--bd)" stroke-width="0.5" stroke-dasharray="2,3"/>';});
+  days.forEach(function(day,i){var x=padL+i*stepX;if(i%Math.ceil(days.length/12||1)===0)svg+='<text x="'+x+'" y="'+(baseY+13)+'" text-anchor="middle" font-size="7.5" fill="var(--tx3)">'+day+'</text>';});
+  pages.forEach(function(q,pi){
+    var color=palette[pi%palette.length],pts=[],lastPt=null;
+    days.forEach(function(day,i){var rows=pgDevDRows(year,prop,device,mi,day);var r=rows.find(function(x){return x.q===q;});var x=padL+i*stepX;
+      if(r&&r.p!=null){var y=yOf(r.p);pts.push(x+','+y);lastPt={x:x,y:y,p:r.p};}});
+    if(pts.length>1)svg+='<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"/>';
+    days.forEach(function(day,i){var rows=pgDevDRows(year,prop,device,mi,day);var r=rows.find(function(x){return x.q===q;});if(r&&r.p!=null){var x=padL+i*stepX,y=yOf(r.p);svg+='<circle cx="'+x+'" cy="'+y+'" r="2.6" fill="'+color+'"><title>'+anEsc(q)+' · dia '+day+': posição '+r.p.toFixed(1)+'</title></circle>';}});
+  });
+  var svgHtml='<div style="overflow-x:auto"><svg viewBox="0 0 '+W+' '+(padTop+plotH+padBot)+'" style="width:100%;min-width:'+Math.round(W*0.7)+'px;height:auto;display:block">'+svg+'</svg></div>';
+  var legend='<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px">'+pages.map(function(q,pi){return '<span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--text-secondary)"><span style="width:10px;height:10px;border-radius:50%;background:'+palette[pi%palette.length]+';display:inline-block"></span>'+anEsc(q.length>40?q.slice(0,40)+'…':q)+'</span>';}).join('')+'</div>';
+  return svgHtml+legend;
+}
+function pgDevDView(){
+  var now=new Date(),year=String(now.getFullYear()),mi=now.getMonth();
+  var h='';
+  var devSel='<select class="fsel" onchange="pgDevDSetDevice(this.value)">'+PGDEV_LIST.map(function(d){return '<option value="'+d.k+'"'+(d.k===pgDevDDevice?' selected':'')+'>'+d.l+'</option>';}).join('')+'</select>';
+  var topSel='<select class="fsel" onchange="pgDevDSetTop(this.value)">'+[5,10,15,20].map(function(n){return '<option value="'+n+'"'+(n===pgDevDTop?' selected':'')+'>Top '+n+'</option>';}).join('')+'</select>';
+  h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Dispositivo</span>'+devSel+'<span class="an-camp-cl">Mostrar</span>'+topSel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="pgDevDImportOpen()"><i class="ti ti-upload"></i> Importar dia</button></div></div>';
+  if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-calendar-stats"></i><p>Selecione uma propriedade</p><span>O acompanhamento diário é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
+  var days=pgDevDDaysWith(year,anProp,pgDevDDevice,mi);
+  if(!days.length){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-calendar-stats"></i><p>Sem dados diários para '+(PGDEV_LIST.find(function(d){return d.k===pgDevDDevice;})||{}).l+' em '+AN_MES_LONG[mi]+'/'+year+'</p><span>Todo dia: no Search Console, filtre por dispositivo na aba "Dispositivos", ajuste o período para aquele dia e exporte "Páginas". Importe aqui clicando em "Importar dia".</span></div></div>';
+    return h;
+  }
+  var topPages=pgDevDTopPages(year,anProp,pgDevDDevice,mi,pgDevDTop);
+  var chart=pgDevDLineChart(year,anProp,pgDevDDevice,mi,topPages,days);
+  // variação: primeiro dia importado vs último, por página
+  var first=days[0],last=days[days.length-1];
+  var rowsFirst=pgDevDRows(year,anProp,pgDevDDevice,mi,first),rowsLast=pgDevDRows(year,anProp,pgDevDDevice,mi,last);
+  var fMap={};rowsFirst.forEach(function(r){fMap[r.q]=r.p;});
+  var lMap={};rowsLast.forEach(function(r){lMap[r.q]=r.p;});
+  var tbl='<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Página</th>'
+    +days.map(function(day){return '<th'+(day===last?' class="on"':'')+'>'+day+'</th>';}).join('')
+    +'<th class="on">Variação (dia '+first+'→'+last+')</th></tr></thead><tbody>'
+    +topPages.map(function(q){
+      var fp=fMap[q],lp=lMap[q],delta=(fp!=null&&lp!=null)?(lp-fp):null;
+      var deltaTxt=delta==null?'—':(delta>0?'+':'')+delta.toFixed(1).replace('.',',');
+      var deltaColor=delta==null?'var(--text-secondary)':delta>0?'var(--danger)':delta<0?'var(--success)':'var(--text-secondary)';
+      return '<tr><td class="stick" style="text-align:left;max-width:300px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(q)+'">'+anEsc(q)+'</td>'
+        +days.map(function(day){var rows=pgDevDRows(year,anProp,pgDevDDevice,mi,day);var r=rows.find(function(x){return x.q===q;});return '<td'+(day===last?' class="on"':'')+'>'+(r&&r.p!=null?r.p.toFixed(1).replace('.',','):'—')+'</td>';}).join('')
+        +'<td class="on" style="color:'+deltaColor+';font-weight:700">'+deltaTxt+'</td></tr>';
+    }).join('')
+    +'</tbody></table></div>';
+  return h+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-chart-line"></i> Variação diária de posição · '+(PGDEV_LIST.find(function(d){return d.k===pgDevDDevice;})||{}).l+' · '+AN_MES_LONG[mi]+'/'+year+'</div><div class="an-card-sub">'+propLabel(anProp)+' · top '+pgDevDTop+' páginas por melhor posição média no mês · '+days.length+' dia(s) importado(s)</div></div>'
+    +chart+'</div>'
+    +'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> Posição por dia</div></div>'+tbl
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-bulb" style="font-size:12px"></i> Variação positiva (vermelho) = posição piorou (número maior); negativa (verde) = melhorou.</div></div>';
 }
 
 
