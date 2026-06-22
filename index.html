@@ -2517,7 +2517,7 @@ function hSOCIAL(){
 }
 function hSEO(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
-  var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['seg','Segmentos','ti-chart-donut'],['pgdev','Páginas/Disp.','ti-devices'],['vel','Velocidade','ti-gauge']];
+  var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['seg','Segmentos','ti-chart-donut'],['pgdev','Páginas/Disp.','ti-devices'],['qdev','Consultas/Disp.','ti-search'],['vel','Velocidade','ti-gauge']];
   var bar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(seoTab===t[0]?' active':'')+'" onclick="seoSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
   if(seoTab==='busca'){
     anSection='gsc';
@@ -2532,6 +2532,10 @@ function hSEO(){
   if(seoTab==='pgdev'){
     var pgSub='<div class="an-seg" style="margin-bottom:14px"><button class="an-seg-btn'+(pgDevSubTab==='mensal'?' active':'')+'" onclick="pgDevSetSubTab(\'mensal\')"><i class="ti ti-calendar"></i>Visão mensal</button><button class="an-seg-btn'+(pgDevSubTab==='diario'?' active':'')+'" onclick="pgDevSetSubTab(\'diario\')"><i class="ti ti-chart-line"></i>Acompanhamento diário</button></div>';
     return pageHeader('SEO','Páginas por Dispositivo · posição Celular vs Computador vs Tablet')+'<div class="an-root">'+bar+anPropChips()+pgSub+(pgDevSubTab==='diario'?pgDevDView():pgDevView())+'</div>';
+  }
+  if(seoTab==='qdev'){
+    var qSub='<div class="an-seg" style="margin-bottom:14px"><button class="an-seg-btn'+(qDevSubTab==='mensal'?' active':'')+'" onclick="qDevSetSubTab(\'mensal\')"><i class="ti ti-calendar"></i>Visão mensal</button><button class="an-seg-btn'+(qDevSubTab==='diario'?' active':'')+'" onclick="qDevSetSubTab(\'diario\')"><i class="ti ti-chart-line"></i>Acompanhamento diário</button></div>';
+    return pageHeader('SEO','Consultas por Dispositivo · posição Celular vs Computador vs Tablet por palavra-chave')+'<div class="an-root">'+bar+anPropChips()+qSub+(qDevSubTab==='diario'?qDevDView():qDevView())+'</div>';
   }
   anSection='cwv';
   return pageHeader('SEO','Velocidade · Core Web Vitals')+'<div class="an-root">'+bar+anPropChips()+anSectionBody()+'</div>';
@@ -3106,7 +3110,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};if(!s.qdev)s.qdev={};if(!s.qdevd)s.qdevd={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -4470,6 +4474,196 @@ function pgDevDView(){
   return h+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> Top '+pgDevDTop+' URLs por dispositivo · '+dateLbl+'</div><div class="an-card-sub">'+propLabel(anProp)+' · ordenado pela melhor posição no Celular nesse dia</div></div>'
     +tbl
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:12px"></i> Para uma URL aparecer aqui, ela precisa ter posição registrada no Celular nesse dia. "—" significa que o dispositivo ainda não foi importado para esse dia, ou a URL não apareceu nele.</div></div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONSULTAS POR DISPOSITIVO — mesma ideia de Páginas por Dispositivo, mas com
+   a dimensão Consulta (palavra-chave) em vez de Página/URL. Mesmo processo de
+   coleta: no Search Console, aba "Dispositivos" → filtrar por dispositivo →
+   aba "Consultas" → exportar (em vez de "Páginas"). Tem visão Mensal e Diária,
+   e um campo de busca para filtrar por palavra-chave específica nas duas.
+   armazenamento mensal: s.qdev[year][prop][device][mi] = [{q,c,i,p}]
+   armazenamento diário: s.qdevd[year][prop][device][mi][day] = [{q,c,i,p}]
+   (mesmo formato de linha de anSeoParse: q=consulta, c=cliques, i=impressões, p=posição)
+   ═══════════════════════════════════════════════════════════════ */
+var qDevMi=null,qDevImportDevice='mobile',_anQDevImp=null;
+var qDevSubTab='mensal'; // 'mensal' ou 'diario'
+function qDevSetSubTab(t){qDevSubTab=t;anR();}
+var qDevSort={by:'gap',dir:'desc'};
+function qDevSortSet(by){if(qDevSort.by===by)qDevSort.dir=qDevSort.dir==='asc'?'desc':'asc';else{qDevSort.by=by;qDevSort.dir=(by==='name')?'asc':(by==='gap'?'desc':'asc');}anR();}
+var qDevFilter=''; // texto de busca por palavra-chave, usado tanto na visão mensal quanto diária
+function qDevSetFilter(v){qDevFilter=v;anR();}
+function qDevObj(year,prop){var s=anStore();s.qdev[year]=s.qdev[year]||{};s.qdev[year][prop]=s.qdev[year][prop]||{};return s.qdev[year][prop];}
+function qDevRows(year,prop,device,mi){var o=qDevObj(year,prop);return(o[device]&&o[device][mi])?o[device][mi]:[];}
+function qDevMonths(year,prop){var o=qDevObj(year,prop),set={};PGDEV_LIST.forEach(function(d){Object.keys(o[d.k]||{}).forEach(function(mi){set[mi]=1;});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
+function qDevCurMi(){var ms=qDevMonths(anYear,anProp);if(qDevMi!=null&&ms.indexOf(qDevMi)>=0)return qDevMi;if(ms.length)return ms[ms.length-1];var now=new Date();return String(now.getFullYear())===String(anYear)?now.getMonth():0;}
+function qDevSetMi(v){qDevMi=parseInt(v,10);anR();}
+function qDevSetImportDevice(d){qDevImportDevice=d;}
+function qDevImportOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica para importar.','ti-info-circle');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});qDevPreview(rows,f.name);}catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});qDevPreview(rows,f.name);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function qDevPreview(rows,fname){
+  var p=anSeoParse(rows);if(!p.rows.length){toast('Não reconheci o arquivo. Use o export "Consultas" do Search Console (filtrado por dispositivo).','ti-alert-circle');return;}
+  _anQDevImp={parsed:p,device:qDevImportDevice};var mi=qDevCurMi();
+  var devSel='<select class="fsel" id="an-qdev-device" onchange="_anQDevImp.device=this.value">'+PGDEV_LIST.map(function(d){return '<option value="'+d.k+'"'+(d.k===qDevImportDevice?' selected':'')+'>'+d.l+'</option>';}).join('')+'</select>';
+  var msel='<select class="fsel" id="an-qdev-mi">';for(var i=0;i<12;i++)msel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';msel+='</select>';
+  var o=document.createElement('div');o.className='ov';o.id='an-qdevimp-ov';
+  o.innerHTML='<div class="mx" style="width:560px;max-width:96vw"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar Consultas por Dispositivo — '+propLabel(anProp)+'</h4>'
+    +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br><strong>'+p.rows.length+'</strong> consultas com cliques, impressões e posição.</p>'
+    +'<p style="font-size:11px;color:var(--text-secondary);margin:0 0 10px;line-height:1.5"><i class="ti ti-info-circle" style="font-size:12px"></i> Confirme de qual dispositivo é este arquivo (filtrado na aba "Dispositivos" do GSC antes de exportar "Consultas").</p>'
+    +'<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Dispositivo deste arquivo</div>'+devSel
+    +'<div style="font-size:12px;font-weight:600;color:var(--navy);margin:10px 0 6px">Mês de referência</div>'+msel
+    +'<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'an-qdevimp-ov\').remove();_anQDevImp=null">Cancelar</button><button class="pr" onclick="qDevApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anQDevImp=null;}});
+}
+function qDevApply(){
+  if(!_anQDevImp)return;
+  var device=document.getElementById('an-qdev-device').value,mi=parseInt(document.getElementById('an-qdev-mi').value);
+  var o=qDevObj(anYear,anProp);o[device]=o[device]||{};o[device][mi]=_anQDevImp.parsed.rows;
+  sv();document.getElementById('an-qdevimp-ov').remove();_anQDevImp=null;qDevMi=mi;anR();
+  toast('Consultas ('+(PGDEV_LIST.find(function(d){return d.k===device;})||{}).l+') importadas — '+AN_MES_LONG[mi]+'/'+anYear+'.','ti-file-import');
+}
+function qDevView(){
+  var h='';var mi=qDevCurMi();var years=anYears();
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var moSel='<select class="fsel" onchange="qDevSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
+  var fSel='<input type="text" class="hin" style="width:200px;text-align:left;padding:6px 10px" placeholder="Buscar palavra-chave…" value="'+anEsc(qDevFilter)+'" oninput="qDevSetFilter(this.value)">';
+  h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'<span class="an-camp-cl">Filtro</span>'+fSel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="qDevImportOpen()"><i class="ti ti-upload"></i> Importar Consultas (por dispositivo)</button></div></div>';
+  if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Selecione uma propriedade</p><span>Consultas por Dispositivo é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
+  var devMaps={},devsWithData=PGDEV_LIST.filter(function(d){var rows=qDevRows(anYear,anProp,d.k,mi);devMaps[d.k]={};rows.forEach(function(r){devMaps[d.k][r.q]=r;});return rows.length>0;});
+  if(!devsWithData.length){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Sem dados de Consultas por Dispositivo em '+AN_MES_LONG[mi]+'/'+anYear+'</p><span>No Search Console: aba "Dispositivos" → clique em "Celular" → aba "Consultas" → exportar. Repita para "Computador" e "Tablet". Importe os arquivos aqui.</span></div></div>';
+    return h;
+  }
+  if(devsWithData.length<2){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Importe pelo menos 2 dispositivos para este mês</p><span>Já tenho '+devsWithData.map(function(d){return d.l;}).join(', ')+', mas preciso de outro dispositivo com a mesma palavra-chave para calcular a diferença.</span></div></div>';
+    return h;
+  }
+  var names={};devsWithData.forEach(function(d){Object.keys(devMaps[d.k]).forEach(function(n){names[n]=1;});});
+  var nameList=Object.keys(names);
+  if(qDevFilter.trim())nameList=nameList.filter(function(n){return n.toLowerCase().indexOf(qDevFilter.trim().toLowerCase())>=0;});
+  var rows=nameList.map(function(n){
+    var pos={};devsWithData.forEach(function(d){var r=devMaps[d.k][n];pos[d.k]=r?r.p:null;});
+    var vals=devsWithData.map(function(d){return pos[d.k];}).filter(function(v){return v!=null;});
+    var gap=vals.length>=2?(Math.max.apply(null,vals)-Math.min.apply(null,vals)):null;
+    var bestD=null,worstD=null;devsWithData.forEach(function(d){if(pos[d.k]==null)return;if(bestD==null||pos[d.k]<pos[bestD])bestD=d.k;if(worstD==null||pos[d.k]>pos[worstD])worstD=d.k;});
+    return{n:n,pos:pos,gap:gap,bestD:bestD,worstD:worstD};
+  });
+  rows=rows.filter(function(r){return r.gap!=null;});
+  var sBy=qDevSort.by,sDir=qDevSort.dir;
+  rows.sort(function(a,b){
+    if(sBy==='name'){var na=(a.n||'').toLowerCase(),nb=(b.n||'').toLowerCase();return sDir==='asc'?na.localeCompare(nb):nb.localeCompare(na);}
+    var va=sBy==='gap'?a.gap:a.pos[sBy],vb=sBy==='gap'?b.gap:b.pos[sBy];
+    if(va==null)va=sDir==='asc'?Infinity:-Infinity;if(vb==null)vb=sDir==='asc'?Infinity:-Infinity;
+    return sDir==='asc'?va-vb:vb-va;
+  });
+  if(!rows.length){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>'+(qDevFilter.trim()?'Nenhuma palavra-chave encontrada para "'+anEsc(qDevFilter)+'"':'Nenhuma palavra-chave em comum entre os dispositivos importados')+'</p><span>'+(qDevFilter.trim()?'Tente outro termo de busca.':'Preciso da mesma consulta presente em pelo menos 2 dispositivos para calcular a diferença.')+'</span></div></div>';
+    return h;
+  }
+  var worst=rows.slice().sort(function(a,b){return b.gap-a.gap;})[0],lBest=PGDEV_LIST.find(function(d){return d.k===worst.bestD;}),lWorst=PGDEV_LIST.find(function(d){return d.k===worst.worstD;});
+  var insight=(!qDevFilter.trim()&&worst.gap>=4)?('<div class="seg-insight" style="border-left:3px solid var(--warning)"><i class="ti ti-search" style="color:var(--warning)"></i><div><div class="seg-ins-t">Maior diferença entre dispositivos</div><div class="seg-ins-x">Em <b>'+anEsc(worst.n)+'</b>: posição <b>'+worst.pos[worst.bestD].toFixed(1).replace('.',',')+'</b> em '+(lBest?lBest.l:worst.bestD)+' vs <b>'+worst.pos[worst.worstD].toFixed(1).replace('.',',')+'</b> em '+(lWorst?lWorst.l:worst.worstD)+' — '+worst.gap.toFixed(1).replace('.',',')+' posições pior.</div></div></div>'):'';
+  var body=rows.map(function(r){var c=r.gap>=4?'var(--danger)':r.gap<=-4?'var(--success)':'var(--warning)';
+    return '<tr><td class="stick" style="text-align:left;max-width:300px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.n)+'">'+anEsc(r.n)+'</td>'
+      +devsWithData.map(function(d){var v=r.pos[d.k];return '<td>'+(v!=null?v.toFixed(1).replace('.',','):'—')+'</td>';}).join('')
+      +'<td class="on" style="color:'+c+';font-weight:700">'+r.gap.toFixed(1).replace('.',',')+'</td></tr>';
+  }).join('');
+  function qDevArrow(by){return qDevSort.by===by?(qDevSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
+  function qDevTh(lbl,by,cls,style){var on=qDevSort.by===by;return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'"'+(style?' style="'+style+'"':'')+' onclick="qDevSortSet(\''+by+'\')">'+lbl+qDevArrow(by)+'</th>';}
+  var devCols=devsWithData.map(function(d){return qDevTh('Posição ('+d.l+')',d.k);}).join('');
+  return h+insight+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-search"></i> Consultas por Dispositivo · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+rows.length+' palavra(s)-chave'+(qDevFilter.trim()?' filtradas por "'+anEsc(qDevFilter)+'"':'')+' · clique no cabeçalho para ordenar</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr>'+qDevTh('Palavra-chave','name','stick','text-align:left')+devCols+qDevTh('Diferença','gap','on')+'</tr></thead><tbody>'+body+'</tbody></table></div>'
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-bulb" style="font-size:12px"></i> Diferença = maior posição menos menor posição entre os dispositivos importados.</div></div>';
+}
+/* ── Consultas por Dispositivo · Diário ── */
+var qDevDDevice='mobile',qDevDTop=30,qDevDDay=null,_anQDevDImp=null;
+function qDevDSetDay(v){qDevDDay=parseInt(v,10);anR();}
+function qDevDSetDevice(d){qDevDDevice=d;}
+function qDevDObj(year,prop){var s=anStore();s.qdevd[year]=s.qdevd[year]||{};s.qdevd[year][prop]=s.qdevd[year][prop]||{};return s.qdevd[year][prop];}
+function qDevDRows(year,prop,device,mi,day){var o=qDevDObj(year,prop);return(o[device]&&o[device][mi]&&o[device][mi][day])?o[device][mi][day]:[];}
+function qDevDDaysWith(year,prop,device,mi){var o=qDevDObj(year,prop);var m=(o[device]||{})[mi]||{};return Object.keys(m).map(Number).sort(function(a,b){return a-b;});}
+function qDevDSetTop(n){qDevDTop=parseInt(n,10);anR();}
+function qDevDImportOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica para importar.','ti-info-circle');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});qDevDPreview(rows,f.name);}catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});qDevDPreview(rows,f.name);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function qDevDPreview(rows,fname){
+  var p=anSeoParse(rows);if(!p.rows.length){toast('Não reconheci o arquivo. Use o export "Consultas" do Search Console (filtrado por dispositivo e por 1 dia).','ti-alert-circle');return;}
+  var now=new Date(),defYear=String(now.getFullYear()),defMi=now.getMonth(),defDay=now.getDate();
+  _anQDevDImp={parsed:p,device:qDevDDevice};
+  var devSel='<select class="fsel" id="an-qdevd-device" onchange="_anQDevDImp.device=this.value">'+PGDEV_LIST.map(function(d){return '<option value="'+d.k+'"'+(d.k===qDevDDevice?' selected':'')+'>'+d.l+'</option>';}).join('')+'</select>';
+  var msel='<select class="fsel" id="an-qdevd-mi">';for(var i=0;i<12;i++)msel+='<option value="'+i+'"'+(i===defMi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+defYear+'</option>';msel+='</select>';
+  var dsel='<select class="fsel" id="an-qdevd-day">';var tD=dIM(Number(defYear),defMi);for(var d2=1;d2<=tD;d2++)dsel+='<option value="'+d2+'"'+(d2===defDay?' selected':'')+'>'+d2+'</option>';dsel+='</select>';
+  var o=document.createElement('div');o.className='ov';o.id='an-qdevdimp-ov';
+  o.innerHTML='<div class="mx" style="width:560px;max-width:96vw"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar Consultas por Dispositivo (diário) — '+propLabel(anProp)+'</h4>'
+    +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br><strong>'+p.rows.length+'</strong> consultas com cliques, impressões e posição.</p>'
+    +'<p style="font-size:11px;color:var(--text-secondary);margin:0 0 10px;line-height:1.5"><i class="ti ti-info-circle" style="font-size:12px"></i> No Search Console: filtre por dispositivo e ajuste o período do relatório para o dia exato antes de exportar "Consultas".</p>'
+    +'<div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Dispositivo deste arquivo</div>'+devSel
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">'
+    +'<div><div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Mês</div>'+msel+'</div>'
+    +'<div><div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Dia</div>'+dsel+'</div></div>'
+    +'<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'an-qdevdimp-ov\').remove();_anQDevDImp=null">Cancelar</button><button class="pr" onclick="qDevDApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anQDevDImp=null;}});
+  document.getElementById('an-qdevd-mi').onchange=function(){var mi2=parseInt(this.value,10),tD2=dIM(Number(defYear),mi2),sel=document.getElementById('an-qdevd-day'),cur=sel.value,html='';for(var k=1;k<=tD2;k++)html+='<option value="'+k+'"'+(String(k)===cur?' selected':'')+'>'+k+'</option>';sel.innerHTML=html;};
+}
+function qDevDApply(){
+  if(!_anQDevDImp)return;
+  var device=document.getElementById('an-qdevd-device').value,mi=parseInt(document.getElementById('an-qdevd-mi').value,10),day=parseInt(document.getElementById('an-qdevd-day').value,10);
+  var year=new Date().getFullYear();
+  var o=qDevDObj(String(year),anProp);o[device]=o[device]||{};o[device][mi]=o[device][mi]||{};o[device][mi][day]=_anQDevDImp.parsed.rows;
+  sv();document.getElementById('an-qdevdimp-ov').remove();_anQDevDImp=null;qDevDDevice=device;qDevDDay=day;anR();
+  toast('Consultas ('+(PGDEV_LIST.find(function(d){return d.k===device;})||{}).l+') importadas — dia '+day+'/'+AN_MES_LONG[mi]+'.','ti-file-import');
+}
+function qDevDTopForDay(year,prop,mi,day,refDevice,topN,filterText){
+  var rows=qDevDRows(year,prop,refDevice,mi,day).filter(function(r){return r.p!=null;});
+  if(filterText&&filterText.trim()){var ft=filterText.trim().toLowerCase();rows=rows.filter(function(r){return r.q.toLowerCase().indexOf(ft)>=0;});}
+  rows.sort(function(a,b){return a.p-b.p;});
+  return rows.slice(0,topN).map(function(r){return r.q;});
+}
+function qDevDView(){
+  var now=new Date(),year=String(now.getFullYear()),mi=now.getMonth();
+  var h='';
+  var allDays=Array.from(new Set(PGDEV_LIST.flatMap(function(d){return qDevDDaysWith(year,anProp,d.k,mi);}))).sort(function(a,b){return a-b;});
+  var curDay=(qDevDDay!=null&&allDays.indexOf(qDevDDay)>=0)?qDevDDay:(allDays.length?allDays[allDays.length-1]:null);
+  var daySel=allDays.length?('<select class="fsel" onchange="qDevDSetDay(this.value)">'+allDays.map(function(d){return '<option value="'+d+'"'+(d===curDay?' selected':'')+'>'+String(d).padStart(2,'0')+'/'+String(mi+1).padStart(2,'0')+'</option>';}).join('')+'</select>'):'<span style="font-size:12px;color:var(--text-secondary)">Nenhum dia importado ainda</span>';
+  var topSel='<select class="fsel" onchange="qDevDSetTop(this.value)">'+[10,20,30,50].map(function(n){return '<option value="'+n+'"'+(n===qDevDTop?' selected':'')+'>Top '+n+'</option>';}).join('')+'</select>';
+  var fSel='<input type="text" class="hin" style="width:200px;text-align:left;padding:6px 10px" placeholder="Buscar palavra-chave…" value="'+anEsc(qDevFilter)+'" oninput="qDevSetFilter(this.value)">';
+  h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Dia</span>'+daySel+'<span class="an-camp-cl">Mostrar</span>'+topSel+'<span class="an-camp-cl">Filtro</span>'+fSel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="qDevDImportOpen()"><i class="ti ti-upload"></i> Importar dia</button></div></div>';
+  if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-calendar-stats"></i><p>Selecione uma propriedade</p><span>O acompanhamento diário é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
+  if(curDay==null){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-calendar-stats"></i><p>Sem dados diários em '+AN_MES_LONG[mi]+'/'+year+'</p><span>Todo dia: no Search Console, filtre por dispositivo na aba "Dispositivos", ajuste o período para aquele dia e exporte "Consultas". Repita para Celular, Computador e Tablet, e importe aqui clicando em "Importar dia".</span></div></div>';
+    return h;
+  }
+  var topQs=qDevDTopForDay(year,anProp,mi,curDay,'mobile',qDevDTop,qDevFilter);
+  if(!topQs.length){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>'+(qDevFilter.trim()?'Nenhuma palavra-chave encontrada para "'+anEsc(qDevFilter)+'" em '+String(curDay).padStart(2,'0')+'/'+String(mi+1).padStart(2,'0'):'Sem dados de Celular em '+String(curDay).padStart(2,'0')+'/'+String(mi+1).padStart(2,'0'))+'</p><span>A ordenação usa a posição no Celular como referência — importe o arquivo de Celular deste dia, ou ajuste o termo de busca.</span></div></div>';
+    return h;
+  }
+  var maps={};PGDEV_LIST.forEach(function(d){var m={};qDevDRows(year,anProp,d.k,mi,curDay).forEach(function(r){m[r.q]=r;});maps[d.k]=m;});
+  var dateLbl=String(curDay).padStart(2,'0')+'/'+String(mi+1).padStart(2,'0');
+  var tbl='<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Data</th><th class="stick" style="text-align:left">Palavra-chave</th>'
+    +PGDEV_LIST.map(function(d){return '<th'+(d.k==='mobile'?' class="on"':'')+'>'+d.l+'</th>';}).join('')
+    +'</tr></thead><tbody>'
+    +topQs.map(function(q){
+      return '<tr><td class="stick" style="text-align:left">'+dateLbl+'</td><td class="stick" style="text-align:left;max-width:320px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(q)+'">'+anEsc(q)+'</td>'
+        +PGDEV_LIST.map(function(d){var r=maps[d.k][q];return '<td'+(d.k==='mobile'?' class="on"':'')+'>'+(r&&r.p!=null?r.p.toFixed(1).replace('.',','):'—')+'</td>';}).join('')
+        +'</tr>';
+    }).join('')
+    +'</tbody></table></div>';
+  return h+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> Top '+qDevDTop+' palavras-chave por dispositivo · '+dateLbl+'</div><div class="an-card-sub">'+propLabel(anProp)+' · ordenado pela melhor posição no Celular nesse dia'+(qDevFilter.trim()?' · filtrado por "'+anEsc(qDevFilter)+'"':'')+'</div></div>'
+    +tbl
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:12px"></i> Para uma palavra-chave aparecer aqui, ela precisa ter posição registrada no Celular nesse dia. "—" significa que o dispositivo ainda não foi importado para esse dia, ou a palavra-chave não apareceu nele.</div></div>';
 }
 
 /* ═══════════════════════════════════════════════════════════════
