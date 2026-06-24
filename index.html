@@ -3134,7 +3134,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};if(!s.qdev)s.qdev={};if(!s.qdevd)s.qdevd={};if(!s.seodim)s.seodim={};if(!s.channels)s.channels={};if(!s.trafchsrc)s.trafchsrc={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};if(!s.qdev)s.qdev={};if(!s.qdevd)s.qdevd={};if(!s.seodim)s.seodim={};if(!s.trafchsrc)s.trafchsrc={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -3234,9 +3234,10 @@ function anExec(year,section,prop,mk){
 
 /* ── Ações de UI ── */
 function anR(){rHub(document.getElementById('app'));}
-function anPersistUI(){var s=anStore();s.ui={prop:anProp,section:anSection};sv();}
-function anInit(){if(_anInit)return;_anInit=true;var s=anStore();if(s.ui){if(s.ui.prop&&AN_PROPS.some(function(p){return p.k===s.ui.prop;}))anProp=s.ui.prop;if(s.ui.section&&(AN_SECTIONS[s.ui.section]||s.ui.section==='pages'||s.ui.section==='channels'||s.ui.section==='seo'||s.ui.section==='ret'))anSection=s.ui.section;if(s.ui.goalSel&&typeof s.ui.goalSel==='object')anGoalSel=s.ui.goalSel;if(s.ui.dashThresh)anDashThresh=Number(s.ui.dashThresh)||15;}
+function anPersistUI(){var s=anStore();s.ui.prop=anProp;s.ui.section=anSection;sv();}
+function anInit(){if(_anInit)return;_anInit=true;var s=anStore();if(s.ui){if(s.ui.prop&&AN_PROPS.some(function(p){return p.k===s.ui.prop;}))anProp=s.ui.prop;if(s.ui.section&&(AN_SECTIONS[s.ui.section]||s.ui.section==='pages'||s.ui.section==='seo'||s.ui.section==='ret'))anSection=s.ui.section;if(s.ui.goalSel&&typeof s.ui.goalSel==='object')anGoalSel=s.ui.goalSel;if(s.ui.dashThresh)anDashThresh=Number(s.ui.dashThresh)||15;}
   if(!s.ui.pgRevPurged){anPgPurgeRevenue();s.ui.pgRevPurged=true;sv();} // migração única: remove receita de Top Páginas já lançada (não era a receita real do site)
+  if(!s.ui.channelsPurged){if(s.channels){delete s.channels;}s.ui.channelsPurged=true;sv();} // migração única: remove a aba "Canais" (Aquisição de Usuários), substituída por "Canais de Tráfego"
 }
 function anSetProp(p){anProp=p;anPersistUI();anR();}
 function anSetSection(sec){anSection=sec;anPersistUI();anR();}
@@ -3261,7 +3262,6 @@ function anSubNav(){
     return '<button class="an-seg-btn'+(anSection===k?' active':'')+'" onclick="anSetSection(\''+k+'\')"><i class="ti '+s.ic+'"></i>'+s.l+'</button>';
   }).join('');
   segs+='<button class="an-seg-btn'+(anSection==='pages'?' active':'')+'" onclick="anSetSection(\'pages\')"><i class="ti ti-world"></i>Top Páginas</button>';
-  segs+='<button class="an-seg-btn'+(anSection==='channels'?' active':'')+'" onclick="anSetSection(\'channels\')"><i class="ti ti-route"></i>Canais</button>';
   segs+='<button class="an-seg-btn'+(anSection==='ret'?' active':'')+'" onclick="anSetSection(\'ret\')"><i class="ti ti-repeat"></i>Retenção</button>';
   return '<div class="an-seg">'+segs+'</div>';
 }
@@ -5595,175 +5595,6 @@ function anPgManBody(){
 function anPgAddPage(){sM('Caminho/título da página (ex.: /calculadora)','',function(v){v=(v||'').trim();if(!v)return;anPgRec(anYear,anProp,v);sv();anPgManBody();},'text');}
 function anPgDelPage(name){cfm('Remover página','Remover "'+name+'" e todos os seus dados deste ano/propriedade?','Remover','dgr',function(){var o=anPgObj(anYear,anProp);delete o[name];sv();anPgManBody();anR();toast('Página removida.','ti-trash');});}
 
-/* ═══════════════════════════════════════════════════════════════
-   CANAIS — Aquisição de usuários por canal (GA4: "Aquisição de usuários ›
-   Grupo principal de canais do primeiro usuário"). Mesma estrutura de Top
-   Páginas (Canal × Mês, 1 arquivo por mês), mas com 8 métricas em vez de
-   Sessões/Receita. armazenamento: s.channels[ano][prop][canal] = {chave: [12]}
-   ═══════════════════════════════════════════════════════════════ */
-var CH_METRICS=[
-  {k:'totUsers', l:'Total de usuários',                              fmt:'int', al:['total de usuários','total users']},
-  {k:'newUsers', l:'Novos usuários',                                 fmt:'int', al:['novos usuários','new users']},
-  {k:'retUsers', l:'Usuários recorrentes',                           fmt:'int', al:['usuários recorrentes','returning users']},
-  {k:'avgEng',   l:'Tempo médio de engajamento (s)',                 fmt:'dec', al:['tempo médio de engajamento','average engagement time']},
-  {k:'sesPerU',  l:'Sessões engajadas por usuário ativo',            fmt:'dec', al:['sessões engajadas por usuário','engaged sessions per active user']},
-  {k:'events',   l:'Contagem de eventos',                            fmt:'int', al:['contagem de eventos','event count']},
-  {k:'keyEvRate',l:'Taxa de eventos principais do usuário',          fmt:'pct', al:['taxa de eventos principais','key event rate']}, // checado ANTES de "eventos principais" — senão "taxa de eventos principais..." casaria com keyEv por engano (substring)
-  {k:'keyEv',    l:'Eventos principais',                             fmt:'int', al:['eventos principais','key events']}
-];
-var anChMetric='totUsers';
-var _anChImp=null;
-function anChMeta(mk){return CH_METRICS.find(function(m){return m.k===mk;})||{k:mk,l:mk,fmt:'int'};}
-function anChCurMetric(){if(!CH_METRICS.some(function(m){return m.k===anChMetric;}))anChMetric='totUsers';return anChMetric;}
-function anChSetMetric(mk){anChMetric=mk;anR();}
-function anChObj(year,prop){var s=anStore();s.channels[year]=s.channels[year]||{};s.channels[year][prop]=s.channels[year][prop]||{};return s.channels[year][prop];}
-function anChRec(year,prop,name){var o=anChObj(year,prop);if(!o[name]||typeof o[name]!=='object')o[name]={};return o[name];}
-function anChArr(year,prop,name,mk){var r=anChRec(year,prop,name);if(!Array.isArray(r[mk]))r[mk]=Array(12).fill(null);return r[mk];}
-function anChSetCell(year,prop,name,mk,mi,val){var a=anChArr(year,prop,name,mk);a[mi]=(val===''||val==null||isNaN(Number(val)))?null:Number(val);}
-function anChVal(year,prop,name,mk,mi){var r=anChRec(year,prop,name);return Array.isArray(r[mk])?r[mk][mi]:null;}
-function anChChannels(year,prop){return Object.keys(anChObj(year,prop));}
-function anChMonths(year,prop){var o=anChObj(year,prop),set={};Object.keys(o).forEach(function(n){CH_METRICS.forEach(function(m){(o[n][m.k]||[]).forEach(function(v,i){if(v!=null&&v!=='')set[i]=1;});});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
-function anChHasAny(year,prop){return anChMonths(year,prop).length>0;}
-function anChLastCol(){var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();var ms=anChMonths(anYear,anProp);return ms.length?ms[ms.length-1]:11;}
-function anChTotal(year,prop,mk,mi){var meta=anChMeta(mk),o=anChObj(year,prop),vals=[];Object.keys(o).forEach(function(n){var v=anChVal(year,prop,n,mk,mi);if(v!=null)vals.push(Number(v));});
-  if(!vals.length)return null;
-  if(meta.fmt==='int')return vals.reduce(function(a,b){return a+b;},0);
-  return vals.reduce(function(a,b){return a+b;},0)/vals.length; // dec/pct: média simples entre canais (são taxas já calculadas pelo GA4)
-}
-/* ── Import ── */
-function anChImportOpen(){
-  if(anProp==='all'){toast('Selecione uma propriedade específica para importar.','ti-info-circle');return;}
-  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
-  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
-    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''});anChPreview(rows,f.name);}catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
-    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});anChPreview(rows,f.name);};rd.readAsText(f,'UTF-8');}
-  };inp.click();
-}
-function anChMatchCol(label){label=(label==null?'':label).toString().toLowerCase().replace(/"/g,'').trim();if(!label)return null;
-  for(var i=0;i<CH_METRICS.length;i++){var m=CH_METRICS[i];for(var k=0;k<m.al.length;k++){if(label.indexOf(m.al[k])>=0)return m.k;}}
-  return null;
-}
-function anChIsChannelDim(label){label=(label==null?'':label).toString().toLowerCase();return['canal','channel','grupo de canais','canais'].some(function(a){return label.indexOf(a)>=0;});}
-function anChParse(rows){
-  var monthIdx=-1,year=anYear;
-  var flat=[];rows.forEach(function(r){(r||[]).forEach(function(c){flat.push(String(c==null?'':c));});});
-  for(var fi=0;fi<flat.length;fi++){var cell=flat[fi];
-    var m=cell.match(/data de início:\s*(20\d{2})(\d{2})\d{2}/i);if(m){year=m[1];monthIdx=parseInt(m[2],10)-1;break;}
-    m=cell.match(/(20\d{2})(\d{2})\d{2}/);if(m){year=m[1];monthIdx=parseInt(m[2],10)-1;break;}
-    m=cell.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/);if(m){year=m[3];monthIdx=parseInt(m[2],10)-1;break;}
-  }
-  var clean=rows.filter(function(cols){if(!cols||!cols.length)return false;var first=String(cols[0]==null?'':cols[0]).trim();if(first.charAt(0)==='#')return false;return cols.some(function(c){return String(c==null?'':c).trim()!=='';});});
-  var headerIdx=-1,colMap={};
-  for(var r=0;r<clean.length;r++){var cols=clean[r];if(cols.length<2)continue;if(!anChIsChannelDim(cols[0]))continue;
-    var map={},any=false;cols.forEach(function(c,ci){if(ci===0)return;var mk=anChMatchCol(c);if(mk){map[mk]=ci;any=true;}});
-    if(any){headerIdx=r;colMap=map;break;}
-  }
-  if(headerIdx<0)return{mode:'none'};
-  var mi=monthIdx>=0?monthIdx:new Date().getMonth(),channels={};
-  clean.slice(headerIdx+1).forEach(function(c){var name=String(c[0]||'').trim();if(!name)return;var low=name.toLowerCase();if(low==='total'||low==='totais'||low.indexOf('#')===0)return;
-    var rec={};var any=false;Object.keys(colMap).forEach(function(mk){var v=hNumParse(c[colMap[mk]]);if(v!=null){rec[mk]=v;any=true;}});
-    if(any)channels[name]=rec;
-  });
-  if(Object.keys(channels).length)return{mode:'month',mi:mi,year:year,channels:channels,metricsFound:Object.keys(colMap)};
-  return{mode:'none'};
-}
-function anChPreview(rows,fname){
-  var p=anChParse(rows);_anChImp={parsed:p};
-  if(p.mode==='none'){toast('Não reconheci o arquivo. Use o export "Aquisição de usuários › Grupo principal de canais" do GA4.','ti-alert-circle');return;}
-  var names=Object.keys(p.channels);
-  var metricsLbl=p.metricsFound.map(function(mk){return anChMeta(mk).l;}).join(', ');
-  var info='Mês detectado: <strong style="color:var(--navy)">'+AN_MES_LONG[p.mi]+'/'+p.year+'</strong> · <strong>'+names.length+'</strong> canais · '+p.metricsFound.length+' métrica(s) reconhecida(s)';
-  var top=names.slice().sort(function(a,b){return(p.channels[b].totUsers||0)-(p.channels[a].totUsers||0);}).slice(0,8);
-  var prev=top.map(function(n){var r=p.channels[n];return '<tr><td style="text-align:left">'+anEsc(n)+'</td><td>'+(r.totUsers!=null?anFmt(r.totUsers,'int'):'—')+'</td><td>'+(r.newUsers!=null?anFmt(r.newUsers,'int'):'—')+'</td></tr>';}).join('');
-  var o=document.createElement('div');o.className='ov';o.id='an-chimp-ov';
-  o.innerHTML='<div class="mx" style="width:600px;max-width:96vw;max-height:88vh;overflow:auto"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar Canais — '+propLabel(anProp)+'</h4>'
-    +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br>'+info+'<br><span style="font-size:11px">Métricas: '+anEsc(metricsLbl)+'</span></p>'
-    +'<div class="hwrap"><table class="htbl pg-prev"><thead><tr><th style="text-align:left">Canal</th><th>Total usuários</th><th>Novos usuários</th></tr></thead><tbody>'+prev+'</tbody></table></div>'
-    +(names.length>8?'<p style="font-size:11px;color:var(--text-secondary);margin-top:6px">+ '+(names.length-8)+' outros canais</p>':'')
-    +'<div style="margin:12px 0 4px;font-size:12px;font-weight:600;color:var(--navy)">Modo</div>'
-    +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;margin-bottom:6px;cursor:pointer"><input type="radio" name="chmode" value="update" checked> <span>Atualizar o mês — substitui os canais enviados neste mês (recomendado)</span></label>'
-    +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;cursor:pointer"><input type="radio" name="chmode" value="replace"> <span>Substituir o mês — apaga os canais deste mês ausentes no arquivo</span></label>'
-    +'<div class="mbb"><button onclick="document.getElementById(\'an-chimp-ov\').remove();_anChImp=null">Cancelar</button><button class="pr" onclick="anChApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
-  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anChImp=null;}});
-}
-function anChApply(){
-  if(!_anChImp)return;var p=_anChImp.parsed;
-  var mi=p.mi,names=Object.keys(p.channels),mode=(document.querySelector('input[name="chmode"]:checked')||{}).value||'update';
-  if(mode==='replace'){var o=anChObj(anYear,anProp);Object.keys(o).forEach(function(n){if(names.indexOf(n)<0){var r=anChRec(anYear,anProp,n);CH_METRICS.forEach(function(m){if(Array.isArray(r[m.k]))r[m.k][mi]=null;});}});}
-  names.forEach(function(n){var rec=p.channels[n];Object.keys(rec).forEach(function(mk){anChSetCell(anYear,anProp,n,mk,mi,rec[mk]);});});
-  sv();document.getElementById('an-chimp-ov').remove();_anChImp=null;anR();
-  toast(names.length+' canais — '+p.metricsFound.length+' métrica(s) — '+AN_MES_LONG[mi]+'/'+p.year+'.','ti-file-import');
-}
-/* ── Pivot canal × meses (mesmo padrão de Top Páginas) ── */
-function anChProjFactor(lastCol){
-  var now=new Date();
-  if(String(now.getFullYear())!==String(anYear)||now.getMonth()!==lastCol)return null;
-  var dE=now.getDate()-1,tD=dIM(Number(anYear),lastCol);
-  if(dE<=0)return null;
-  return tD/dE;
-}
-function anChPivot(){
-  var o=anChObj(anYear,anProp),lastCol=anChLastCol();
-  var months=[];for(var i=0;i<=lastCol;i++)months.push(i);
-  var mk=anChCurMetric(),meta=anChMeta(mk);
-  var allNames=Object.keys(o);
-  var valMatrix={},rowHasData={},monthTotals=Array(12).fill(0),monthCounts=Array(12).fill(0);
-  allNames.forEach(function(n){
-    var row=Array(12).fill(null),any=false;
-    months.forEach(function(mi){var v=anChVal(anYear,anProp,n,mk,mi);row[mi]=(v==null?null:Number(v));if(v!=null){any=true;monthTotals[mi]+=Number(v);monthCounts[mi]++;}});
-    valMatrix[n]=row;rowHasData[n]=any;
-  });
-  var names=allNames.filter(function(n){return rowHasData[n];});
-  if(!names.length)return '<div class="an-empty"><i class="ti ti-route"></i><p>Sem '+meta.l+' para '+propLabel(anProp)+' em '+anYear+'</p><span>Importe o relatório "Aquisição de usuários › Grupo principal de canais" do GA4</span></div>';
-  function valAt(n,mi){return valMatrix[n][mi];}
-  function varpAt(n){var cur=valAt(n,lastCol),prev=lastCol>0?valAt(n,lastCol-1):null;if(cur==null||prev==null||prev===0)return null;return(cur-prev)/Math.abs(prev)*100;}
-  var effBy=anPgSort_ch===null?'var':anPgSort_ch;
-  var projFactor=(meta.fmt==='int')?anChProjFactor(lastCol):null; // só projeta métricas acumulativas (taxas/médias não fazem sentido projetadas)
-  function projOf(v){return(v==null||!projFactor)?null:v*projFactor;}
-  function sortKey(n){if(effBy==='name')return(n||'').toLowerCase();if(effBy==='var'){var v=varpAt(n);return v==null?-Infinity:v;}var mv=valAt(n,Number(effBy));return mv==null?-Infinity:mv;}
-  function sortKey2(n){if(anPgSort_ch!==null)return sortKey(n);var mv=valAt(n,lastCol);return mv==null?-Infinity:mv;}
-  var keyed=names.map(function(n){return{n:n,k:sortKey2(n)};});
-  keyed.sort(function(a,b){if(typeof a.k==='string')return anChSortDir==='asc'?a.k.localeCompare(b.k):b.k.localeCompare(a.k);return anChSortDir==='asc'?a.k-b.k:b.k-a.k;});
-  names=keyed.map(function(x){return x.n;});
-  function arr(by){var on=(anPgSort_ch===by)||(anPgSort_ch===null&&by===String(lastCol));return on?(anChSortDir==='asc'?' \u25B2':' \u25BC'):'';}
-  function th(lbl,by,cls,style){var on=(anPgSort_ch===by)||(anPgSort_ch===null&&by===String(lastCol));return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'"'+(style?' style="'+style+'"':'')+' onclick="anChSortSet(\''+by+'\')">'+lbl+arr(by)+'</th>';}
-  var head='<tr>'+th('Canal','name','stick','text-align:left')
-    +months.map(function(mi){return th(HMESES[mi]+'/'+anYear.slice(2),String(mi),(mi===lastCol?'on':''));}).join('')
-    +(projFactor?'<th class="on">Projeção</th>':'')
-    +th('Variação','var','on')+'</tr>';
-  var body=names.map(function(n){
-    var lastV=valAt(n,lastCol),pv=projOf(lastV);
-    return '<tr><td class="stick" style="text-align:left;font-weight:600;max-width:240px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(n)+'">'+anEsc(n)+'</td>'
-      +months.map(function(mi){var v=valAt(n,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
-      +(projFactor?'<td class="on">'+(pv==null?'<span class="an-na">—</span>':anShort(pv,meta.fmt))+'</td>':'')
-      +'<td class="on">'+anPgVarCell(varpAt(n))+'</td></tr>';
-  }).join('');
-  var totVar=(function(){var cur=monthCounts[lastCol]?monthTotals[lastCol]/(meta.fmt==='int'?1:monthCounts[lastCol]):null,prev=(lastCol>0&&monthCounts[lastCol-1])?monthTotals[lastCol-1]/(meta.fmt==='int'?1:monthCounts[lastCol-1]):null;if(cur==null||prev==null||prev===0)return null;return(cur-prev)/Math.abs(prev)*100;})();
-  var totLbl=meta.fmt==='int'?'Total':'Média';
-  var totLastRaw=monthCounts[lastCol]?monthTotals[lastCol]:null,totLastV=totLastRaw==null?null:(meta.fmt==='int'?totLastRaw:totLastRaw/monthCounts[lastCol]),totPv=projOf(totLastV);
-  var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">'+totLbl+'</td>'
-    +months.map(function(mi){var raw=monthCounts[mi]?monthTotals[mi]:null,v=raw==null?null:(meta.fmt==='int'?raw:raw/monthCounts[mi]);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
-    +(projFactor?'<td class="on">'+(totPv==null?'<span class="an-na">—</span>':anShort(totPv,meta.fmt))+'</td>':'')
-    +'<td class="on">'+anPgVarCell(totVar)+'</td></tr>';
-  var projNote=projFactor?' · projeção estima o fechamento de '+HMESES[lastCol]+' com base nos dias já decorridos':'';
-  return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-route"></i> '+meta.l+' por canal e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' canais · variação = '+HMESES[lastCol]+' vs '+(lastCol>0?HMESES[lastCol-1]:'—')+projNote+'</div></div>'
-    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div>'
-    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Clique no cabeçalho para ordenar · Total/Mês: métricas de soma (usuários/eventos) somam os canais; tempo/taxas mostram a média entre canais.</div>';
-}
-var anPgSort_ch=null,anChSortDir='desc';
-function anChSortSet(by){if(anPgSort_ch===by)anChSortDir=anChSortDir==='asc'?'desc':'asc';else{anPgSort_ch=by;anChSortDir=(by==='name'?'asc':'desc');}anR();}
-function anChView(){
-  var h='';var years=anYears();
-  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
-  var mSel=CH_METRICS.map(function(m){return '<button class="an-mtab'+(anChCurMetric()===m.k?' active':'')+'" onclick="anChSetMetric(\''+m.k+'\')">'+m.l+'</button>';}).join('');
-  h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anChImportOpen()"><i class="ti ti-upload"></i> Importar Canais</button></div></div>';
-  h+='<div class="an-focus" style="margin-bottom:14px"><span class="lbl">Métrica</span>'+mSel+'</div>';
-  if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-route"></i><p>Selecione uma propriedade</p><span>Canais é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
-  if(!anChHasAny(anYear,anProp)){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-route"></i><p>Sem dados de Canais para '+propLabel(anProp)+' em '+anYear+'</p><span>No GA4: Relatórios › Aquisição › Aquisição de usuários, exporte "Grupo principal de canais do primeiro usuário" e importe aqui — um arquivo por mês.</span></div></div>';return h;}
-  h+='<div class="an-card">'+anChPivot()+'</div>';
-  return h;
-}
 
 /* ═══════════════════════════════════════════════════════════════
    GESTÃO DO TEMPO — calendário (jun–dez) + planejamento 24h · classes A–E
@@ -6000,7 +5831,7 @@ function anSectionBody(){
 }
 function hGA(){
   anInit();
-  if(anSection==='app'||anSection==='cwv'||anSection==='seo'||anSection==='gsc')anSection='traf';
+  if(anSection==='app'||anSection==='cwv'||anSection==='seo'||anSection==='gsc'||anSection==='channels')anSection='traf';
   var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
   if(anSection==='pages'){
     var hp=pageHeader('Analytics','Top Páginas · '+propLabel(anProp));
@@ -6008,11 +5839,6 @@ function hGA(){
     hp+=anSubNav();
     hp+=anPgView();
     return '<div class="an-root">'+hp+'</div>';
-  }
-  if(anSection==='channels'){
-    var hc=pageHeader('Analytics','Canais · Aquisição de usuários por canal · '+propLabel(anProp));
-    hc+=anPropChips();hc+=anSubNav();hc+=anChView();
-    return '<div class="an-root">'+hc+'</div>';
   }
   if(anSection==='ret'){
     var hr=pageHeader('Analytics','Retenção (coortes) · '+propLabel(anProp));
