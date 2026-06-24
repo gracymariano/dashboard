@@ -3058,6 +3058,18 @@ var AN_SECTIONS={
       {k:'contagem_eventos',l:'Contagem de Eventos',         fmt:'int',   al:['contagem de eventos','contagem de evento','event count']},
       {k:'receita',         l:'Receita Total',               fmt:'money', al:['receita total','total revenue','receita']}
     ]},
+  trafch:{l:'Canais de Tráfego', ic:'ti-route', head:'sessoes', dim:'Grupo principal de canais da sessão',
+    metrics:[
+      {k:'sessoes',         l:'Sessões',                     fmt:'int',   al:['sessões','sessoes','sessions']},
+      {k:'sessoes_eng',     l:'Sessões Engajadas',           fmt:'int',   al:['sessões engajadas','sessoes engajadas','engaged sessions','sessões engaj']},
+      {k:'tx_eng',          l:'Taxa de Engajamento',         fmt:'pct',   al:['taxa de engajamento','engagement rate','taxa de engaj']},
+      {k:'tempo_sessao',    l:'Tempo Médio de Engaj./Sessão',fmt:'dur',   al:['tempo médio de engajamento por sess','tempo medio de engajamento por sess','average engagement time per session','tempo por sess']},
+      {k:'ev_sessao',       l:'Eventos por Sessão',          fmt:'dec',   al:['eventos por sessão','eventos por sessao','events per session','evento por sess']},
+      {k:'contagem_eventos',l:'Contagem de Eventos',         fmt:'int',   al:['contagem de eventos','contagem de evento','event count']},
+      {k:'tx_ev_principais',l:'Taxa de Eventos Principais',  fmt:'pct',   al:['taxa de eventos principais','key event rate']}, // checada ANTES de "eventos principais" — senão essa coluna casaria com ev_principais por substring
+      {k:'ev_principais',   l:'Eventos Principais',          fmt:'int',   al:['eventos principais','key events','principais events']},
+      {k:'receita',         l:'Receita Total',               fmt:'money', al:['receita total','total revenue','receita']}
+    ]},
   app:{l:'App', ic:'ti-device-mobile', head:'mau',
     metrics:[
       {k:'inst',   l:'Instalações',          fmt:'int', al:['instalações','instalacoes','installs','downloads','novas instalações','aquisições de usuários']},
@@ -3118,7 +3130,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};if(!s.qdev)s.qdev={};if(!s.qdevd)s.qdevd={};if(!s.seodim)s.seodim={};if(!s.channels)s.channels={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};if(!s.qdev)s.qdev={};if(!s.qdevd)s.qdevd={};if(!s.seodim)s.seodim={};if(!s.channels)s.channels={};if(!s.trafchsrc)s.trafchsrc={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -3999,6 +4011,208 @@ function anCampView(){
   var mi=anCampCurMi(),mk=anCampCurMetric();
   h+=anCampPivot(mk);
   h+=anCampTable(mi,mk);
+  return h;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CANAIS DE TRÁFEGO — visão quebrada por canal (Organic Search, Direct, …),
+   espelha "Origem da Campanha" (mesma lógica, chave de armazenamento própria
+   para não misturar com campanhas). Fonte: GA4 "Aquisição de tráfego ›
+   Grupo principal de canais da sessão".
+   dados por canal: ac.an.trafchsrc[year][prop][canal][mk]=[12]
+   ═══════════════════════════════════════════════════════════════ */
+var anTchMi=null, anTchMetric=null;
+var anTchSort={by:'agg',dir:'desc'};
+function anTchSortSet(by){if(anTchSort.by===by)anTchSort.dir=anTchSort.dir==='asc'?'desc':'asc';else{anTchSort.by=by;anTchSort.dir=(by==='name'?'asc':'desc');}anR();}
+
+function anTchObj(year,prop){var s=anStore();s.trafchsrc=s.trafchsrc||{};s.trafchsrc[year]=s.trafchsrc[year]||{};s.trafchsrc[year][prop]=s.trafchsrc[year][prop]||{};return s.trafchsrc[year][prop];}
+function anTchArr(year,prop,name,mk){var o=anTchObj(year,prop);o[name]=o[name]||{};if(!Array.isArray(o[name][mk]))o[name][mk]=Array(12).fill(null);return o[name][mk];}
+function anTchSetCell(year,prop,name,mk,mi,val){var a=anTchArr(year,prop,name,mk);a[mi]=(val===''||val==null||isNaN(Number(val)))?null:Number(val);}
+function anTchChannels(year,prop){return Object.keys(anTchObj(year,prop));}
+function anTchVal(year,prop,name,mk,mi){var o=anTchObj(year,prop);return(o[name]&&Array.isArray(o[name][mk]))?o[name][mk][mi]:null;}
+function anTchMonths(year,prop){var o=anTchObj(year,prop),set={};Object.keys(o).forEach(function(n){var sc=o[n];Object.keys(sc).forEach(function(mk){(sc[mk]||[]).forEach(function(v,i){if(v!=null&&v!=='')set[i]=1;});});});return Object.keys(set).map(Number).sort(function(a,b){return a-b;});}
+function anTchHasAny(year,prop){return anTchMonths(year,prop).length>0;}
+function anTchTotal(year,prop,mk,mi){var meta=anMeta('trafch',mk),o=anTchObj(year,prop),names=Object.keys(o);
+  if(meta.fmt==='int'){var s=0,any=false;names.forEach(function(n){var v=anTchVal(year,prop,n,mk,mi);if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
+  var wk=meta.w||AN_SECTIONS.trafch.head,num=0,den=0;
+  names.forEach(function(n){var v=anTchVal(year,prop,n,mk,mi),w=anTchVal(year,prop,n,wk,mi);if(v!=null&&w!=null){num+=Number(v)*Number(w);den+=Number(w);}});
+  if(den>0)return num/den;
+  var nums=names.map(function(n){return anTchVal(year,prop,n,mk,mi);}).filter(function(v){return v!=null;});
+  return nums.length?nums.reduce(function(a,b){return Number(a)+Number(b);},0)/nums.length:null;}
+function anTchSeriesByMonth(year,prop,name,mk){var arr=[];for(var i=0;i<12;i++)arr.push(anTchVal(year,prop,name,mk,i));return arr;}
+
+function anTchCurMi(){if(anTchMi!=null&&anTchMi>=0&&anTchMi<=11)return anTchMi;var ms=anTchMonths(anYear,anProp);if(ms.length)return ms[ms.length-1];var now=new Date();return String(now.getFullYear())===String(anYear)?now.getMonth():11;}
+function anTchCurMetric(){var ms=AN_SECTIONS.trafch.metrics;if(!anTchMetric||!ms.some(function(m){return m.k===anTchMetric;}))anTchMetric='sessoes';return anTchMetric;}
+function anTchSetMi(v){anTchMi=parseInt(v,10);anR();}
+function anTchSetMetric(v){anTchMetric=v;anR();}
+
+function anTchControls(disabled){
+  var ms=AN_SECTIONS.trafch.metrics,mi=anTchCurMi(),mk=anTchCurMetric(),years=anYears();
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var moSel='<select class="fsel" onchange="anTchSetMi(this.value)"'+(disabled?' disabled':'')+'>'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select>';
+  var mkSel='<select class="fsel" onchange="anTchSetMetric(this.value)"'+(disabled?' disabled':'')+'>'+ms.map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select>';
+  return '<div class="an-card an-camp-ctrl">'
+    +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Métrica</span>'+mkSel+'<span class="an-camp-cl">Mês (detalhe)</span>'+moSel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anTchManualOpen()"><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<button class="an-btn" onclick="anTchModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
+    +'<button class="an-btn prim" onclick="anTchImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+}
+function anTchTable(mi,mk){
+  var mets=AN_SECTIONS.trafch.metrics,o=anTchObj(anYear,anProp);
+  var rows=Object.keys(o).map(function(n){return n;}).filter(function(n){return mets.some(function(m){return anTchVal(anYear,anProp,n,m.k,mi)!=null;});});
+  rows.sort(function(a,b){var va=anTchVal(anYear,anProp,a,mk,mi),vb=anTchVal(anYear,anProp,b,mk,mi);return(vb==null?-1:Number(vb))-(va==null?-1:Number(va));});
+  if(!rows.length)return '';
+  var head='<tr><th style="text-align:left">Canal</th>'+mets.map(function(m){return '<th'+(m.k===mk?' class="on"':'')+'>'+m.l+'</th>';}).join('')+'</tr>';
+  var body=rows.map(function(n){return '<tr><td style="text-align:left;font-weight:600">'+anEsc(n)+'</td>'+mets.map(function(m){var v=anTchVal(anYear,anProp,n,m.k,mi);return '<td'+(m.k===mk?' class="on"':'')+'>'+(v==null?'—':anShort(v,m.fmt))+'</td>';}).join('')+'</tr>';}).join('');
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> Detalhamento por canal · '+AN_MES_LONG[mi]+'/'+anYear+'</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div></div>';
+}
+
+/* ── Manual por canal (mês selecionado) ── */
+var _anTchMan=null;
+function anTchManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}_anTchMan={mi:anTchCurMi()};
+  var o=document.createElement('div');o.className='ov';o.id='an-tman-ov';
+  o.innerHTML='<div class="mx" style="width:860px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="an-tman-body" style="overflow:auto;flex:1;min-height:0"></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anTchMan=null;}});anTchManBody();}
+function anTchManBody(){
+  if(!_anTchMan)return;var mi=_anTchMan.mi,mets=AN_SECTIONS.trafch.metrics,o=anTchObj(anYear,anProp),names=Object.keys(o);
+  var h='<h4 style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><i class="ti ti-route" style="color:var(--primary)"></i> Canais — '+propLabel(anProp)
+    +'<select class="fsel" style="margin-left:auto" onchange="_anTchMan.mi=parseInt(this.value);anTchManBody()">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select></h4>';
+  h+='<p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px;line-height:1.5">Edite os valores de cada canal para '+AN_MES_LONG[mi]+'/'+anYear+'. Salva automaticamente no Supabase.</p>';
+  h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl an-cman-tbl"><thead><tr><th style="text-align:left">Canal</th>'+mets.map(function(m){return '<th>'+m.l+'</th>';}).join('')+'<th></th></tr></thead><tbody>';
+  names.forEach(function(n){h+='<tr><td style="text-align:left;font-weight:600">'+anEsc(n)+'</td>'+mets.map(function(m){var v=anTchVal(anYear,anProp,n,m.k,mi);
+    return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anTchSetCell(anYear,anProp,\''+anEsc(n).replace(/'/g,"\\'")+'\',\''+m.k+'\','+mi+',this.value);sv()"></td>';}).join('')
+    +'<td><button class="an-ic-btn del" title="Remover canal" onclick="anTchDelChannel(\''+anEsc(n).replace(/'/g,"\\'")+'\')"><i class="ti ti-trash"></i></button></td></tr>';});
+  h+='</tbody></table></div>';
+  h+='<div class="mbb"><button onclick="anTchAddChannel()"><i class="ti ti-plus" style="font-size:11px"></i> Adicionar canal</button>'
+    +'<button onclick="anTchImportOpen()"><i class="ti ti-upload" style="font-size:11px"></i> Importar CSV</button>'
+    +'<button class="pr" onclick="document.getElementById(\'an-tman-ov\').remove();_anTchMan=null;anR()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
+  document.getElementById('an-tman-body').innerHTML=h;
+}
+function anTchAddChannel(){sM('Nome do canal (ex.: Organic Search, Direct)','',function(v){v=(v||'').trim();if(!v)return;anTchArr(anYear,anProp,v,'sessoes');sv();anTchManBody();},'text');}
+function anTchDelChannel(name){cfm('Remover canal','Remover "'+name+'" e todos os seus dados deste ano/propriedade?','Remover','dgr',function(){var o=anTchObj(anYear,anProp);delete o[name];sv();anTchManBody();anR();toast('Canal removido.','ti-trash');});}
+
+/* ── Modelo CSV (canais) ── */
+function anTchModelDownload(){
+  var mets=AN_SECTIONS.trafch.metrics;
+  var esc=function(s){return /[",;\n]/.test(s)?'"'+String(s).replace(/"/g,'""')+'"':s;};
+  var head=['Grupo principal de canais da sessão'].concat(mets.map(function(m){return m.l;})).map(esc).join(',');
+  var ex=['Organic Search'].concat(mets.map(function(){return '';})).map(esc).join(',');
+  var csv='\uFEFF'+head+'\n'+ex+'\n';
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='modelo_canais_trafego_'+anYear+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  toast('Modelo de canais de tráfego baixado.','ti-download');
+}
+
+/* ── Import por canal ── */
+var _anTchImp=null;
+function anTchImportOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica para importar.','ti-info-circle');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''});anTchPreview(rows,f.name);}catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});anTchPreview(rows,f.name);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function anTchIsChannelDim(label){label=(label==null?'':label).toString().toLowerCase();return['canal','channel','grupo de canais','canais'].some(function(a){return label.indexOf(a)>=0;});}
+function anTchParse(rows){
+  var sec=AN_SECTIONS.trafch,monthIdx=-1,year=anYear;
+  var flat=[];rows.forEach(function(r){(r||[]).forEach(function(c){flat.push(String(c==null?'':c));});});
+  for(var fi=0;fi<flat.length;fi++){var cell=flat[fi];var m=cell.match(/(20\d{2})(\d{2})\d{2}/);if(m){year=m[1];monthIdx=parseInt(m[2],10)-1;break;}m=cell.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/);if(m){year=m[3];monthIdx=parseInt(m[2],10)-1;break;}}
+  var clean=rows.filter(function(cols){if(!cols||!cols.length)return false;var first=String(cols[0]==null?'':cols[0]).trim();if(first.charAt(0)==='#')return false;return cols.some(function(c){return String(c==null?'':c).trim()!=='';});});
+  var headerIdx=-1,colMap={};
+  for(var r=0;r<clean.length;r++){var cols=clean[r];if(cols.length<2)continue;if(!anTchIsChannelDim(cols[0]))continue;
+    var map={},hits=0;cols.forEach(function(c,ci){if(ci===0)return;var mk=anMatchCol(sec,c);if(mk&&map[mk]==null){map[mk]=ci;hits++;}});
+    if(hits>=2){headerIdx=r;colMap=map;break;}
+  }
+  if(headerIdx<0)return{mi:-1,year:year,channels:{},mk:[]};
+  var mi=monthIdx>=0?monthIdx:new Date().getMonth();
+  var channels={};
+  clean.slice(headerIdx+1).forEach(function(c){var name=String(c[0]||'').trim();if(!name)return;var low=name.toLowerCase();if(low==='total'||low==='totais'||low==='all'||low.indexOf('#')===0)return;
+    var rec={};Object.keys(colMap).forEach(function(mk){var v=hNumParse(c[colMap[mk]]);if(v!=null)rec[mk]=v;});
+    if(Object.keys(rec).length)channels[name]=rec;});
+  return{mi:mi,year:year,channels:channels,mk:Object.keys(colMap)};
+}
+function anTchPreview(rows,fname){
+  var parsed=anTchParse(rows);_anTchImp={parsed:parsed};
+  var names=Object.keys(parsed.channels);
+  if(parsed.mi<0||!names.length){toast('Não reconheci o formato de canal. Baixe o modelo para conferir as colunas, ou confirme que é o relatório "Aquisição de tráfego" (canal da sessão).','ti-alert-circle');return;}
+  var metsLbl=parsed.mk.map(function(k){return anMeta('trafch',k).l;}).join(', ');
+  var top=names.slice().sort(function(a,b){return(parsed.channels[b].sessoes||0)-(parsed.channels[a].sessoes||0);}).slice(0,8);
+  var prev=top.map(function(n){return '<tr><td style="text-align:left;font-weight:600">'+anEsc(n)+'</td><td>'+(parsed.channels[n].sessoes!=null?anFmt(parsed.channels[n].sessoes,'int'):'—')+'</td><td>'+(parsed.channels[n].receita!=null?anFmt(parsed.channels[n].receita,'money'):'—')+'</td></tr>';}).join('');
+  var o=document.createElement('div');o.className='ov';o.id='an-timp-ov';
+  o.innerHTML='<div class="mx" style="width:620px;max-width:96vw;max-height:88vh;overflow:auto"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar Canais de Tráfego — '+propLabel(anProp)+'</h4>'
+    +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br>Mês detectado: <strong style="color:var(--navy)">'+AN_MES_LONG[parsed.mi]+'/'+parsed.year+'</strong> · <strong>'+names.length+'</strong> canais · Métricas: '+anEsc(metsLbl)+'</p>'
+    +'<div class="hwrap"><table class="htbl"><thead><tr><th style="text-align:left">Canal</th><th>Sessões</th><th>Receita</th></tr></thead><tbody>'+prev+'</tbody></table></div>'
+    +(names.length>8?'<p style="font-size:11px;color:var(--text-secondary);margin-top:6px">+ '+(names.length-8)+' outros canais</p>':'')
+    +'<div style="margin:12px 0 4px;font-size:12px;font-weight:600;color:var(--navy)">Modo de importação</div>'
+    +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;margin-bottom:6px;cursor:pointer"><input type="radio" name="timode" value="update" checked> <span>Atualizar o mês — substitui os valores dos canais enviados neste mês (recomendado)</span></label>'
+    +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;cursor:pointer"><input type="radio" name="timode" value="replace"> <span>Substituir o mês — apaga os canais deste mês não presentes no arquivo</span></label>'
+    +'<div class="mbb"><button onclick="document.getElementById(\'an-timp-ov\').remove();_anTchImp=null">Cancelar</button><button class="pr" onclick="anTchApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anTchImp=null;}});
+}
+function anTchApply(){
+  if(!_anTchImp)return;var parsed=_anTchImp.parsed,mi=parsed.mi;
+  var mode=(document.querySelector('input[name="timode"]:checked')||{}).value||'update';
+  var names=Object.keys(parsed.channels);
+  if(mode==='replace'){var o=anTchObj(anYear,anProp);Object.keys(o).forEach(function(n){if(names.indexOf(n)<0){AN_SECTIONS.trafch.metrics.forEach(function(m){if(Array.isArray(o[n][m.k]))o[n][m.k][mi]=null;});}});}
+  var n=0;names.forEach(function(name){var rec=parsed.channels[name];AN_SECTIONS.trafch.metrics.forEach(function(m){if(rec[m.k]!=null){anTchSetCell(anYear,anProp,name,m.k,mi,rec[m.k]);}});n++;});
+  sv();
+  document.getElementById('an-timp-ov').remove();_anTchImp=null;
+  anTchMi=mi;anR();
+  toast(n+' canais importados — '+AN_MES_LONG[mi]+'/'+parsed.year+'.','ti-file-import');
+}
+
+/* ── Render: tabela dinâmica canal × meses (estilo Top Páginas) ── */
+function anTchAggChannel(name,mk,months){var meta=anMeta('trafch',mk);
+  if(meta.fmt==='int'){var s=0,any=false;months.forEach(function(mi){var v=anTchVal(anYear,anProp,name,mk,mi);if(v!=null){s+=Number(v);any=true;}});return any?s:null;}
+  var wk=meta.w||AN_SECTIONS.trafch.head,num=0,den=0;months.forEach(function(mi){var v=anTchVal(anYear,anProp,name,mk,mi),w=anTchVal(anYear,anProp,name,wk,mi);if(v!=null&&w!=null){num+=Number(v)*Number(w);den+=Number(w);}});
+  if(den>0)return num/den;var nums=months.map(function(mi){return anTchVal(anYear,anProp,name,mk,mi);}).filter(function(v){return v!=null;});return nums.length?nums.reduce(function(a,b){return Number(a)+Number(b);},0)/nums.length:null;}
+function anTchAggAll(mk,months){var meta=anMeta('trafch',mk);
+  if(meta.fmt==='int')return months.reduce(function(s,mi){var v=anTchTotal(anYear,anProp,mk,mi);return s+(v||0);},0);
+  var wk=meta.w||AN_SECTIONS.trafch.head,num=0,den=0;months.forEach(function(mi){var v=anTchTotal(anYear,anProp,mk,mi),w=anTchTotal(anYear,anProp,wk,mi);if(v!=null&&w!=null){num+=Number(v)*Number(w);den+=Number(w);}});return den>0?num/den:null;}
+function anTchPivot(mk){
+  var meta=anMeta('trafch',mk),o=anTchObj(anYear,anProp);
+  var months=[0,1,2,3,4,5,6,7,8,9,10,11];
+  var hasMonths=anTchMonths(anYear,anProp);
+  if(!hasMonths.length)return '';
+  var names=Object.keys(o).filter(function(n){return months.some(function(mi){return anTchVal(anYear,anProp,n,mk,mi)!=null;});});
+  function sortKey(n){if(anTchSort.by==='name')return(n||'').toLowerCase();if(anTchSort.by==='agg'){var a=anTchAggChannel(n,mk,months);return a==null?-Infinity:Number(a);}var v=anTchVal(anYear,anProp,n,mk,anTchSort.by);return v==null?-Infinity:Number(v);}
+  names.sort(function(a,b){var ka=sortKey(a),kb=sortKey(b);if(typeof ka==='string')return anTchSort.dir==='asc'?ka.localeCompare(kb):kb.localeCompare(ka);return anTchSort.dir==='asc'?ka-kb:kb-ka;});
+  var aggLbl=meta.fmt==='int'?'Total':'Média';
+  function arr(by){return anTchSort.by===by?(anTchSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
+  function th(lbl,by,cls,style){return '<th class="an-sortable'+(cls?' '+cls:'')+(anTchSort.by===by?' sorted':'')+'"'+(style?' style="'+style+'"':'')+' onclick="anTchSortSet(\''+by+'\')">'+lbl+arr(by)+'</th>';}
+  var head='<tr>'+th('Canal','name','stick','text-align:left')
+    +months.map(function(mi){return th(HMESES[mi]+'/'+anYear.slice(2),String(mi),(String(mi)===anTchSort.by?'on':''));}).join('')
+    +th(aggLbl,'agg','on')+'</tr>';
+  var body=names.map(function(n){
+    return '<tr><td class="stick" style="text-align:left;font-weight:600">'+anEsc(n)+'</td>'
+      +months.map(function(mi){var v=anTchVal(anYear,anProp,n,mk,mi);return '<td'+(String(mi)===anTchSort.by?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
+      +'<td class="on">'+anShort(anTchAggChannel(n,mk,months),meta.fmt)+'</td></tr>';
+  }).join('');
+  var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">Total</td>'
+    +months.map(function(mi){var v=anTchTotal(anYear,anProp,mk,mi);return '<td'+(String(mi)===anTchSort.by?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
+    +'<td class="on">'+anShort(anTchAggAll(mk,months),meta.fmt)+'</td></tr>';
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-route"></i> '+meta.l+' por canal e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' canais</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div>'
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Clique no cabeçalho para ordenar · troque a métrica no seletor acima · '+(meta.fmt==='int'?'coluna Total soma os meses':'coluna Média pondera pelos volumes')+'</div></div>';
+}
+
+/* ── View principal da aba de Canais de Tráfego ── */
+function anTchView(){
+  var h='';
+  h+=anTchControls(anProp==='all');
+  if(anProp==='all'){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-route"></i><p>Selecione uma propriedade</p><span>A visão por canal de tráfego é exibida por propriedade. Escolha uma propriedade nos chips acima.</span></div></div>';
+    return h;
+  }
+  if(!anTchHasAny(anYear,anProp)){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-route"></i><p>Sem dados de canais para '+propLabel(anProp)+' em '+anYear+'</p><span>Importe um CSV de "Aquisição de tráfego › Grupo principal de canais da sessão" do GA4 (ou use o modelo) — os dados aparecem quebrados por canal</span></div></div>';
+    return h;
+  }
+  var mi=anTchCurMi(),mk=anTchCurMetric();
+  h+=anTchPivot(mk);
+  h+=anTchTable(mi,mk);
   return h;
 }
 
@@ -5802,6 +6016,10 @@ function hGA(){
   h+=anSubNav();
   if(anSection==='camp'){
     h+=anCampView();
+    return '<div class="an-root">'+h+'</div>';
+  }
+  if(anSection==='trafch'){
+    h+=anTchView();
     return '<div class="an-root">'+h+'</div>';
   }
   h+=anSectionBody();
