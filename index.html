@@ -44,6 +44,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .nav-item i{font-size:17px;flex-shrink:0}
 .nav-item svg{width:18px;height:18px;flex-shrink:0}
 .sb-footer{padding:16px 12px;border-top:1px solid rgba(255,255,255,.06)}
+.sb-savebadge{margin-top:10px;font-size:10.5px;color:rgba(255,255,255,.55);display:flex;align-items:center;gap:5px;padding:4px 2px}
 .sb-user{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--radius-xs);background:rgba(255,255,255,.04)}
 .sb-avatar{width:34px;height:34px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
 .sb-user-name{font-size:12px;font-weight:600;color:#fff}
@@ -753,6 +754,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <div class="sb-user-email">gracy.mariano@gmail.com</div>
       </div>
     </div>
+    <div class="sb sb-savebadge"><i class="ti ti-device-floppy" style="font-size:10px"></i> Salvo</div>
   </div>
 </aside>
 
@@ -924,7 +926,9 @@ const CATL={reels:'Reels',artigos:'Artigos',pins:'Pins',melhorias:'Melhorias'};
 const CATC={reels:'var(--red)',artigos:'var(--blu)',pins:'var(--cor)',melhorias:'var(--pur)'};
 async function ld(){try{const d=await sbGet('gd_v4');if(d){cT=d.t||{};ac=d.a||{};tE=d.e||{}}else{// migrar dados existentes do localStorage, se houver
 const s=localStorage.getItem('gd_v4');if(s){try{const lsd=JSON.parse(s);cT=lsd.t||{};ac=lsd.a||{};tE=lsd.e||{};await sbSet('gd_v4',{t:cT,a:ac,e:tE});localStorage.removeItem('gd_v4')}catch(e2){}}}}catch(e){console.error('ld error',e)}}
-function sv(){const el=document.querySelector('.sb');if(el)el.innerHTML='<i class="ti ti-loader-2" style="font-size:10px;display:inline-block;animation:spin .8s linear infinite"></i> Salvando...';sbSet('gd_v4',{t:cT,a:ac,e:tE}).then(()=>{const el2=document.querySelector('.sb');if(el2)el2.innerHTML='<i class="ti ti-device-floppy" style="font-size:10px"></i> Salvo'}).catch(()=>{const el2=document.querySelector('.sb');if(el2)el2.innerHTML='<i class="ti ti-alert-circle" style="font-size:10px;color:var(--red)"></i> Erro ao salvar'})}
+var _svPending=false; // true enquanto o salvamento no Supabase ainda está em andamento — usado para avisar antes de recarregar/fechar a página
+window.addEventListener('beforeunload',function(e){if(_svPending){e.preventDefault();e.returnValue='';return '';}});
+function sv(){const el=document.querySelector('.sb');if(el)el.innerHTML='<i class="ti ti-loader-2" style="font-size:10px;display:inline-block;animation:spin .8s linear infinite"></i> Salvando...';_svPending=true;sbSet('gd_v4',{t:cT,a:ac,e:tE}).then(()=>{_svPending=false;const el2=document.querySelector('.sb');if(el2)el2.innerHTML='<i class="ti ti-device-floppy" style="font-size:10px"></i> Salvo'}).catch(()=>{_svPending=false;const el2=document.querySelector('.sb');if(el2)el2.innerHTML='<i class="ti ti-alert-circle" style="font-size:10px;color:var(--red)"></i> Erro ao salvar'})}
 // Helpers
 function K(m,d,i){return m+'-'+d+'-'+i}
 function EK(m,d){return m+'-'+d}
@@ -3975,6 +3979,9 @@ function anCampPivot(mk){
   var hasMonths=anCampMonths(anYear,anProp);
   if(!hasMonths.length)return '';
   var names=Object.keys(o).filter(function(n){return months.some(function(mi){return anCampVal(anYear,anProp,n,mk,mi)!=null;});});
+  var totalNames=names.length;
+  // Top 20 por valor agregado (Total/Média da métrica em foco) — independente da ordenação de exibição escolhida abaixo
+  names=names.slice().sort(function(a,b){var va=anCampAggOrigin(a,mk,months),vb=anCampAggOrigin(b,mk,months);return(vb==null?-Infinity:Number(vb))-(va==null?-Infinity:Number(va));}).slice(0,20);
   function sortKey(n){if(anCampSort.by==='name')return(n||'').toLowerCase();if(anCampSort.by==='agg'){var a=anCampAggOrigin(n,mk,months);return a==null?-Infinity:Number(a);}var v=anCampVal(anYear,anProp,n,mk,anCampSort.by);return v==null?-Infinity:Number(v);}
   names.sort(function(a,b){var ka=sortKey(a),kb=sortKey(b);if(typeof ka==='string')return anCampSort.dir==='asc'?ka.localeCompare(kb):kb.localeCompare(ka);return anCampSort.dir==='asc'?ka-kb:kb-ka;});
   var aggLbl=meta.fmt==='int'?'Total':'Média';
@@ -3991,7 +3998,8 @@ function anCampPivot(mk){
   var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">Total</td>'
     +months.map(function(mi){var v=anCampTotal(anYear,anProp,mk,mi);return '<td'+(String(mi)===anCampSort.by?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
     +'<td class="on">'+anShort(anCampAggAll(mk,months),meta.fmt)+'</td></tr>';
-  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por origem e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' origens</div></div>'
+  var topNote=totalNames>20?(' · mostrando as top 20 de '+totalNames+' origens (por '+aggLbl.toLowerCase()+' de '+meta.l+')'):'';
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por origem e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' origens'+topNote+'</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Clique no cabeçalho para ordenar · troque a métrica no seletor acima · '+(meta.fmt==='int'?'coluna Total soma os meses':'coluna Média pondera pelos volumes')+'</div></div>';
 }
