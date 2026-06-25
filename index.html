@@ -5713,11 +5713,16 @@ function pvView(){
   if(pvFilter.trim()){var ft=pvFilter.trim().toLowerCase();rows=rows.filter(function(r){return r.n.toLowerCase().indexOf(ft)>=0;});}
   h+=pvBounceInsight(allRows,pvMinViews);
   var sBy=pvSort.by,sDir=pvSort.dir;
-  var sorted=rows.slice().sort(function(a,b){
+  function cmp(a,b){
     if(sBy==='n'){var na=(a.n||'').toLowerCase(),nb=(b.n||'').toLowerCase();return sDir==='asc'?na.localeCompare(nb):nb.localeCompare(na);}
     var va=a[sBy],vb=b[sBy];if(va==null)va=sDir==='asc'?Infinity:-Infinity;if(vb==null)vb=sDir==='asc'?Infinity:-Infinity;
     return sDir==='asc'?va-vb:vb-va;
-  });
+  }
+  // páginas com visualizações abaixo do mínimo sempre vão para o fim da lista (não competem no topo de
+  // nenhuma ordenação — com 1-4 visualizações a taxa de rejeição só pode ser 0% ou 100%, distorcendo o ranking)
+  var above=rows.filter(function(r){return!(pvMinViews>0&&r.views!=null&&r.views<pvMinViews);}).sort(cmp);
+  var below=rows.filter(function(r){return pvMinViews>0&&r.views!=null&&r.views<pvMinViews;}).sort(cmp);
+  var sorted=above.concat(below);
   var totalRows=sorted.length,visible=sorted.slice(0,pvShowCount);
   function arrow(by){return pvSort.by===by?(pvSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
   function th(lbl,by,cls){var on=pvSort.by===by;return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'" onclick="pvSortSet(\''+by+'\')">'+lbl+arrow(by)+'</th>';}
@@ -5735,7 +5740,7 @@ function pvView(){
   var moreNote=totalRows>visible.length?'<div class="an-card-sub" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span>Mostrando '+visible.length+' de '+totalRows+' páginas</span><button class="an-btn" onclick="pvShowMore()"><i class="ti ti-chevron-down" style="font-size:11px"></i> Carregar mais 100</button></div>':'';
   return h+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-file-text"></i> Páginas e Telas · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+totalRows+' página(s)'+(pvFilter.trim()?' filtradas por "'+anEsc(pvFilter)+'"':'')+' · clique no cabeçalho para ordenar</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'
-    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:12px"></i> Páginas com visualizações abaixo do mínimo aparecem esmaecidas (tendem a ter rejeição extrema por pouco volume). Ajuste o "Mín. visualizações" para refinar.</div>'
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:12px"></i> Páginas com visualizações abaixo do mínimo aparecem esmaecidas e sempre no fim da lista, em qualquer ordenação (com pouco volume a rejeição vira 0% ou 100%, distorcendo o ranking). Ajuste o "Mín. visualizações" para refinar.</div>'
     +moreNote+'</div>';
 }
 
