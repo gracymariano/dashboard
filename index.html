@@ -3134,7 +3134,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};if(!s.qdev)s.qdev={};if(!s.qdevd)s.qdevd={};if(!s.seodim)s.seodim={};if(!s.trafchsrc)s.trafchsrc={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};if(!s.qdev)s.qdev={};if(!s.qdevd)s.qdevd={};if(!s.seodim)s.seodim={};if(!s.trafchsrc)s.trafchsrc={};if(!s.pgview)s.pgview={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -3235,7 +3235,7 @@ function anExec(year,section,prop,mk){
 /* ── Ações de UI ── */
 function anR(){rHub(document.getElementById('app'));}
 function anPersistUI(){var s=anStore();s.ui.prop=anProp;s.ui.section=anSection;sv();}
-function anInit(){if(_anInit)return;_anInit=true;var s=anStore();if(s.ui){if(s.ui.prop&&AN_PROPS.some(function(p){return p.k===s.ui.prop;}))anProp=s.ui.prop;if(s.ui.section&&(AN_SECTIONS[s.ui.section]||s.ui.section==='pages'||s.ui.section==='seo'||s.ui.section==='ret'))anSection=s.ui.section;if(s.ui.goalSel&&typeof s.ui.goalSel==='object')anGoalSel=s.ui.goalSel;if(s.ui.dashThresh)anDashThresh=Number(s.ui.dashThresh)||15;}
+function anInit(){if(_anInit)return;_anInit=true;var s=anStore();if(s.ui){if(s.ui.prop&&AN_PROPS.some(function(p){return p.k===s.ui.prop;}))anProp=s.ui.prop;if(s.ui.section&&(AN_SECTIONS[s.ui.section]||s.ui.section==='pages'||s.ui.section==='pgview'||s.ui.section==='seo'||s.ui.section==='ret'))anSection=s.ui.section;if(s.ui.goalSel&&typeof s.ui.goalSel==='object')anGoalSel=s.ui.goalSel;if(s.ui.dashThresh)anDashThresh=Number(s.ui.dashThresh)||15;}
   if(!s.ui.pgRevPurged){anPgPurgeRevenue();s.ui.pgRevPurged=true;sv();} // migração única: remove receita de Top Páginas já lançada (não era a receita real do site)
   if(!s.ui.channelsPurged){if(s.channels){delete s.channels;}s.ui.channelsPurged=true;sv();} // migração única: remove a aba "Canais" (Aquisição de Usuários), substituída por "Canais de Tráfego"
 }
@@ -3262,6 +3262,7 @@ function anSubNav(){
     return '<button class="an-seg-btn'+(anSection===k?' active':'')+'" onclick="anSetSection(\''+k+'\')"><i class="ti '+s.ic+'"></i>'+s.l+'</button>';
   }).join('');
   segs+='<button class="an-seg-btn'+(anSection==='pages'?' active':'')+'" onclick="anSetSection(\'pages\')"><i class="ti ti-world"></i>Top Páginas</button>';
+  segs+='<button class="an-seg-btn'+(anSection==='pgview'?' active':'')+'" onclick="anSetSection(\'pgview\')"><i class="ti ti-file-text"></i>Páginas e Telas</button>';
   segs+='<button class="an-seg-btn'+(anSection==='ret'?' active':'')+'" onclick="anSetSection(\'ret\')"><i class="ti ti-repeat"></i>Retenção</button>';
   return '<div class="an-seg">'+segs+'</div>';
 }
@@ -5595,6 +5596,149 @@ function anPgManBody(){
 function anPgAddPage(){sM('Caminho/título da página (ex.: /calculadora)','',function(v){v=(v||'').trim();if(!v)return;anPgRec(anYear,anProp,v);sv();anPgManBody();},'text');}
 function anPgDelPage(name){cfm('Remover página','Remover "'+name+'" e todos os seus dados deste ano/propriedade?','Remover','dgr',function(){var o=anPgObj(anYear,anProp);delete o[name];sv();anPgManBody();anR();toast('Página removida.','ti-trash');});}
 
+/* ═══════════════════════════════════════════════════════════════
+   PÁGINAS E TELAS — visão mensal com Visualizações, Usuários ativos, Visualizações
+   por usuário ativo, Taxa de rejeição e Tempo médio de engajamento por usuário
+   ativo, lado a lado, para 1 mês por vez (responde "quais páginas têm mais
+   rejeição"). Fonte: GA4 "Páginas e telas › Título da página e classe da tela".
+   armazenamento: s.pgview[year][prop][mi] = [{n,views,users,viewsPerUser,bounce,engTime}]
+   ═══════════════════════════════════════════════════════════════ */
+var PV_METRICS=[
+  {k:'views',        l:'Visualizações',                              fmt:'int', al:['visualizações de página','visualizações','views','page views']},
+  {k:'users',         l:'Usuários ativos',                            fmt:'int', al:['usuários ativos','active users','usuários']},
+  {k:'viewsPerUser',  l:'Visualizações/Usuário ativo',                fmt:'dec', al:['visualizações por usuário ativo','views per active user']},
+  {k:'bounce',        l:'Taxa de Rejeição',                           fmt:'pct', al:['taxa de rejeição','bounce rate']},
+  {k:'engTime',       l:'Tempo Médio de Engajamento (s)',             fmt:'dec', al:['tempo médio de engajamento por usuário ativo','tempo médio de engajamento','average engagement time per active user']}
+];
+var pvMi=null,pvShowCount=100,pvShowCtx=null,pvMinViews=30,pvFilter='';
+var pvSort={by:'bounce',dir:'desc'}; // padrão: maior rejeição primeiro, para responder "quais páginas têm mais rejeição"
+function pvMeta(mk){return PV_METRICS.find(function(m){return m.k===mk;})||{k:mk,l:mk,fmt:'int'};}
+function pvSetMi(v){pvMi=parseInt(v,10);anR();}
+function pvSetMinViews(v){pvMinViews=Math.max(0,parseInt(v,10)||0);anR();}
+function pvSetFilter(v){pvFilter=v;pvShowCount=100;anR();}
+function pvSortSet(by){if(pvSort.by===by)pvSort.dir=pvSort.dir==='asc'?'desc':'asc';else{pvSort.by=by;pvSort.dir=(by==='n')?'asc':'desc';}pvShowCount=100;anR();}
+function pvShowMore(){pvShowCount+=100;anR();}
+function pvObj(year,prop){var s=anStore();s.pgview[year]=s.pgview[year]||{};s.pgview[year][prop]=s.pgview[year][prop]||{};return s.pgview[year][prop];}
+function pvRows(year,prop,mi){var o=pvObj(year,prop);return o[mi]||[];}
+function pvMonths(year,prop){var o=pvObj(year,prop);return Object.keys(o).map(Number).sort(function(a,b){return a-b;});}
+function pvHasAny(year,prop){return pvMonths(year,prop).length>0;}
+function pvCurMi(){var ms=pvMonths(anYear,anProp);if(pvMi!=null&&ms.indexOf(pvMi)>=0)return pvMi;if(ms.length)return ms[ms.length-1];var now=new Date();return String(now.getFullYear())===String(anYear)?now.getMonth():0;}
+
+/* ── Import ── */
+var _anPvImp=null;
+function pvImportOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica para importar.','ti-info-circle');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';
+  inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];var rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''});pvPreview(rows,f.name);}catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}};rd.readAsArrayBuffer(f);}).catch(function(err){toast(err.message,'ti-alert-circle');});}
+    else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);var rows=txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);});pvPreview(rows,f.name);};rd.readAsText(f,'UTF-8');}
+  };inp.click();
+}
+function pvMatchCol(label){label=(label==null?'':label).toString().toLowerCase().replace(/"/g,'').trim();if(!label)return null;
+  var best=null,bestLen=0;
+  PV_METRICS.forEach(function(m){m.al.forEach(function(a){if(label.indexOf(a)>=0&&a.length>bestLen){best=m.k;bestLen=a.length;}});});
+  return best;
+}
+function pvIsPageDim(label){label=(label==null?'':label).toString().toLowerCase();return['página','pagina','page','caminho','título','titulo','url','tela','classe da tela'].some(function(a){return label.indexOf(a)>=0;});}
+function pvParse(rows){
+  var monthIdx=-1,year=anYear;
+  var flat=[];rows.forEach(function(r){(r||[]).forEach(function(c){flat.push(String(c==null?'':c));});});
+  for(var fi=0;fi<flat.length;fi++){var cell=flat[fi];
+    var m=cell.match(/data de início:\s*(20\d{2})(\d{2})\d{2}/i);if(m){year=m[1];monthIdx=parseInt(m[2],10)-1;break;}
+    m=cell.match(/(20\d{2})(\d{2})\d{2}/);if(m){year=m[1];monthIdx=parseInt(m[2],10)-1;break;}
+    m=cell.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/);if(m){year=m[3];monthIdx=parseInt(m[2],10)-1;break;}
+  }
+  var clean=rows.filter(function(cols){if(!cols||!cols.length)return false;var first=String(cols[0]==null?'':cols[0]).trim();if(first.charAt(0)==='#')return false;return cols.some(function(c){return String(c==null?'':c).trim()!=='';});});
+  var headerIdx=-1,colMap={};
+  for(var r=0;r<clean.length;r++){var cols=clean[r];if(cols.length<2)continue;if(!pvIsPageDim(cols[0]))continue;
+    var map={},hits=0;cols.forEach(function(c,ci){if(ci===0)return;var mk=pvMatchCol(c);if(mk&&map[mk]==null){map[mk]=ci;hits++;}});
+    if(hits>=2){headerIdx=r;colMap=map;break;}
+  }
+  if(headerIdx<0)return{mode:'none'};
+  var mi=monthIdx>=0?monthIdx:new Date().getMonth(),pages=[];
+  clean.slice(headerIdx+1).forEach(function(c){var name=String(c[0]||'').trim();if(!name)return;var low=name.toLowerCase();if(low==='total'||low==='totais'||low.indexOf('#')===0)return;
+    var rec={n:name};var any=false;Object.keys(colMap).forEach(function(mk){var v=hNumParse(c[colMap[mk]]);if(v!=null){rec[mk]=v;any=true;}});
+    if(any)pages.push(rec);
+  });
+  if(pages.length)return{mode:'month',mi:mi,year:year,pages:pages,metricsFound:Object.keys(colMap)};
+  return{mode:'none'};
+}
+function pvPreview(rows,fname){
+  var p=pvParse(rows);_anPvImp={parsed:p};
+  if(p.mode==='none'){toast('Não reconheci o arquivo. Use o export "Páginas e telas" do GA4 (Título da página e classe da tela).','ti-alert-circle');return;}
+  var metricsLbl=p.metricsFound.map(function(mk){return pvMeta(mk).l;}).join(', ');
+  var info='Mês detectado: <strong style="color:var(--navy)">'+AN_MES_LONG[p.mi]+'/'+p.year+'</strong> · <strong>'+p.pages.length+'</strong> páginas · '+p.metricsFound.length+' métrica(s) reconhecida(s)';
+  var top=p.pages.slice().sort(function(a,b){return(b.views||0)-(a.views||0);}).slice(0,8);
+  var prev=top.map(function(r){return '<tr><td style="text-align:left;max-width:260px;overflow:hidden;text-overflow:ellipsis">'+anEsc(r.n)+'</td><td>'+(r.views!=null?anFmt(r.views,'int'):'—')+'</td><td>'+(r.bounce!=null?(r.bounce*100).toFixed(1).replace('.',',')+'%':'—')+'</td></tr>';}).join('');
+  var o=document.createElement('div');o.className='ov';o.id='an-pvimp-ov';
+  o.innerHTML='<div class="mx" style="width:620px;max-width:96vw;max-height:88vh;overflow:auto"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar Páginas e Telas — '+propLabel(anProp)+'</h4>'
+    +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br>'+info+'<br><span style="font-size:11px">Métricas: '+anEsc(metricsLbl)+'</span></p>'
+    +'<div class="hwrap"><table class="htbl pg-prev"><thead><tr><th style="text-align:left">Página</th><th>Visualizações</th><th>Rejeição</th></tr></thead><tbody>'+prev+'</tbody></table></div>'
+    +(p.pages.length>8?'<p style="font-size:11px;color:var(--text-secondary);margin-top:6px">+ '+(p.pages.length-8)+' outras páginas</p>':'')
+    +'<div class="mbb"><button onclick="document.getElementById(\'an-pvimp-ov\').remove();_anPvImp=null">Cancelar</button><button class="pr" onclick="pvApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anPvImp=null;}});
+}
+function pvApply(){
+  if(!_anPvImp)return;var p=_anPvImp.parsed;
+  var o=pvObj(anYear,anProp);o[p.mi]=p.pages;
+  sv();document.getElementById('an-pvimp-ov').remove();_anPvImp=null;pvMi=p.mi;pvShowCount=100;anR();
+  toast(p.pages.length+' páginas — '+p.metricsFound.length+' métrica(s) — '+AN_MES_LONG[p.mi]+'/'+p.year+'.','ti-file-import');
+}
+
+/* ── View principal: tabela Página × 5 métricas, para o mês selecionado ── */
+function pvBounceInsight(rows,minViews){
+  var cands=rows.filter(function(r){return r.bounce!=null&&r.views!=null&&r.views>=minViews;});
+  if(!cands.length)return '';
+  var worst=cands.slice().sort(function(a,b){return(b.bounce||0)-(a.bounce||0);})[0];
+  return '<div class="seg-insight" style="border-left:3px solid var(--danger)"><i class="ti ti-alert-triangle" style="color:var(--danger)"></i><div><div class="seg-ins-t">Maior taxa de rejeição (com volume relevante)</div>'
+    +'<div class="seg-ins-x">Em <b>'+anEsc(worst.n)+'</b>: <b>'+(worst.bounce*100).toFixed(1).replace('.',',')+'%</b> de rejeição, com '+anFmt(worst.views,'int')+' visualizações'+(worst.engTime!=null?' e tempo médio de engajamento de '+worst.engTime.toFixed(0)+'s':'')+'. Vale revisar a primeira impressão dessa página: título, velocidade de carregamento e se o conteúdo entrega o que prometeu no clique.</div></div></div>';
+}
+function pvView(){
+  var h='';var mi=pvCurMi();var years=anYears();
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var moSel='<select class="fsel" onchange="pvSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
+  var minSel='<input type="number" class="hin" style="width:80px;padding:6px 10px" min="0" step="10" value="'+pvMinViews+'" onchange="pvSetMinViews(this.value)" title="Visualizações mínimas para entrar no insight e no destaque de rejeição">';
+  h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'<span class="an-camp-cl">Mín. visualizações</span>'+minSel+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="pvImportOpen()"><i class="ti ti-upload"></i> Importar Páginas e Telas</button></div></div>';
+  h+=anDevFilterBox(pvFilter,'pvSetFilter','Buscar por página… (ex: poupanca, calculadora)');
+  if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-file-text"></i><p>Selecione uma propriedade</p><span>Páginas e Telas é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
+  if(!pvHasAny(anYear,anProp)){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-file-text"></i><p>Sem dados de Páginas e Telas para '+propLabel(anProp)+' em '+anYear+'</p><span>No GA4: Relatórios › Engajamento › Páginas e telas, exporte por "Título da página e classe da tela" e importe aqui — um arquivo por mês.</span></div></div>';
+    return h;
+  }
+  var ctx=anYear+'|'+anProp;if(pvShowCtx!==ctx){pvShowCtx=ctx;pvShowCount=100;}
+  var allRows=pvRows(anYear,anProp,mi);
+  if(!allRows.length){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-file-text"></i><p>Sem dados em '+AN_MES_LONG[mi]+'/'+anYear+'</p><span>Importe o arquivo desse mês, ou escolha outro mês no seletor acima.</span></div></div>';return h;}
+  var rows=allRows;
+  if(pvFilter.trim()){var ft=pvFilter.trim().toLowerCase();rows=rows.filter(function(r){return r.n.toLowerCase().indexOf(ft)>=0;});}
+  h+=pvBounceInsight(allRows,pvMinViews);
+  var sBy=pvSort.by,sDir=pvSort.dir;
+  var sorted=rows.slice().sort(function(a,b){
+    if(sBy==='n'){var na=(a.n||'').toLowerCase(),nb=(b.n||'').toLowerCase();return sDir==='asc'?na.localeCompare(nb):nb.localeCompare(na);}
+    var va=a[sBy],vb=b[sBy];if(va==null)va=sDir==='asc'?Infinity:-Infinity;if(vb==null)vb=sDir==='asc'?Infinity:-Infinity;
+    return sDir==='asc'?va-vb:vb-va;
+  });
+  var totalRows=sorted.length,visible=sorted.slice(0,pvShowCount);
+  function arrow(by){return pvSort.by===by?(pvSort.dir==='asc'?' \u25B2':' \u25BC'):'';}
+  function th(lbl,by,cls){var on=pvSort.by===by;return '<th class="an-sortable'+(cls?' '+cls:'')+(on?' sorted':'')+'" onclick="pvSortSet(\''+by+'\')">'+lbl+arrow(by)+'</th>';}
+  var head='<tr>'+th('Página','n','stick')+PV_METRICS.filter(function(m){return m.k!=='n';}).map(function(m){return th(m.l,m.k,m.k==='bounce'?'on':'');}).join('')+'</tr>';
+  var body=visible.map(function(r){
+    var bounceColor=r.bounce==null?'var(--text-secondary)':r.bounce>=0.7?'var(--danger)':r.bounce>=0.4?'var(--warning)':'var(--success)';
+    var lowVol=pvMinViews>0&&r.views!=null&&r.views<pvMinViews;
+    return '<tr'+(lowVol?' style="opacity:.55"':'')+'><td class="stick" style="text-align:left;max-width:300px;overflow:hidden;text-overflow:ellipsis;font-weight:600" title="'+anEsc(r.n)+(lowVol?' (abaixo do mínimo de visualizações)':'')+'">'+anEsc(r.n)+'</td>'
+      +'<td>'+(r.views!=null?anFmt(r.views,'int'):'—')+'</td>'
+      +'<td>'+(r.users!=null?anFmt(r.users,'int'):'—')+'</td>'
+      +'<td>'+(r.viewsPerUser!=null?r.viewsPerUser.toFixed(2).replace('.',','):'—')+'</td>'
+      +'<td class="on" style="color:'+bounceColor+';font-weight:700">'+(r.bounce!=null?(r.bounce*100).toFixed(1).replace('.',',')+'%':'—')+'</td>'
+      +'<td>'+(r.engTime!=null?r.engTime.toFixed(0)+'s':'—')+'</td></tr>';
+  }).join('');
+  var moreNote=totalRows>visible.length?'<div class="an-card-sub" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span>Mostrando '+visible.length+' de '+totalRows+' páginas</span><button class="an-btn" onclick="pvShowMore()"><i class="ti ti-chevron-down" style="font-size:11px"></i> Carregar mais 100</button></div>':'';
+  return h+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-file-text"></i> Páginas e Telas · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+totalRows+' página(s)'+(pvFilter.trim()?' filtradas por "'+anEsc(pvFilter)+'"':'')+' · clique no cabeçalho para ordenar</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'
+    +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:12px"></i> Páginas com visualizações abaixo do mínimo aparecem esmaecidas (tendem a ter rejeição extrema por pouco volume). Ajuste o "Mín. visualizações" para refinar.</div>'
+    +moreNote+'</div>';
+}
+
 
 /* ═══════════════════════════════════════════════════════════════
    GESTÃO DO TEMPO — calendário (jun–dez) + planejamento 24h · classes A–E
@@ -5839,6 +5983,11 @@ function hGA(){
     hp+=anSubNav();
     hp+=anPgView();
     return '<div class="an-root">'+hp+'</div>';
+  }
+  if(anSection==='pgview'){
+    var hv=pageHeader('Analytics','Páginas e Telas · visualizações, usuários e rejeição · '+propLabel(anProp));
+    hv+=anPropChips();hv+=anSubNav();hv+=pvView();
+    return '<div class="an-root">'+hv+'</div>';
   }
   if(anSection==='ret'){
     var hr=pageHeader('Analytics','Retenção (coortes) · '+propLabel(anProp));
