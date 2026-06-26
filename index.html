@@ -1934,7 +1934,7 @@ function hVG(){
     +'<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===year?' selected':'')+'>'+y+'</option>';}).join('')+'</select>'
     +'<span class="an-camp-cl">Sensibilidade padrão</span>'
     +'<select class="fsel" onchange="anDashSetThresh(this.value)">'+[10,15,25].map(function(t){return '<option value="'+t+'"'+(t===thresh?' selected':'')+'>±'+t+'%</option>';}).join('')+'</select></div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anDashThrOpen()"><i class="ti ti-adjustments"></i> Limites por métrica</button></div></div>';
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="centralOpen()"><i class="ti ti-cloud-upload"></i> Upload Central</button><button class="an-btn" onclick="anDashThrOpen()"><i class="ti ti-adjustments"></i> Limites por métrica</button></div></div>';
   // Metas + ritmo
   var metas=anDashMetas(year);
   var metaRisk=metas.filter(function(m){return m.status==='risco'&&m.isCur;}).map(function(m){return {kind:'meta',label:m.label,sec:m.secL,fmt:m.fmt,goal:m.goal,proj:m.proj,mi:m.mi};});
@@ -6012,6 +6012,186 @@ function hGA(){
   }
   h+=anSectionBody();
   return '<div class="an-root">'+h+'</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UPLOAD CENTRAL — seleciona vários arquivos de uma vez, detecta automaticamente
+   o tipo de cada um (pelo conteúdo das colunas + nome do arquivo quando preciso
+   desambiguar dispositivo) e distribui para as telas certas em um só clique.
+   Usa sempre a propriedade/ano já selecionados nos chips do topo.
+   ═══════════════════════════════════════════════════════════════ */
+var CENTRAL_TYPES=[
+  {k:'pgview',  l:'Páginas e Telas (visualizações/usuários/rejeição)'},
+  {k:'pages',   l:'Top Páginas (sessões)'},
+  {k:'trafch',  l:'Canais de Tráfego'},
+  {k:'camp',    l:'Origem da Campanha'},
+  {k:'seo_pages_device',  l:'Páginas por Dispositivo (mensal)'},
+  {k:'seo_pages_device_d',l:'Páginas por Dispositivo (diário)'},
+  {k:'seo_query_device',  l:'Consultas por Dispositivo (mensal)'},
+  {k:'seo_query_device_d',l:'Consultas por Dispositivo (diário)'},
+  {k:'seo_general', l:'Busca (Oportunidades/Decaimento/Impressão)'},
+  {k:'seg',     l:'Segmentos (Dispositivo/País/Aspecto)'},
+  {k:'unknown', l:'Não identificado'}
+];
+function centralTypeLabel(k){var t=CENTRAL_TYPES.find(function(x){return x.k===k;});return t?t.l:k;}
+function centralDeviceFromName(fname){
+  var n=(fname||'').toLowerCase();
+  if(/celular|mobile|smartphone/.test(n))return 'mobile';
+  if(/computador|desktop/.test(n))return 'desktop';
+  if(/tablet/.test(n))return 'tablet';
+  return null;
+}
+// acha a linha de cabeçalho real (primeira linha não-comentário com 2+ colunas preenchidas) e devolve o
+// rótulo da primeira coluna — usado para decidir, ANTES de tentar qualquer parser, se a dimensão do
+// arquivo é claramente "canal" (e nesse caso nunca deve cair em Top Páginas/Páginas e Telas, que aceitam
+// qualquer dimensão como fallback e historicamente confundiam "Usuários"/"Sessões" do relatório de canais
+// com as mesmas métricas de páginas)
+function centralHeaderDim(rows){
+  var clean=rows.filter(function(cols){if(!cols||!cols.length)return false;var f=String(cols[0]==null?'':cols[0]).trim();if(f.charAt(0)==='#')return false;return cols.some(function(c){return String(c==null?'':c).trim()!=='';});});
+  for(var r=0;r<clean.length;r++){if(clean[r].length>=2)return String(clean[r][0]||'');}
+  return '';
+}
+function centralDetectOne(rows,fname){
+  var dev=centralDeviceFromName(fname);
+  var headerDim=centralHeaderDim(rows);
+  var looksLikeChannel=anTchIsChannelDim(headerDim);
+  var looksLikeUserChannel=looksLikeChannel&&/usu[áa]rio/i.test(headerDim)&&headerDim.toLowerCase().indexOf('sess')<0; // "canal do primeiro usuário" — relatório sem tela própria no dashboard hoje
+  // 0) Se a primeira coluna do cabeçalho já indica claramente "canal de sessão" (Aquisição de Tráfego), vai
+  //    direto para Canais de Tráfego — nunca tenta Páginas e Telas/Top Páginas nesse caso (que aceitariam
+  //    por engano via fallback, já que "usuários"/"sessões" também aparecem nas métricas de canal)
+  if(looksLikeChannel&&!looksLikeUserChannel){
+    var tchEarly=anTchParse(rows);
+    if(tchEarly.mi>=0&&Object.keys(tchEarly.channels).length)return{type:'trafch',data:tchEarly,fname:fname};
+    return{type:'unknown',data:null,fname:fname};
+  }
+  if(looksLikeUserChannel)return{type:'unknown',data:null,fname:fname}; // "canal do primeiro usuário" não tem tela própria — evita classificar errado em outra
+  var looksLikePageDim=anPgIsPageDim(headerDim);
+  // 1) Páginas e Telas (Título da página) — checa ANTES de Top Páginas, pois ambos aceitam rótulos parecidos
+  //    na dimensão; a diferença real está em qual coluna de métrica cada um reconhece. Só tenta os dois
+  //    quando a dimensão do cabeçalho já parece página/URL — sem essa blindagem, o fallback permissivo de
+  //    ambos os parsers (aceitam qualquer dimensão se acharem 1 métrica reconhecida) rouba arquivos de
+  //    Campanha/Canal/outros que também têm colunas chamadas "Sessões"/"Usuários".
+  if(looksLikePageDim){
+    var pv=pvParse(rows);
+    if(pv.mode==='month')return{type:'pgview',data:pv,fname:fname};
+    // 2) Top Páginas (Caminho/URL, métrica Sessões)
+    var pg=anPgParse(rows);
+    if(pg.mode==='month'||pg.mode==='wide')return{type:'pages',data:pg,fname:fname};
+  }
+  // 3) Canais de Tráfego (dimensão explícita "canal") — checa antes de Campanha, que é mais permissiva
+  var tch=anTchParse(rows);
+  if(tch.mi>=0&&Object.keys(tch.channels).length)return{type:'trafch',data:tch,fname:fname};
+  // 4) Segmentos do GSC (Dispositivo/País/Aspecto) — dimensão vem explícita no próprio arquivo
+  var seg=anSegParse(rows);
+  if(seg.dim&&seg.dim!=='other'&&seg.rows.length)return{type:'seg',data:seg,fname:fname};
+  // 5) Search Console genérico (Consultas ou Páginas, com Cliques/Impressões/Posição) — pode ser geral OU
+  //    filtrado por dispositivo; só o nome do arquivo revela isso, daí a ambiguidade tratada abaixo
+  var seo=anSeoParse(rows);
+  if(seo.rows.length){
+    var isPageDim=seo.dimLbl&&/p[áa]gina|page|url/i.test(seo.dimLbl);
+    var baseType=isPageDim?'seo_pages_device':'seo_query_device';
+    if(dev)return{type:baseType,data:seo,fname:fname,device:dev,needsDay:false};
+    // sem indicação de dispositivo no nome: trata como Busca geral, mas marca como ambíguo para revisão
+    return{type:'seo_general',data:seo,fname:fname,ambiguous:true};
+  }
+  // 6) Origem da Campanha (mais permissiva — fica por último para não roubar arquivos de Canais)
+  var camp=anCampParse(rows);
+  if(camp.mi>=0&&Object.keys(camp.sources).length)return{type:'camp',data:camp,fname:fname};
+  return{type:'unknown',data:null,fname:fname};
+}
+var _centralFiles=[]; // [{fname, rows, detected:{type,data,...}, overrideType, overrideDevice, overrideDaily}]
+var _centralBusy=false;
+function centralOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica antes de usar o Upload Central.','ti-info-circle');return;}
+  _centralFiles=[];
+  var o=document.createElement('div');o.className='ov';o.id='central-ov';
+  o.innerHTML='<div class="mx" style="width:760px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column"><div id="central-body" style="overflow:auto;flex:1;min-height:0"></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o&&!_centralBusy){o.remove();}});
+  centralRenderBody();
+}
+function centralPickFiles(){
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';inp.multiple=true;
+  inp.onchange=function(e){
+    var files=Array.from(e.target.files||[]);if(!files.length)return;
+    var pending=files.length;
+    files.forEach(function(f){
+      var ext=(f.name.split('.').pop()||'').toLowerCase();
+      function onRows(rows){
+        var det=centralDetectOne(rows,f.name);
+        _centralFiles.push({fname:f.name,rows:rows,detected:det,overrideType:det.type,overrideDevice:det.device||null,skip:det.type==='unknown'});
+        pending--;if(pending===0)centralRenderBody();
+      }
+      if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];onRows(XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''}));}catch(err){pending--;toast('Falha ao ler '+f.name+': '+err.message,'ti-alert-circle');if(pending===0)centralRenderBody();}};rd.readAsArrayBuffer(f);}).catch(function(){pending--;if(pending===0)centralRenderBody();});}
+      else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);onRows(txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);}));};rd.readAsText(f,'UTF-8');}
+    });
+  };inp.click();
+}
+function centralRemoveFile(idx){_centralFiles.splice(idx,1);centralRenderBody();}
+function centralSetType(idx,type){_centralFiles[idx].overrideType=type;_centralFiles[idx].skip=(type==='unknown');centralRenderBody();}
+function centralSetDevice(idx,dev){_centralFiles[idx].overrideDevice=dev;centralRenderBody();}
+function centralSetDaily(idx,checked){_centralFiles[idx].dailyMode=checked;centralRenderBody();}
+function centralRenderBody(){
+  var h='<h4 style="display:flex;align-items:center;gap:7px"><i class="ti ti-cloud-upload" style="color:var(--primary)"></i> Upload Central — '+propLabel(anProp)+' · '+anYear+'</h4>';
+  h+='<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 12px">Selecione quantos arquivos quiser de uma vez. O sistema identifica o tipo de cada um pelo conteúdo (e pelo nome do arquivo, quando precisa saber o dispositivo). Revise a lista antes de confirmar — você pode corrigir qualquer linha.</p>';
+  h+='<button class="an-btn prim" onclick="centralPickFiles()" style="margin-bottom:14px"><i class="ti ti-upload"></i> Selecionar arquivos</button>';
+  if(!_centralFiles.length){
+    h+='<div class="an-empty" style="padding:30px 10px"><i class="ti ti-files"></i><p>Nenhum arquivo selecionado ainda</p><span>Clique em "Selecionar arquivos" e escolha 1 ou vários CSVs/XLSX de uma vez.</span></div>';
+  }else{
+    h+='<div class="hwrap"><table class="htbl" style="font-size:11.5px"><thead><tr><th style="text-align:left">Arquivo</th><th style="text-align:left">Tipo detectado</th><th>Dispositivo</th><th>Diário?</th><th></th></tr></thead><tbody>';
+    _centralFiles.forEach(function(f,idx){
+      var det=f.detected;
+      var needsDevice=(f.overrideType==='seo_pages_device'||f.overrideType==='seo_pages_device_d'||f.overrideType==='seo_query_device'||f.overrideType==='seo_query_device_d');
+      var ambiguous=det.ambiguous&&f.overrideType==='seo_general';
+      var typeSel='<select class="fsel" style="font-size:11px" onchange="centralSetType('+idx+',this.value)">'+CENTRAL_TYPES.map(function(t){return '<option value="'+t.k+'"'+(t.k===f.overrideType?' selected':'')+'>'+t.l+'</option>';}).join('')+'</select>';
+      var devSel=needsDevice?('<select class="fsel" style="font-size:11px" onchange="centralSetDevice('+idx+',this.value)"><option value="">—</option><option value="mobile"'+(f.overrideDevice==='mobile'?' selected':'')+'>Celular</option><option value="desktop"'+(f.overrideDevice==='desktop'?' selected':'')+'>Computador</option><option value="tablet"'+(f.overrideDevice==='tablet'?' selected':'')+'>Tablet</option></select>'):'—';
+      var dailyChk=(needsDevice||f.overrideType==='seo_general')?('<input type="checkbox" '+(f.dailyMode?'checked':'')+' onchange="centralSetDaily('+idx+',this.checked)">'):'—';
+      var rowStyle=ambiguous?' style="background:rgba(245,158,11,.08)"':(f.skip?' style="opacity:.5"':'');
+      h+='<tr'+rowStyle+'><td style="text-align:left;max-width:220px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(f.fname)+'">'+(ambiguous?'<i class="ti ti-alert-triangle" style="color:var(--warning);font-size:11px"></i> ':'')+anEsc(f.fname)+'</td>'
+        +'<td style="text-align:left">'+typeSel+'</td><td>'+devSel+'</td><td>'+dailyChk+'</td>'
+        +'<td><button class="an-ic-btn del" onclick="centralRemoveFile('+idx+')"><i class="ti ti-trash" style="font-size:11px"></i></button></td></tr>';
+    });
+    h+='</tbody></table></div>';
+    var validCount=_centralFiles.filter(function(f){return!f.skip;}).length;
+    h+='<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'central-ov\').remove()">Cancelar</button><button class="pr" onclick="centralApplyAll()" '+(validCount?'':'disabled')+'><i class="ti ti-check" style="font-size:11px"></i> Importar '+validCount+' arquivo(s)</button></div>';
+  }
+  document.getElementById('central-body').innerHTML=h;
+}
+// aplica cada arquivo usando o parser/armazenamento já existente do tipo escolhido — reaproveita 100%
+// a lógica de import de cada tela, só trocando a origem do clique manual pela central
+function centralApplyOne(f){
+  var det=f.detected,type=f.overrideType;
+  if(type==='pgview'){var p=pvParse(f.rows);if(p.mode!=='month')return false;var o=pvObj(anYear,anProp);o[p.mi]=p.pages;return true;}
+  if(type==='pages'){var p2=anPgParse(f.rows);if(p2.mode==='month'){Object.keys(p2.pages).forEach(function(n){var rec=p2.pages[n];if(rec.ses!=null)anPgSetCell(anYear,anProp,n,'ses',p2.mi,rec.ses);});return true;}if(p2.mode==='wide'){var wmk=anPgCurMetric();Object.keys(p2.pages).forEach(function(n){var arr=p2.pages[n];for(var i=0;i<12;i++)anPgSetCell(anYear,anProp,n,wmk,i,arr[i]);});return true;}return false;}
+  if(type==='trafch'){var p3=anTchParse(f.rows);if(p3.mi<0)return false;Object.keys(p3.channels).forEach(function(name){var rec=p3.channels[name];AN_SECTIONS.trafch.metrics.forEach(function(m){if(rec[m.k]!=null)anTchSetCell(anYear,anProp,name,m.k,p3.mi,rec[m.k]);});});return true;}
+  if(type==='camp'){var p4=anCampParse(f.rows);if(p4.mi<0)return false;
+    var oc=anCampObj(anYear,anProp);Object.keys(p4.sources).forEach(function(name){oc[name]=oc[name]||{};var rec=p4.sources[name];Object.keys(rec).forEach(function(mk){if(!Array.isArray(oc[name][mk]))oc[name][mk]=Array(12).fill(null);oc[name][mk][p4.mi]=rec[mk];});});
+    return true;}
+  if(type==='seg'){var p5=anSegParse(f.rows);if(!p5.dim||!p5.rows.length)return false;var mi5=segMi!=null?segMi:new Date().getMonth();var o5=anSegObj(anYear,anProp);o5[p5.dim]=o5[p5.dim]||{};o5[p5.dim][mi5]=p5.rows;return true;}
+  if(type==='seo_general'){var p6=anSeoParse(f.rows);if(!p6.rows.length)return false;var mi6=f.dailyMode?(new Date().getDate()-1):new Date().getMonth();var o6=anSeoObj(anYear,anProp);o6[mi6]=p6.rows;anSeoDimSet(anYear,anProp,mi6,p6.dimLbl);return true;}
+  if(type==='seo_pages_device'||type==='seo_query_device'){
+    var p7=anSeoParse(f.rows);if(!p7.rows.length||!f.overrideDevice)return false;
+    var mi7=new Date().getMonth();var isQ=type==='seo_query_device';
+    var o7=isQ?qDevObj(anYear,anProp):pgDevObj(anYear,anProp);o7[f.overrideDevice]=o7[f.overrideDevice]||{};o7[f.overrideDevice][mi7]=p7.rows;
+    return true;
+  }
+  if(type==='seo_pages_device_d'||type==='seo_query_device_d'){
+    var p8=anSeoParse(f.rows);if(!p8.rows.length||!f.overrideDevice)return false;
+    var now=new Date(),mi8=now.getMonth(),day8=now.getDate();var isQ8=type==='seo_query_device_d';
+    var o8=isQ8?qDevDObj(anYear,anProp):pgDevDObj(anYear,anProp);o8[f.overrideDevice]=o8[f.overrideDevice]||{};o8[f.overrideDevice][mi8]=o8[f.overrideDevice][mi8]||{};o8[f.overrideDevice][mi8][day8]=p8.rows;
+    return true;
+  }
+  return false;
+}
+function centralApplyAll(){
+  _centralBusy=true;
+  var toApply=_centralFiles.filter(function(f){return!f.skip;});
+  var okCount=0,failCount=0;
+  toApply.forEach(function(f){try{if(centralApplyOne(f))okCount++;else failCount++;}catch(err){console.error('central import error',f.fname,err);failCount++;}});
+  sv();
+  _centralBusy=false;
+  var ov=document.getElementById('central-ov');if(ov)ov.remove();
+  anR();
+  toast(okCount+' arquivo(s) importado(s)'+(failCount?(' · '+failCount+' falharam (confira o tipo escolhido)'):'')+'.','ti-file-import');
 }
 </script>
 </body>
