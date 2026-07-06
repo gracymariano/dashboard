@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Guardar Dinheiro — Hub de Performance</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/dist/tabler-icons.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 /* ═══ DESIGN SYSTEM — GUARDAR DINHEIRO PREMIUM ═══ */
@@ -20,6 +20,19 @@
   --sidebar-w:260px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+/* ═══ TIPOGRAFIA DE DESTAQUE — trazida do Relatório Semestral ═══
+   Uso: .rp-title (título de seção grande, clamp + peso 800)
+        .rp-title-sm (subtítulo de card, clamp + peso 700)
+        .rp-grad (aplica o degradê da marca ao texto — usar dentro de rp-title/rp-title-sm ou em números de destaque)
+        .rp-num-accent (número grande de KPI, já em degradê, tabular-nums) */
+.rp-title{font-family:'Inter Tight','Inter',sans-serif;font-size:clamp(1.7rem,2.6vw,2.35rem);font-weight:800;letter-spacing:-.03em;line-height:1.08;color:var(--text-primary)}
+.rp-title-sm{font-family:'Inter Tight','Inter',sans-serif;font-size:clamp(1.05rem,1.6vw,1.3rem);font-weight:700;letter-spacing:-.02em;line-height:1.15;color:var(--text-primary)}
+.rp-grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.rp-num-accent{font-family:'Inter Tight','Inter',sans-serif;font-size:clamp(1.6rem,2.4vw,2.15rem);font-weight:750;letter-spacing:-.03em;font-variant-numeric:tabular-nums;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+.rp-callout{border-radius:16px;padding:16px 20px;display:flex;gap:12px;align-items:flex-start;border:1px solid}
+.rp-callout.co-green{background:rgba(22,199,154,.07);border-color:rgba(22,199,154,.25)}
+.rp-callout.co-amber{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.28)}
+.rp-callout.co-red{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.25)}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;font-size:15px}
 
 /* ── SHELL ── */
@@ -67,7 +80,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 /* ── PAGE HEADER ── */
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
-.page-title{font-size:26px;font-weight:700;color:var(--text-primary);letter-spacing:-.5px}
+.page-title{font-family:'Inter Tight','Inter',sans-serif;font-size:clamp(1.55rem,2.4vw,2.05rem);font-weight:800;color:var(--text-primary);letter-spacing:-.03em;line-height:1.1}
 .page-sub{font-size:13px;color:var(--text-secondary);margin-top:3px}
 .page-actions{display:flex;align-items:center;gap:8px}
 
@@ -466,6 +479,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .an-exec-sub{font-size:11px;color:var(--text-secondary);margin-top:4px;font-weight:500}
 /* ── Cards de métrica (semáforo) ── */
 .an-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
+.an-metrics.an-metrics-3{grid-template-columns:repeat(3,1fr)}
 .an-mcard{background:var(--card);border:1px solid rgba(11,34,57,.06);border-radius:var(--radius-sm);padding:17px;transition:all .2s;box-shadow:0 3px 14px rgba(11,34,57,.04)}
 .an-mcard:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
 .an-mcard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px;min-height:32px}
@@ -737,6 +751,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <button class="nav-item" data-id="hub" data-sec="analytics" onclick="navTo('hub','analytics')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M7 14l3-4 3 2 4-6"/></svg>Analytics</button>
     <button class="nav-item" data-id="hub" data-sec="app" onclick="navTo('hub','app')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg>App</button>
     <button class="nav-item" data-id="hub" data-sec="seo" onclick="navTo('hub','seo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>SEO</button>
+    <button class="nav-item" data-id="hub" data-sec="raiox" onclick="navTo('hub','raiox')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>Raio-X</button>
     <button class="nav-item" data-id="cora" data-sec="" onclick="navTo('cora','')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M13.5 6.5l3 3"/></svg>Conteúdo</button>
     <button class="nav-item" data-id="hub" data-sec="social" onclick="navTo('hub','social')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="2.5"/><circle cx="17" cy="6" r="2.5"/><circle cx="17" cy="18" r="2.5"/><path d="M8.3 10.9l6.4-3.7M8.3 13.1l6.4 3.7"/></svg>Social</button>
 
@@ -1838,6 +1853,7 @@ function rHub(a){
   if(hubSec==='visao-geral')    sec=hVG();
   else if(hubSec==='aquisicao') sec=hAQ();
   else if(hubSec==='seo')       sec=hSEO();
+  else if(hubSec==='raiox')     sec=hRAIOX();
   else if(hubSec==='monetizacao')sec=hMON();
   else if(hubSec==='geral')     sec=hGeral();
   else if(hubSec==='tempo')     sec=hTime();
@@ -2358,7 +2374,7 @@ function anSegParse(rows){
     if(a>=0&&b>=0){hi=r;cc=a;ic=b;pc=p;for(var k=0;k<cols.length;k++){if(k===cc||k===ic||k===pc)continue;if(anSeoMatch(cols[k],['ctr','taxa']))continue;dc=k;break;}dimLbl=String(cols[dc]||'').replace(/"/g,'').trim();break;}}
   if(hi<0)return{dim:null,rows:[],dimLbl:''};
   var dl=dimLbl.toLowerCase();
-  var dim=/dispositiv|device/.test(dl)?'device':(/pa[íi]s|country/.test(dl)?'country':(/aspecto|appearance|apar[êe]nc|snippet/.test(dl)?'appearance':'other'));
+  var dim=/\bdispositiv\w*\b|\bdevice\b/.test(dl)?'device':(/\bpa[íi]s\b|\bcountry\b/.test(dl)?'country':(/\baspecto\w*\b|\bappearance\b|\bapar[êe]nc\w*\b|\bsnippet\b/.test(dl)?'appearance':'other'));
   var out=[];clean.slice(hi+1).forEach(function(c){var n=String(c[dc]||'').trim();if(!n||n.charAt(0)==='#')return;var cl=hNumParse(c[cc]),im=hNumParse(c[ic]),po=pc>=0?hNumParse(c[pc]):null;if(cl==null&&im==null)return;out.push({n:n,c:cl||0,i:im||0,p:po});});
   out.sort(function(a,b){return b.c-a.c;});
   return{dim:dim,rows:out,dimLbl:dimLbl};
@@ -2526,17 +2542,471 @@ function hSOCIAL(){
     +socTotalCard()+socSummary()+socChart(socNet)+socTable();
   return '<div class="an-root">'+h+'</div>';
 }
+/* ═══════════════════════════════════════════════════════════════
+   SEO · NOVOS GRÁFICOS COMBINADOS (compridos/finos, largura total)
+   1) Impressões × Cliques do GSC — mensal (histórico) / diário (mês vigente,
+      somando os dispositivos já importados em "Páginas por Dispositivo · diário")
+   2) Posição média por dispositivo — Celular/Computador/Tablet, ponderada por
+      impressões, a partir dos mesmos dados de Páginas por Dispositivo
+   ═══════════════════════════════════════════════════════════════ */
+var rpDevPosMode='mensal'; // 'mensal' | 'diario'
+function rpDevPosSetMode(m){rpDevPosMode=m;anR();}
+function rpCurMonthIdx(){var now=new Date();return String(now.getFullYear())===String(anYear)?now.getMonth():0;}
+function rpWeightedPos(rows){var num=0,den=0;rows.forEach(function(r){if(r.p!=null&&r.i){num+=r.p*r.i;den+=r.i;}});return den>0?(num/den):null;}
+
+/* ── util: card com toggle Mensal/Diário (reaproveitado pelos dois gráficos abaixo) ── */
+function rpToggleCard(icon,title,mode,setterName,innerHtml){
+  var toggle='<div class="an-seg" style="margin-left:auto"><button class="an-seg-btn'+(mode==='mensal'?' active':'')+'" onclick="'+setterName+'(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(mode==='diario'?' active':'')+'" onclick="'+setterName+'(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></div>';
+  return '<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti '+icon+'"></i> '+title+'</div>'+toggle+'</div>'+innerHtml+'</div>';
+}
+
+/* ── 2) Posição média por dispositivo (ponderada por impressões) ── */
+var RP_DEV_COLORS={mobile:'#16C79A',desktop:'#3B82F6',tablet:'#F59E0B'};
+function rpDevPosChart(){
+  if(anProp==='all')return '<div class="an-empty" style="padding:26px 0"><i class="ti ti-info-circle"></i><p>Selecione uma propriedade específica</p></div>';
+  var labels=[],series={};PGDEV_LIST.forEach(function(d){series[d.k]=[];});
+  if(rpDevPosMode==='mensal'){
+    for(var mi=0;mi<12;mi++){labels.push(HMESES[mi]);PGDEV_LIST.forEach(function(d){series[d.k].push(rpWeightedPos(pgDevRows(anYear,anProp,d.k,mi)));});}
+  }else{
+    var curMi=rpCurMonthIdx(),tD=dIM(Number(anYear),curMi);
+    for(var d2=0;d2<tD;d2++){labels.push(String(d2+1));PGDEV_LIST.forEach(function(d){series[d.k].push(rpWeightedPos(pgDevDRows(anYear,anProp,d.k,curMi,d2+1)));});}
+  }
+  var hasAny=PGDEV_LIST.some(function(d){return series[d.k].some(function(v){return v!=null;});});
+  if(!hasAny)return '<div class="an-empty" style="padding:26px 0"><i class="ti ti-devices"></i><p>Sem dados '+(rpDevPosMode==='mensal'?'em '+anYear:'para '+AN_MES_LONG[rpCurMonthIdx()]+'/'+anYear)+'</p><span>Importe em "Páginas/Disp." ('+(rpDevPosMode==='mensal'?'Visão mensal':'Acompanhamento diário')+')</span></div>';
+  var n=labels.length,W=1160,H=140,padL=8,padR=8,padT=16,padB=22,plotH=H-padT-padB,baseY=padT;// posição: menor = melhor → menor y = topo (natural)
+  var step=(W-padL-padR)/(n-1||1);function xAt(i){return padL+i*step;}
+  var allVals=[];PGDEV_LIST.forEach(function(d){series[d.k].forEach(function(v){if(v!=null)allVals.push(v);});});
+  var mxV=Math.max.apply(null,[10].concat(allVals));
+  function y(v){return padT+(v/mxV)*plotH;}
+  var lines='',dots='',legendItems='';
+  PGDEV_LIST.forEach(function(d){
+    var pts=[];series[d.k].forEach(function(v,i){if(v!=null)pts.push([xAt(i),y(v),i,v]);});
+    if(pts.length>1)lines+='<polyline points="'+pts.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'" fill="none" stroke="'+RP_DEV_COLORS[d.k]+'" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>';
+    dots+=pts.map(function(p){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="2.4" fill="'+RP_DEV_COLORS[d.k]+'"><title>'+d.l+' · '+labels[p[2]]+': posição '+p[3].toFixed(1).replace('.',',')+'</title></circle>';}).join('');
+    var last=null;for(var k=pts.length-1;k>=0;k--){last=pts[k][3];break;}
+    legendItems+='<span style="font-size:10.5px;display:inline-flex;align-items:center;gap:5px;color:var(--text-secondary)"><i style="width:9px;height:9px;border-radius:50%;background:'+RP_DEV_COLORS[d.k]+';display:inline-block"></i>'+d.l+(last!=null?' · <b style="color:var(--text-primary)">'+last.toFixed(1).replace('.',',')+'</b>':'')+'</span>';
+  });
+  var xl='',xStep=n>20?Math.ceil(n/12):1;for(var i=0;i<n;i++){if(i%xStep===0||i===n-1)xl+='<text class="an-axis" x="'+xAt(i).toFixed(1)+'" y="'+(baseY+plotH+15)+'" text-anchor="middle" style="font-size:8px">'+labels[i]+'</text>';}
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">'+lines+dots+xl+'</svg>';
+  return svg+'<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:6px">'+legendItems+'</div><div class="an-card-sub" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:11px"></i> Quanto mais alto no gráfico, melhor a posição (mais perto do topo da busca). Ponderado pelas impressões de cada página.</div>';
+}
+function rpDevPosCard(){return rpToggleCard('ti-devices','Posição média por dispositivo',rpDevPosMode,'rpDevPosSetMode',rpDevPosChart());}
+
+/* ═══════════════════════════════════════════════════════════════
+   PÁGINAS INDEXADAS × NÃO INDEXADAS — registro diário simples + bloco
+   em destaque na capa de SEO (Search Console → Indexação → Páginas)
+   armazenamento: s.idxpg[year][prop][mi][idx|nidx] = Array(31)
+   ═══════════════════════════════════════════════════════════════ */
+function anIdxObj(year,prop){var s=anStore();s.idxpg=s.idxpg||{};s.idxpg[year]=s.idxpg[year]||{};s.idxpg[year][prop]=s.idxpg[year][prop]||{};return s.idxpg[year][prop];}
+function anIdxArr(year,prop,mi,mk){var o=anIdxObj(year,prop);o[mi]=o[mi]||{};if(!Array.isArray(o[mi][mk]))o[mi][mk]=Array(31).fill(null);return o[mi][mk];}
+function anIdxSet(year,prop,mi,day,mk,val){var a=anIdxArr(year,prop,mi,mk);a[day]=(val===''||val==null||isNaN(Number(val)))?null:Number(val);}
+function anIdxLastVal(year,prop,mk){
+  var now=new Date(),curMi=(String(now.getFullYear())===String(year))?now.getMonth():11;
+  for(var mi=curMi;mi>=0;mi--){var a=anIdxArr(year,prop,mi,mk);for(var d=30;d>=0;d--){if(a[d]!=null)return{v:a[d],mi:mi,d:d};}}
+  return null;
+}
+function anIdxQuickOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}
+  var now=new Date(),last=anIdxLastVal(anYear,anProp,'idx'),lastN=anIdxLastVal(anYear,anProp,'nidx');
+  var o=document.createElement('div');o.className='ov';o.id='an-idxq-ov';
+  o.innerHTML='<div class="mx" style="width:380px;max-width:94vw"><h4><i class="ti ti-list-check" style="color:var(--primary)"></i> Indexação — hoje ('+now.getDate()+'/'+AN_MES_LONG[now.getMonth()]+')</h4>'
+    +'<div style="font-size:12px;font-weight:600;color:var(--navy);margin:10px 0 4px">Páginas indexadas</div><input class="fsel" id="an-idxq-i" type="number" style="width:100%" value="'+(last?last.v:'')+'">'
+    +'<div style="font-size:12px;font-weight:600;color:var(--navy);margin:10px 0 4px">Páginas NÃO indexadas</div><input class="fsel" id="an-idxq-n" type="number" style="width:100%" value="'+(lastN?lastN.v:'')+'">'
+    +'<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'an-idxq-ov\').remove()">Cancelar</button><button class="pr" onclick="anIdxQuickSave()"><i class="ti ti-check" style="font-size:11px"></i> Salvar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o)o.remove();});
+}
+function anIdxQuickSave(){
+  var vi=document.getElementById('an-idxq-i').value,vn=document.getElementById('an-idxq-n').value;
+  var now=new Date(),mi=now.getMonth(),day=now.getDate()-1;
+  anIdxSet(anYear,anProp,mi,day,'idx',vi);anIdxSet(anYear,anProp,mi,day,'nidx',vn);sv();
+  var ov=document.getElementById('an-idxq-ov');if(ov)ov.remove();
+  anR();toast('Indexação de hoje registrada.','ti-check');
+}
+function anIdxBlock(){
+  if(anProp==='all')return '';
+  var addBtn='<button class="an-btn prim" onclick="anIdxQuickOpen()"><i class="ti ti-plus"></i> Registrar hoje</button>';
+  var wrapOpen='<div class="an-card" style="margin-bottom:14px;background:linear-gradient(135deg,rgba(22,199,154,.07),rgba(0,139,139,.03));border:1px solid rgba(22,199,154,.2)">'
+    +'<div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti ti-list-check"></i> Páginas indexadas × não indexadas</div>'+addBtn+'</div>';
+  var idx=anIdxLastVal(anYear,anProp,'idx'),nidx=anIdxLastVal(anYear,anProp,'nidx');
+  if(!idx&&!nidx){
+    return wrapOpen+'<div class="an-empty" style="padding:18px 0"><i class="ti ti-list-check"></i><p>Nenhum dado ainda</p><span>Registre diariamente quantas páginas o Google indexou vs. não indexou (Search Console → Indexação → Páginas)</span></div></div>';
+  }
+  var totV=(idx?idx.v:0)+(nidx?nidx.v:0),pct=totV>0?((idx?idx.v:0)/totV*100):null;
+  var curMi=rpCurMonthIdx(),tD=dIM(Number(anYear),curMi),labels=[],vI=[],vN=[];
+  var arrI=anIdxArr(anYear,anProp,curMi,'idx'),arrN=anIdxArr(anYear,anProp,curMi,'nidx');
+  for(var d=0;d<tD;d++){labels.push(String(d+1));vI.push(arrI[d]);vN.push(arrN[d]);}
+  var W=1160,H=90,padL=8,padR=8,padT=10,padB=18,plotH=H-padT-padB,baseY=padT+plotH,n=tD,step=(W-padL-padR)/(n-1||1);
+  function xAt(i){return padL+i*step;}
+  var mx=Math.max.apply(null,[1].concat(vI.filter(function(v){return v!=null;})).concat(vN.filter(function(v){return v!=null;})));
+  function y(v){return baseY-(v/mx)*plotH;}
+  var ptsI=[],ptsN=[];vI.forEach(function(v,i){if(v!=null)ptsI.push([xAt(i),y(v)]);});vN.forEach(function(v,i){if(v!=null)ptsN.push([xAt(i),y(v)]);});
+  var lI=ptsI.length>1?('<polyline points="'+ptsI.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'" fill="none" stroke="var(--success)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>'):'';
+  var lN=ptsN.length>1?('<polyline points="'+ptsN.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'" fill="none" stroke="var(--danger)" stroke-width="2" stroke-dasharray="4 3" stroke-linejoin="round" stroke-linecap="round"/>'):'';
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block;margin-top:10px">'+lI+lN+'</svg>';
+  return wrapOpen+'<div style="display:flex;gap:28px;flex-wrap:wrap;align-items:baseline;margin-top:4px">'
+    +'<div><div class="rp-num-accent">'+(pct!=null?pct.toFixed(1).replace('.',',')+'%':'—')+'</div><div style="font-size:11px;color:var(--text-secondary)">indexadas do total conhecido</div></div>'
+    +'<div><div style="font-size:20px;font-weight:700;color:var(--success)">'+(idx?anFmt(idx.v,'int'):'—')+'</div><div style="font-size:11px;color:var(--text-secondary)">indexadas ('+(idx?(idx.d+1)+'/'+HMESES[idx.mi]:'—')+')</div></div>'
+    +'<div><div style="font-size:20px;font-weight:700;color:var(--danger)">'+(nidx?anFmt(nidx.v,'int'):'—')+'</div><div style="font-size:11px;color:var(--text-secondary)">não indexadas ('+(nidx?(nidx.d+1)+'/'+HMESES[nidx.mi]:'—')+')</div></div>'
+    +'</div>'+svg+'</div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TOP CONSULTAS POR POSIÇÃO — ranking simples, mensal (dados de Consultas
+   já importados em Busca) ou diário (soma os dispositivos de Consultas/Disp.
+   naquele dia específico)
+   ═══════════════════════════════════════════════════════════════ */
+var rpTopQMode='mensal', rpTopQDay=null;
+function rpTopQSetMode(m){rpTopQMode=m;anR();}
+function rpTopQSetDay(v){rpTopQDay=parseInt(v,10);anR();}
+function rpTopQRows(mi){
+  if(rpTopQMode==='mensal'){
+    if(anSeoDimGet(anYear,anProp,mi)!=='Consulta')return [];
+    return anSeoRows(anYear,anProp,mi).filter(function(r){return r.p!=null;}).slice().sort(function(a,b){return a.p-b.p;});
+  }
+  var tD=dIM(Number(anYear),mi),day=rpTopQDay||Math.min(new Date().getDate(),tD);
+  var map={};
+  PGDEV_LIST.forEach(function(d){qDevDRows(anYear,anProp,d.k,mi,day).forEach(function(r){
+    if(!map[r.q])map[r.q]={q:r.q,c:0,i:0,pw:0};
+    map[r.q].c+=r.c||0;map[r.q].i+=r.i||0;if(r.p!=null&&r.i)map[r.q].pw+=r.p*r.i;
+  });});
+  return Object.keys(map).map(function(k){var m=map[k];return{q:m.q,c:m.c,i:m.i,p:m.i>0?(m.pw/m.i):null};}).filter(function(r){return r.p!=null;}).sort(function(a,b){return a.p-b.p;});
+}
+function rpTopQView(){
+  if(anProp==='all')return '<div class="an-card"><div class="an-empty"><i class="ti ti-list-numbers"></i><p>Selecione uma propriedade</p><span>Top Consultas é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';
+  var mi=anSeoCurMi(),years=anYears();
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var moSel='<select class="fsel" onchange="anSeoSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
+  var toggle='<span class="an-seg" style="margin-left:6px"><button class="an-seg-btn'+(rpTopQMode==='mensal'?' active':'')+'" onclick="rpTopQSetMode(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(rpTopQMode==='diario'?' active':'')+'" onclick="rpTopQSetMode(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></span>';
+  var dayCtrl='';
+  if(rpTopQMode==='diario'){
+    var tD=dIM(Number(anYear),mi),curDay=rpTopQDay||Math.min(new Date().getDate(),tD);
+    var dsel='<select class="fsel" onchange="rpTopQSetDay(this.value)">';for(var d=1;d<=tD;d++)dsel+='<option value="'+d+'"'+(d===curDay?' selected':'')+'>'+d+'</option>';dsel+='</select>';
+    dayCtrl='<span class="an-camp-cl">Dia</span>'+dsel;
+  }
+  var h='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+dayCtrl+toggle+'</div></div>';
+  var rows=rpTopQRows(mi);
+  if(!rows.length){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-list-numbers"></i><p>Sem dados</p>'+(rpTopQMode==='mensal'?'<span>Importe o relatório de Consultas do mês em SEO → Busca (Manual/CSV)</span>':'<span>Precisa ter Consultas por Dispositivo importadas nesse dia (aba Consultas/Disp. → Acompanhamento diário)</span>')+'</div></div>';
+    return h;
+  }
+  var top=rows.slice(0,50);
+  var body=top.map(function(r,idx){return '<tr><td style="text-align:center;color:var(--text-secondary)">'+(idx+1)+'</td><td class="stick" style="text-align:left;max-width:320px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(r.q)+'">'+anEsc(r.q)+'</td><td>'+anFmt(r.c,'int')+'</td><td>'+anFmt(r.i,'int')+'</td><td>'+(r.i>0?(r.c/r.i*100).toFixed(2).replace('.',',')+'%':'—')+'</td><td class="on" style="font-weight:700">'+r.p.toFixed(1).replace('.',',')+'</td></tr>';}).join('');
+  return h+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-list-numbers"></i> Top Consultas por Posição</div><div class="an-card-sub">'+propLabel(anProp)+' · '+top.length+' de '+rows.length+' consulta(s) · ordenadas da melhor posição</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th>#</th><th class="stick" style="text-align:left">Consulta</th><th>Cliques</th><th>Impressões</th><th>CTR</th><th class="on">Posição</th></tr></thead><tbody>'+body+'</tbody></table></div></div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DESEMPENHO POR MARCA PESQUISADA — classifica consultas por marca
+   (lista editável) a partir dos mesmos dados de Busca/Consultas por
+   Dispositivo. Mensal (mês selecionado) ou diário (mês vigente, dia a dia).
+   ═══════════════════════════════════════════════════════════════ */
+var rpBrandMode='mensal', rpBrandDay=null;
+function rpBrandSetMode(m){rpBrandMode=m;anR();}
+function rpBrandSetDay(v){rpBrandDay=parseInt(v,10);anR();}
+function anBrandList(){
+  var s=anStore();
+  if(!Array.isArray(s.brands)||!s.brands.length){
+    s.brands=[
+      {id:'nubank',l:'Nubank',kw:'nubank'},
+      {id:'picpay',l:'PicPay',kw:'picpay'},
+      {id:'itau',l:'Itaú',kw:'itau,itaú'},
+      {id:'mp',l:'Mercado Pago',kw:'mercado pago,mercadopago'},
+      {id:'c6',l:'C6 Bank',kw:'c6 bank,c6bank'},
+      {id:'inter',l:'Banco Inter',kw:'banco inter,inter bank'},
+      {id:'caixa',l:'Caixa',kw:'caixa economica,caixa econômica,caixa tem'},
+      {id:'gd',l:'Guardar Dinheiro',kw:'guardar dinheiro,guardardinheiro'}
+    ];
+    sv();
+  }
+  return s.brands;
+}
+function anBrandMatch(query,brand){
+  var q=' '+(query||'').toLowerCase().replace(/[.,;:!?()"“”]/g,' ')+' ';
+  return (brand.kw||'').split(',').some(function(k){k=k.trim().toLowerCase();return k&&q.indexOf(' '+k+' ')>=0;});
+}
+function rpBrandRows(mi){
+  var brands=anBrandList(),srcRows;
+  if(rpBrandMode==='mensal'){
+    srcRows=(anSeoDimGet(anYear,anProp,mi)==='Consulta')?anSeoRows(anYear,anProp,mi):[];
+  }else{
+    var tD=dIM(Number(anYear),mi),day=rpBrandDay||Math.min(new Date().getDate(),tD),map={};
+    PGDEV_LIST.forEach(function(d){qDevDRows(anYear,anProp,d.k,mi,day).forEach(function(r){
+      if(!map[r.q])map[r.q]={q:r.q,c:0,i:0,pw:0};
+      map[r.q].c+=r.c||0;map[r.q].i+=r.i||0;if(r.p!=null&&r.i)map[r.q].pw+=r.p*r.i;
+    });});
+    srcRows=Object.keys(map).map(function(k){var m=map[k];return{q:m.q,c:m.c,i:m.i,p:m.i>0?(m.pw/m.i):null};});
+  }
+  var out=brands.map(function(b){return{id:b.id,l:b.l,c:0,i:0,pw:0,rows:[]};}),outMap={};out.forEach(function(o){outMap[o.id]=o;});
+  srcRows.forEach(function(r){
+    for(var bi=0;bi<brands.length;bi++){
+      if(anBrandMatch(r.q,brands[bi])){var o=outMap[brands[bi].id];o.c+=r.c||0;o.i+=r.i||0;if(r.p!=null&&r.i)o.pw+=r.p*r.i;o.rows.push(r);break;}
+    }
+  });
+  out.forEach(function(o){o.p=o.i>0?(o.pw/o.i):null;o.ctr=o.i>0?(o.c/o.i*100):null;o.rows.sort(function(a,b){return (b.c||0)-(a.c||0);});});
+  return out;
+}
+function rpBrandEditOpen(){
+  var brands=anBrandList();
+  var rows=brands.map(function(b,i){return '<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px"><input class="fsel" style="width:120px" value="'+anEsc(b.l)+'" data-f="l" data-i="'+i+'"><input class="fsel" style="flex:1" value="'+anEsc(b.kw)+'" placeholder="palavras-chave separadas por vírgula" data-f="kw" data-i="'+i+'"><button class="an-ic-btn del" onclick="rpBrandDel('+i+')"><i class="ti ti-trash"></i></button></div>';}).join('');
+  var o=document.createElement('div');o.className='ov';o.id='rp-brandedit-ov';
+  o.innerHTML='<div class="mx" style="width:560px;max-width:96vw"><h4><i class="ti ti-tag" style="color:var(--primary)"></i> Marcas monitoradas</h4>'
+    +'<p style="font-size:11px;color:var(--text-secondary);margin:6px 0 10px">Uma consulta entra na primeira marca cujas palavras-chave aparecerem nela — separe várias por vírgula.</p>'
+    +'<div id="rp-brand-rows">'+rows+'</div>'
+    +'<button class="an-btn" onclick="rpBrandAddRow()"><i class="ti ti-plus"></i> Adicionar marca</button>'
+    +'<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'rp-brandedit-ov\').remove()">Cancelar</button><button class="pr" onclick="rpBrandSave()"><i class="ti ti-check" style="font-size:11px"></i> Salvar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o)o.remove();});
+}
+function rpBrandAddRow(){var s=anStore();s.brands=s.brands||[];s.brands.push({id:'b'+Date.now(),l:'',kw:''});var ov=document.getElementById('rp-brandedit-ov');if(ov)ov.remove();rpBrandEditOpen();}
+function rpBrandDel(i){var s=anStore();s.brands.splice(i,1);var ov=document.getElementById('rp-brandedit-ov');if(ov)ov.remove();rpBrandEditOpen();}
+function rpBrandSave(){
+  var s=anStore();document.querySelectorAll('#rp-brand-rows input').forEach(function(inp){var i=parseInt(inp.getAttribute('data-i'),10),f=inp.getAttribute('data-f');if(s.brands[i])s.brands[i][f]=inp.value;});
+  sv();var ov=document.getElementById('rp-brandedit-ov');if(ov)ov.remove();anR();toast('Marcas atualizadas.','ti-check');
+}
+function rpBrandView(){
+  if(anProp==='all')return '<div class="an-card"><div class="an-empty"><i class="ti ti-tag"></i><p>Selecione uma propriedade</p><span>Marca é exibida por propriedade. Escolha uma nos chips acima.</span></div></div>';
+  var mi=anSeoCurMi(),years=anYears();
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var moSel='<select class="fsel" onchange="anSeoSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
+  var toggle='<span class="an-seg" style="margin-left:6px"><button class="an-seg-btn'+(rpBrandMode==='mensal'?' active':'')+'" onclick="rpBrandSetMode(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(rpBrandMode==='diario'?' active':'')+'" onclick="rpBrandSetMode(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></span>';
+  var dayCtrl='';
+  if(rpBrandMode==='diario'){var tD=dIM(Number(anYear),mi),curDay=rpBrandDay||Math.min(new Date().getDate(),tD),dsel='<select class="fsel" onchange="rpBrandSetDay(this.value)">';for(var d=1;d<=tD;d++)dsel+='<option value="'+d+'"'+(d===curDay?' selected':'')+'>'+d+'</option>';dsel+='</select>';dayCtrl='<span class="an-camp-cl">Dia</span>'+dsel;}
+  var h='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+dayCtrl+toggle+'</div><div class="an-camp-ctrl-r"><button class="an-btn" onclick="rpBrandEditOpen()"><i class="ti ti-tag"></i> Editar marcas</button></div></div>';
+  var brandRows=rpBrandRows(mi),withData=brandRows.filter(function(b){return b.i>0;});
+  if(!withData.length){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-tag"></i><p>Sem dados para as marcas monitoradas</p>'+(rpBrandMode==='mensal'?'<span>Importe o relatório de Consultas do mês em SEO → Busca</span>':'<span>Precisa ter Consultas por Dispositivo importadas nesse dia</span>')+'</div></div>';
+    return h;
+  }
+  var body=brandRows.map(function(b){
+    var top3=b.rows.slice(0,3).map(function(r){return anEsc(r.q);}).join(', ')||'—';
+    return '<tr><td class="stick" style="text-align:left;font-weight:600">'+anEsc(b.l)+'</td><td>'+(b.i>0?anFmt(b.c,'int'):'—')+'</td><td>'+(b.i>0?anFmt(b.i,'int'):'—')+'</td><td>'+(b.ctr!=null?b.ctr.toFixed(2).replace('.',',')+'%':'—')+'</td><td class="on" style="font-weight:700">'+(b.p!=null?b.p.toFixed(1).replace('.',','):'—')+'</td><td style="text-align:left;font-size:11px;color:var(--text-secondary);max-width:260px">'+top3+'</td></tr>';
+  }).join('');
+  return h+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-tag"></i> Desempenho por Marca Pesquisada</div><div class="an-card-sub">'+propLabel(anProp)+'</div></div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th class="stick" style="text-align:left">Marca</th><th>Cliques</th><th>Impressões</th><th>CTR</th><th class="on">Posição</th><th style="text-align:left">Principais consultas</th></tr></thead><tbody>'+body+'</tbody></table></div></div>';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RAIO-X — perfil de quem pesquisa/visita: demografia (gênero/idade),
+   marcas mais buscadas (reaproveita a classificação de Marca) e um
+   bloco de insights editável a qualquer momento.
+   ═══════════════════════════════════════════════════════════════ */
+function anDemoObj(year,prop){var s=anStore();s.demo=s.demo||{};s.demo[year]=s.demo[year]||{};s.demo[year][prop]=s.demo[year][prop]||{};return s.demo[year][prop];}
+function anDemoGet(year,prop,mi){return anDemoObj(year,prop)[mi]||null;}
+function anDemoLastMi(year,prop){var o=anDemoObj(year,prop);var mis=Object.keys(o).map(Number).sort(function(a,b){return b-a;});return mis.length?mis[0]:null;}
+function _rpNum(id){var v=document.getElementById(id).value;return v===''?null:Number(v);}
+function anDemoEditOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}
+  var mi=rpCurMonthIdx(),cur=anDemoGet(anYear,anProp,mi)||{},g=cur.gender||{},a=cur.age||{};
+  function inp(id,val){return '<input class="fsel" id="'+id+'" type="number" min="0" max="100" style="width:100%" value="'+(val!=null?val:'')+'">';}
+  var o=document.createElement('div');o.className='ov';o.id='rp-demo-ov';
+  o.innerHTML='<div class="mx" style="width:460px;max-width:96vw"><h4><i class="ti ti-users" style="color:var(--primary)"></i> Dados demográficos — '+AN_MES_LONG[mi]+'/'+anYear+'</h4>'
+    +'<p style="font-size:11px;color:var(--text-secondary);margin:6px 0 10px">Do Google Analytics → Público-alvo → Dados demográficos (% de usuários). Não precisa somar exatamente 100.</p>'
+    +'<div style="font-size:12px;font-weight:700;color:var(--navy);margin:8px 0 6px">Gênero (%)</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">'
+      +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">Feminino</div>'+inp('rp-demo-gf',g.f)+'</div>'
+      +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">Masculino</div>'+inp('rp-demo-gm',g.m)+'</div>'
+      +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">Outro/ND</div>'+inp('rp-demo-go',g.o)+'</div>'
+    +'</div>'
+    +'<div style="font-size:12px;font-weight:700;color:var(--navy);margin:14px 0 6px">Faixa etária (%)</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">'
+      +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">18–24</div>'+inp('rp-demo-a1',a.a1)+'</div>'
+      +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">25–34</div>'+inp('rp-demo-a2',a.a2)+'</div>'
+      +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">35–44</div>'+inp('rp-demo-a3',a.a3)+'</div>'
+      +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">45–54</div>'+inp('rp-demo-a4',a.a4)+'</div>'
+      +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">55–64</div>'+inp('rp-demo-a5',a.a5)+'</div>'
+      +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">65+</div>'+inp('rp-demo-a6',a.a6)+'</div>'
+    +'</div>'
+    +'<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'rp-demo-ov\').remove()">Cancelar</button><button class="pr" onclick="anDemoSave('+mi+')"><i class="ti ti-check" style="font-size:11px"></i> Salvar</button></div></div>';
+  document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o)o.remove();});
+}
+function anDemoSave(mi){
+  var obj={gender:{f:_rpNum('rp-demo-gf'),m:_rpNum('rp-demo-gm'),o:_rpNum('rp-demo-go')},age:{a1:_rpNum('rp-demo-a1'),a2:_rpNum('rp-demo-a2'),a3:_rpNum('rp-demo-a3'),a4:_rpNum('rp-demo-a4'),a5:_rpNum('rp-demo-a5'),a6:_rpNum('rp-demo-a6')}};
+  var o=anDemoObj(anYear,anProp);o[mi]=obj;sv();
+  var ov=document.getElementById('rp-demo-ov');if(ov)ov.remove();anR();toast('Dados demográficos salvos.','ti-check');
+}
+function rpBarList(items){
+  var mx=Math.max.apply(null,[1].concat(items.map(function(i){return i.val||0;})));
+  return items.map(function(i){var pct=mx>0?(i.val||0)/mx*100:0;
+    return '<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px"><span style="color:var(--text-secondary)">'+i.label+'</span><span style="font-weight:700;color:var(--text-primary)">'+(i.val!=null?i.val.toFixed(1).replace('.',',')+'%':'—')+'</span></div><div style="height:7px;border-radius:4px;background:rgba(0,0,0,.06)"><div style="height:100%;border-radius:4px;width:'+pct+'%;background:'+i.color+'"></div></div></div>';
+  }).join('');
+}
+function rpDemoBlock(){
+  if(anProp==='all')return '<div class="an-card" style="margin-bottom:14px"><div class="an-empty"><i class="ti ti-users"></i><p>Selecione uma propriedade</p></div></div>';
+  var mi=rpCurMonthIdx(),data=anDemoGet(anYear,anProp,mi);
+  if(!data){var lastMi=anDemoLastMi(anYear,anProp);if(lastMi!=null){data=anDemoGet(anYear,anProp,lastMi);mi=lastMi;}}
+  var editBtn='<button class="an-btn prim" onclick="anDemoEditOpen()"><i class="ti ti-pencil"></i> '+(data?'Atualizar':'Registrar')+'</button>';
+  var head='<div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti ti-users"></i> Perfil demográfico'+(data?(' · '+AN_MES_LONG[mi]+'/'+anYear):'')+'</div>'+editBtn+'</div>';
+  if(!data)return '<div class="an-card" style="margin-bottom:14px">'+head+'<div class="an-empty" style="padding:18px 0"><i class="ti ti-users"></i><p>Nenhum dado ainda</p><span>Google Analytics → Público-alvo → Dados demográficos (Gênero / Idade)</span></div></div>';
+  var g=data.gender||{},a=data.age||{};
+  var genderHtml=rpBarList([{label:'Feminino',val:g.f,color:'#EC4899'},{label:'Masculino',val:g.m,color:'#3B82F6'},{label:'Outro/ND',val:g.o,color:'#9CA3AF'}]);
+  var ageHtml=rpBarList([{label:'18–24',val:a.a1,color:'#16C79A'},{label:'25–34',val:a.a2,color:'#16C79A'},{label:'35–44',val:a.a3,color:'#16C79A'},{label:'45–54',val:a.a4,color:'#16C79A'},{label:'55–64',val:a.a5,color:'#16C79A'},{label:'65+',val:a.a6,color:'#16C79A'}]);
+  return '<div class="an-card" style="margin-bottom:14px">'+head
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:6px">'
+      +'<div><div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px">Gênero</div>'+genderHtml+'</div>'
+      +'<div><div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px">Faixa etária</div>'+ageHtml+'</div>'
+    +'</div></div>';
+}
+function rpDemoBrandPreview(){
+  if(anProp==='all')return '';
+  var mi=anSeoCurMi();
+  var rows=rpBrandRows(mi).filter(function(b){return b.i>0;}).sort(function(a,b){return (b.c||0)-(a.c||0);}).slice(0,5);
+  var goBtn='<button class="an-btn" onclick="seoSetTab(\'marca\');navTo(\'hub\',\'seo\')"><i class="ti ti-arrow-right"></i> Ver tudo em SEO → Marca</button>';
+  var headTtl='<div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti ti-tag"></i> Marcas mais buscadas'+(rows.length?(' · '+AN_MES_LONG[mi]+'/'+anYear):'')+'</div>';
+  if(!rows.length)return '<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'+headTtl+goBtn+'</div><div class="an-empty" style="padding:14px 0"><i class="ti ti-tag"></i><p>Sem dados de marca ainda</p><span>Configure em SEO → Marca</span></div></div>';
+  var body=rows.map(function(b){return '<tr><td style="text-align:left;font-weight:600">'+anEsc(b.l)+'</td><td>'+anFmt(b.c,'int')+'</td><td>'+anFmt(b.i,'int')+'</td><td class="on" style="font-weight:700">'+(b.p!=null?b.p.toFixed(1).replace('.',','):'—')+'</td></tr>';}).join('');
+  return '<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'+headTtl+goBtn+'</div>'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th style="text-align:left">Marca</th><th>Cliques</th><th>Impressões</th><th class="on">Posição</th></tr></thead><tbody>'+body+'</tbody></table></div></div>';
+}
+function anInsightsGet(prop){var s=anStore();s.raioxNotes=s.raioxNotes||{};return s.raioxNotes[prop]||'';}
+function anInsightsSave(prop,txt){var s=anStore();s.raioxNotes=s.raioxNotes||{};s.raioxNotes[prop]=txt;sv();}
+function rpInsightsBlock(){
+  if(anProp==='all')return '';
+  var txt=anInsightsGet(anProp);
+  return '<div class="rp-callout co-green"><i class="ti ti-bulb" style="font-size:20px;color:var(--success)"></i>'
+    +'<div style="flex:1"><div style="font-weight:700;font-size:13px;margin-bottom:6px;color:var(--navy)">Insights e observações</div>'
+    +'<textarea id="rp-insights-txt" style="width:100%;min-height:70px;border:1px solid var(--border);border-radius:8px;padding:8px;font-family:inherit;font-size:12.5px;resize:vertical" placeholder="Anote aqui diagnósticos e decisões — ex: causa raiz identificada, mudança de estratégia, teste em andamento…">'+anEsc(txt)+'</textarea>'
+    +'<div style="margin-top:8px"><button class="an-btn prim" onclick="rpInsightsSave()"><i class="ti ti-check"></i> Salvar nota</button></div></div></div>';
+}
+function rpInsightsSave(){var txt=document.getElementById('rp-insights-txt').value;anInsightsSave(anProp,txt);toast('Nota salva.','ti-check');}
+/* ═══════════════════════════════════════════════════════════════
+   RAIO-X · MINERAÇÃO DE CONSULTAS — extrai do texto das próprias buscas
+   (Search Console) o valor mencionado ("150 mil", "4 mil"...) e a marca
+   citada, para montar as personas, a distribuição de valores e os KPIs
+   de comportamento. Mesma fonte de dados da aba SEO → Marca.
+   ═══════════════════════════════════════════════════════════════ */
+function rpAllQueryRows(){
+  var rows=[];
+  for(var mi=0;mi<12;mi++){if(anSeoDimGet(anYear,anProp,mi)==='Consulta')rows=rows.concat(anSeoRows(anYear,anProp,mi));}
+  return rows;
+}
+function rpAggByQuery(rows){
+  var map={};
+  rows.forEach(function(r){if(!map[r.q])map[r.q]={q:r.q,c:0,i:0,pw:0};map[r.q].c+=r.c||0;map[r.q].i+=r.i||0;if(r.p!=null&&r.i)map[r.q].pw+=r.p*r.i;});
+  return Object.keys(map).map(function(k){var m=map[k];return{q:m.q,c:m.c,i:m.i,p:m.i>0?(m.pw/m.i):null};});
+}
+var RP_VBUCKETS=['até 1 mil','1–10 mil','10–50 mil','50–100 mil','100–300 mil','300 mil–1 mi','1 mi+'];
+function rpExtractValue(q){
+  q=(q||'').toLowerCase();var m;
+  m=q.match(/(\d+(?:[.,]\d+)?)\s*milh(?:ão|ao|ões|oes)/);if(m)return parseFloat(m[1].replace(',','.'))*1000000;
+  m=q.match(/(\d+(?:[.,]\d+)?)\s*mi\b/);if(m)return parseFloat(m[1].replace(',','.'))*1000000;
+  m=q.match(/(\d+(?:[.,]\d+)?)\s*mil\b/);if(m)return parseFloat(m[1].replace(',','.'))*1000;
+  m=q.match(/r\$\s*(\d+(?:[.,]\d+)?)/);if(m)return parseFloat(m[1].replace(',','.'));
+  return null;
+}
+function rpValueBucketIdx(v){if(v==null)return null;if(v<1000)return 0;if(v<=10000)return 1;if(v<=50000)return 2;if(v<=100000)return 3;if(v<=300000)return 4;if(v<=1000000)return 5;return 6;}
+function rpValueDistribution(rows){var buckets=RP_VBUCKETS.map(function(l){return{l:l,c:0};});rows.forEach(function(r){var bi=rpValueBucketIdx(rpExtractValue(r.q));if(bi!=null)buckets[bi].c+=r.c||0;});return buckets;}
+function rpValueBarChart(buckets){
+  var mx=Math.max.apply(null,[1].concat(buckets.map(function(b){return b.c;})));
+  var n=buckets.length,W=560,H=190,padL=6,padR=6,padT=10,padB=34,plotH=H-padT-padB,baseY=padT+plotH,gap=(W-padL-padR)/n,bw=gap*0.6;
+  var bars='',labels='';
+  buckets.forEach(function(b,i){
+    var h=mx>0?(b.c/mx)*plotH:0,x=padL+i*gap+(gap-bw)/2,y=baseY-h;
+    bars+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(h,1).toFixed(1)+'" rx="3" fill="var(--primary)"><title>'+b.l+': '+anFmt(b.c,'int')+' cliques</title></rect>';
+    labels+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(baseY+13)+'" text-anchor="middle" style="font-size:7.6px" class="an-axis">'+b.l+'</text>';
+  });
+  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">'+bars+labels+'</svg>';
+}
+function rpBrandYearAgg(){
+  var rows=rpAllQueryRows(),brands=anBrandList();
+  var out=brands.map(function(b){return{id:b.id,l:b.l,c:0};}),outMap={};out.forEach(function(o){outMap[o.id]=o;});
+  var otherC=0;
+  rows.forEach(function(r){var matched=false;for(var bi=0;bi<brands.length;bi++){if(anBrandMatch(r.q,brands[bi])){outMap[brands[bi].id].c+=r.c||0;matched=true;break;}}if(!matched)otherC+=r.c||0;});
+  out.push({id:'outros',l:'Outros',c:otherC});
+  return out.filter(function(o){return o.c>0;}).sort(function(a,b){return b.c-a.c;});
+}
+function rpDonutChart(items){
+  var total=items.reduce(function(s,i){return s+i.c;},0);
+  if(!total)return '<div class="an-empty" style="padding:14px 0"><p>Sem dados</p></div>';
+  var colors=['#16C79A','#7C3AED','#3B82F6','#10B981','#F59E0B','#EC4899','#94A3B8','#F43F5E'];
+  var R=64,C=2*Math.PI*R,cx=84,cy=84,offset=0,segs='';
+  items.forEach(function(it,i){var frac=it.c/total,len=frac*C,color=colors[i%colors.length];
+    segs+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="none" stroke="'+color+'" stroke-width="26" stroke-dasharray="'+len.toFixed(1)+' '+(C-len).toFixed(1)+'" stroke-dashoffset="'+(-offset).toFixed(1)+'" transform="rotate(-90 '+cx+' '+cy+')"><title>'+it.l+': '+(frac*100).toFixed(1).replace('.',',')+'% ('+anFmt(it.c,'int')+' cliques)</title></circle>';
+    offset+=len;});
+  var legend=items.map(function(it,i){var pct=(it.c/total*100).toFixed(1).replace('.',',');return '<span style="font-size:11px;display:inline-flex;align-items:center;gap:5px;color:var(--text-secondary)"><i style="width:9px;height:9px;border-radius:50%;background:'+colors[i%colors.length]+';display:inline-block;flex-shrink:0"></i>'+it.l+' · <b style="color:var(--text-primary)">'+pct+'%</b></span>';}).join('');
+  return '<div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 168 168" style="width:150px;height:150px;flex-shrink:0">'+segs+'</svg><div style="display:flex;flex-direction:column;gap:6px">'+legend+'</div></div>';
+}
+function rpPersonaCard(title,subtitle,descHtml,chips,bg,border){
+  return '<div class="an-card" style="background:'+bg+';border:1px solid '+border+'">'
+    +'<div style="font-weight:800;font-size:15px;margin-bottom:4px;color:var(--navy)">'+title+'</div>'
+    +'<div style="font-size:11.5px;color:var(--text-secondary);margin-bottom:10px">'+subtitle+'</div>'
+    +'<div style="font-size:12.5px;line-height:1.65;color:var(--text-primary);margin-bottom:12px">'+descHtml+'</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'+(chips.length?chips.map(function(c){return '<span style="font-size:11px;padding:5px 10px;border-radius:20px;background:rgba(0,0,0,.05);color:var(--text-secondary)">✓ '+anEsc(c)+'</span>';}).join(''):'<span style="font-size:11px;color:var(--text-secondary)">Ainda sem consultas suficientes nessa faixa</span>')+'</div></div>';
+}
+function rpPersonasData(){
+  var rows=rpAggByQuery(rpAllQueryRows()).map(function(r){return{q:r.q,c:r.c,v:rpExtractValue(r.q)};});
+  var poup=rows.filter(function(r){return r.v!=null&&r.v<=10000;});
+  var acum=rows.filter(function(r){return r.v!=null&&r.v>=100000;});
+  function sumC(a){return a.reduce(function(s,r){return s+(r.c||0);},0);}
+  function topQ(a,n){return a.slice().sort(function(x,y){return y.c-x.c;}).slice(0,n).map(function(r){return r.q;});}
+  return{poup:{clicks:sumC(poup),chips:topQ(poup,3)},acum:{clicks:sumC(acum),chips:topQ(acum,3)}};
+}
+function rpInsightKpis(rows){
+  var totalC=rows.reduce(function(s,r){return s+(r.c||0);},0)||1;
+  var rendeC=rows.filter(function(r){return (r.q||'').toLowerCase().indexOf('quanto rende')>=0;}).reduce(function(s,r){return s+(r.c||0);},0);
+  var riskKw=['ações','acoes','cripto','bitcoin','bolsa','fii'];
+  var riskC=rows.filter(function(r){var q=(r.q||'').toLowerCase();return riskKw.some(function(k){return q.indexOf(k)>=0;});}).reduce(function(s,r){return s+(r.c||0);},0);
+  var top=rpAggByQuery(rows).slice().sort(function(a,b){return b.c-a.c;})[0];
+  return{pctRende:(rendeC/totalC*100),riskC:riskC,topQ:top?top.q:null};
+}
+function hRAIOX(){
+  anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
+  var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var h=pageHeader('Raio-X','Quem está do outro lado da busca — minerado das próprias consultas do Search Console')+'<div class="an-root">'+anPropChips();
+  if(anProp==='all')return h+'<div class="an-card"><div class="an-empty"><i class="ti ti-scan"></i><p>Selecione uma propriedade</p></div></div></div>';
+  h+='<div class="an-card an-camp-ctrl" style="margin-bottom:14px"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div></div>';
+  var rows=rpAllQueryRows();
+  if(!rows.length){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-scan"></i><p>Sem consultas suficientes em '+anYear+'</p><span>Importe os relatórios de Consultas em SEO → Busca — essa análise é calculada automaticamente a partir deles</span></div></div>';
+    return h+'</div>';
+  }
+  var personas=rpPersonasData();
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">'
+    +rpPersonaCard('Persona 1 · O Poupador Digital','R$ 1–10 mil · '+anFmt(personas.poup.clicks,'int')+' cliques nessa faixa',
+      'Está guardando as <b>primeiras reservas</b>: busca valores pequenos e concretos. Quer ver o dinheiro render <b>sem risco e sem jargão</b>.',
+      personas.poup.chips,'rgba(22,199,154,.06)','rgba(22,199,154,.22)')
+    +rpPersonaCard('Persona 2 · O Acumulador','R$ 100 mil+ · '+anFmt(personas.acum.clicks,'int')+' cliques nessa faixa',
+      'Já construiu <b>patrimônio maior</b> e decide onde estacioná-lo. Compara opções para valores altos — decisões grandes, perguntas diretas.',
+      personas.acum.chips,'rgba(124,58,237,.06)','rgba(124,58,237,.22)')
+    +'</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">'
+    +'<div class="an-card"><div class="an-card-ttl rp-title-sm">Valores mais buscados</div><div class="an-card-sub" style="margin-bottom:8px">Cliques por faixa de valor mencionada na consulta · '+anYear+'</div>'+rpValueBarChart(rpValueDistribution(rows))+'</div>'
+    +'<div class="an-card"><div class="an-card-ttl rp-title-sm">Marca pesquisada</div><div class="an-card-sub" style="margin-bottom:8px">Cliques por marca · '+anYear+' (mesma classificação de SEO → Marca)</div>'+rpDonutChart(rpBrandYearAgg())+'</div>'
+    +'</div>';
+  var kpis=rpInsightKpis(rows);
+  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px">'
+    +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Quer número, não aula</div><div class="rp-num-accent" style="font-size:1.9rem">'+kpis.pctRende.toFixed(0)+'%</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">dos cliques contêm "quanto rende"</div></div>'
+    +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Perfil conservador</div><div style="font-size:1.3rem;font-weight:800;color:var(--navy)">CDI &amp; caixinha</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">'+anFmt(kpis.riskC,'int')+' clique(s) em ações/cripto — quase nada</div></div>'
+    +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Fala língua de gente</div><div style="font-size:1.05rem;font-weight:800;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(kpis.topQ?anEsc(kpis.topQ):'')+'">"'+(kpis.topQ?anEsc(kpis.topQ):'—')+'"</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">consulta com mais cliques no período</div></div>'
+    +'</div>';
+  h+=rpDemoBlock();
+  h+=rpInsightsBlock();
+  return h+'</div>';
+}
+
 function hSEO(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
-  var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['seg','Segmentos','ti-chart-donut'],['pgdev','Páginas/Disp.','ti-devices'],['qdev','Consultas/Disp.','ti-search'],['vel','Velocidade','ti-gauge']];
+  if(seoTab==='vel')seoTab='busca'; // aba Velocidade foi removida — evita ficar preso numa aba inexistente
+  var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['topq','Top Consultas','ti-list-numbers'],['marca','Marca','ti-tag'],['seg','Segmentos','ti-chart-donut'],['pgdev','Páginas/Disp.','ti-devices'],['qdev','Consultas/Disp.','ti-search']];
   var bar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(seoTab===t[0]?' active':'')+'" onclick="seoSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
   var clearBtn='<button class="an-btn" style="color:var(--danger)" onclick="anDevDataClearConfirm()"><i class="ti ti-trash"></i> Limpar dados</button>';
   if(seoTab==='busca'){
     anSection='gsc';
-    return pageHeader('SEO','Busca · Search Console (cliques, impressões, CTR, posição) — por site/app')+'<div class="an-root">'+bar+'<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'+clearBtn+'</div>'+anPropChips()+anSectionBody()+'</div>';
+    var h=pageHeader('SEO','Busca · Search Console (cliques, impressões, CTR, posição) — por site/app')+'<div class="an-root">'+bar+'<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'+clearBtn+'</div>'+anPropChips();
+    h+=anMetricCards();
+    h+=anGoalProgress();
+    h+=anIdxBlock();
+    h+=rpDevPosCard();
+    h+=anEntryBar();
+    h+=anAnnotationsCard();
+    return h+'</div>';
   }
   if(seoTab==='opp'){
     return pageHeader('SEO','Oportunidades e decaimento · Search Console')+'<div class="an-root">'+bar+'<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'+clearBtn+'</div>'+anPropChips()+anSeoView()+'</div>';
+  }
+  if(seoTab==='topq'){
+    return pageHeader('SEO','Top Consultas · ordenadas pela melhor posição')+'<div class="an-root">'+bar+anPropChips()+rpTopQView()+'</div>';
+  }
+  if(seoTab==='marca'){
+    return pageHeader('SEO','Marca · desempenho das consultas de marca monitoradas')+'<div class="an-root">'+bar+anPropChips()+rpBrandView()+'</div>';
   }
   if(seoTab==='seg'){
     return pageHeader('SEO','Segmentos · dispositivo, país e aspecto da pesquisa')+'<div class="an-root">'+bar+'<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'+clearBtn+'</div>'+anPropChips()+anSegView()+'</div>';
@@ -2549,8 +3019,7 @@ function hSEO(){
     var qSub='<div class="an-seg" style="margin-bottom:14px"><button class="an-seg-btn'+(qDevSubTab==='mensal'?' active':'')+'" onclick="qDevSetSubTab(\'mensal\')"><i class="ti ti-calendar"></i>Visão mensal</button><button class="an-seg-btn'+(qDevSubTab==='diario'?' active':'')+'" onclick="qDevSetSubTab(\'diario\')"><i class="ti ti-chart-line"></i>Acompanhamento diário</button><button class="an-seg-btn" style="margin-left:auto;color:var(--danger)" onclick="anDevDataClearConfirm()"><i class="ti ti-trash"></i>Limpar dados</button></div>';
     return pageHeader('SEO','Consultas por Dispositivo · posição Celular vs Computador vs Tablet por palavra-chave')+'<div class="an-root">'+bar+anPropChips()+qSub+(qDevSubTab==='diario'?qDevDView():qDevView())+'</div>';
   }
-  anSection='cwv';
-  return pageHeader('SEO','Velocidade · Core Web Vitals')+'<div class="an-root">'+bar+'<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'+clearBtn+'</div>'+anPropChips()+anSectionBody()+'</div>';
+  return pageHeader('SEO','Busca · Search Console (cliques, impressões, CTR, posição) — por site/app')+'<div class="an-root"><div class="an-empty"><i class="ti ti-alert-circle"></i><p>Aba desconhecida</p></div></div>';
 }
 var monTab='rede';
 function monSetTab(t){monTab=t;rHub(document.getElementById('app'));}
@@ -3134,7 +3603,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};if(!s.qdev)s.qdev={};if(!s.qdevd)s.qdevd={};if(!s.seodim)s.seodim={};if(!s.trafchsrc)s.trafchsrc={};if(!s.pgview)s.pgview={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};if(!s.qdev)s.qdev={};if(!s.qdevd)s.qdevd={};if(!s.seodim)s.seodim={};if(!s.trafchsrc)s.trafchsrc={};if(!s.pgview)s.pgview={};if(!s.idxpg)s.idxpg={};if(!s.brands)s.brands=[];if(!s.demo)s.demo={};if(!s.raioxNotes)s.raioxNotes={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
@@ -5201,7 +5670,7 @@ function anAdsCards(mi){
       +bestHtml
     +'</div>';
   }).join('');
-  return '<div class="an-metrics">'+cards+'</div>';
+  return '<div class="an-metrics an-metrics-3">'+cards+'</div>';
 }
 
 /* ── Gráfico diário por métrica (um SVG por métrica) ── */
@@ -5221,8 +5690,9 @@ function anAdsDaySvg(mi,mk){
   }
   return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">'+out+'</svg>';
 }
-function anAdsCharts(mi){
-  var blocks=anAdsCurMetrics().map(function(m){
+function anAdsCharts(mi,excludeKeys){
+  excludeKeys=excludeKeys||{};
+  var blocks=anAdsCurMetrics().filter(function(m){return !excludeKeys[m.k];}).map(function(m){
     var st=anAdsStats(anAdsYear,mi,m.k),sem=anSemaphore(st.varp),best=anAdsBestDay(anAdsYear,mi,m.k);
     var varHtml=st.varp==null?'<span class="an-var flat" style="font-size:11px">—</span>':'<span class="an-var '+sem+'" style="font-size:11px">'+(st.varp>=0?'▲ ':'▼ ')+Math.abs(st.varp).toFixed(1)+'%</span>';
     var valTxt=st.cur==null?'—':anFmt(st.cur,m.fmt);
@@ -5358,6 +5828,70 @@ function anAdsManUpdateTotal(){
 }
 
 /* ── Página AdSense ── */
+/* ═══════════════════════════════════════════════════════════════
+   GRÁFICOS COMBINADOS — compridos e finos, largura total, com toggle
+   Mensal (12 meses do ano) / Diário (dias do mês vigente).
+   Reaproveita os dados diários já existentes de anAdsObj/anAdsMonthTotal.
+   ═══════════════════════════════════════════════════════════════ */
+var anAdsComboMode='mensal'; // 'mensal' | 'diario'
+function anAdsComboSetMode(m){anAdsComboMode=m;R();}
+function anAdsComboPairs(){
+  // pares [métrica A, métrica B] adequados a cada fonte (Ad Manager tem eCPM/Visibilidade; AdSense usa RPM/Active View)
+  return anAdsSrc==='adm'
+    ? [['rec','rpmimp','ti-chart-area','Receita × RPM de Impressões'],['imp','avimp','ti-eye','Impressões × Impressões Active View']]
+    : [['rec','ecpm','ti-chart-area','Receita × eCPM'],['imp','vis','ti-eye','Impressões × Visibilidade']];
+}
+function rpComboChart(mkA,mkB){
+  var metaA=anAdsMeta(mkA),metaB=anAdsMeta(mkB);
+  var labels=[],valsA=[],valsB=[];
+  if(anAdsComboMode==='mensal'){
+    for(var mi=0;mi<12;mi++){labels.push(HMESES[mi]);valsA.push(anAdsMonthTotal(anAdsYear,mi,mkA));valsB.push(anAdsMonthTotal(anAdsYear,mi,mkB));}
+  }else{
+    var curMi=anAdsCurMi(),tD=dIM(Number(anAdsYear),curMi);
+    for(var d=0;d<tD;d++){labels.push(String(d+1));valsA.push(anAdsValD(anAdsYear,curMi,mkA,d));valsB.push(anAdsValD(anAdsYear,curMi,mkB,d));}
+  }
+  var hasAny=valsA.some(function(v){return v!=null;})||valsB.some(function(v){return v!=null;});
+  if(!hasAny)return '<div class="an-empty" style="padding:26px 0"><i class="ti ti-chart-line"></i><p>Sem dados para '+(anAdsComboMode==='mensal'?anAdsYear:(AN_MES_LONG[anAdsCurMi()]+'/'+anAdsYear))+'</p></div>';
+  var n=labels.length,W=1160,H=132,padL=8,padR=8,padT=20,padB=22,plotH=H-padT-padB,baseY=padT+plotH;
+  var step=(W-padL-padR)/(n-1||1);
+  function xAt(i){return padL+i*step;}
+  var mxA=Math.max.apply(null,[1].concat(valsA.filter(function(v){return v!=null;}).map(function(v){return Math.abs(v);})));
+  var mxB=Math.max.apply(null,[1].concat(valsB.filter(function(v){return v!=null;}).map(function(v){return Math.abs(v);})));
+  function yA(v){return baseY-(v/mxA)*plotH;}
+  function yB(v){return baseY-(v/mxB)*plotH;}
+  var ptsA=[],ptsB=[];
+  valsA.forEach(function(v,i){if(v!=null)ptsA.push([xAt(i),yA(v),i,v]);});
+  valsB.forEach(function(v,i){if(v!=null)ptsB.push([xAt(i),yB(v),i,v]);});
+  var areaPath='';
+  if(ptsA.length>1){
+    areaPath='M'+ptsA[0][0].toFixed(1)+','+baseY.toFixed(1)+' ';
+    ptsA.forEach(function(p){areaPath+='L'+p[0].toFixed(1)+','+p[1].toFixed(1)+' ';});
+    areaPath+='L'+ptsA[ptsA.length-1][0].toFixed(1)+','+baseY.toFixed(1)+' Z';
+  }
+  var lineA=ptsA.length>1?('<polyline points="'+ptsA.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'" fill="none" stroke="var(--primary-dark)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>'):'';
+  var lineB=ptsB.length>1?('<polyline points="'+ptsB.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'" fill="none" stroke="var(--warning)" stroke-width="2" stroke-dasharray="4 3" stroke-linejoin="round" stroke-linecap="round"/>'):'';
+  var dotsA=ptsA.map(function(p){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="2.6" fill="var(--primary-dark)"><title>'+labels[p[2]]+' · '+metaA.l+': '+anFmt(p[3],metaA.fmt)+'</title></circle>';}).join('');
+  var dotsB=ptsB.map(function(p){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="2.4" fill="var(--warning)"><title>'+labels[p[2]]+' · '+metaB.l+': '+anFmt(p[3],metaB.fmt)+'</title></circle>';}).join('');
+  var xl='',xStep=n>20?Math.ceil(n/12):1;
+  for(var i=0;i<n;i++){if(i%xStep===0||i===n-1)xl+='<text class="an-axis" x="'+xAt(i).toFixed(1)+'" y="'+(baseY+15)+'" text-anchor="middle" style="font-size:8px">'+labels[i]+'</text>';}
+  var lastA=null,lastB=null;
+  for(var k=valsA.length-1;k>=0;k--){if(valsA[k]!=null){lastA=valsA[k];break;}}
+  for(var k2=valsB.length-1;k2>=0;k2--){if(valsB[k2]!=null){lastB=valsB[k2];break;}}
+  var svg='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">'
+    +'<defs><linearGradient id="rpAreaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--primary)" stop-opacity=".28"/><stop offset="100%" stop-color="var(--primary)" stop-opacity="0"/></linearGradient></defs>'
+    +(areaPath?('<path d="'+areaPath+'" fill="url(#rpAreaGrad)"/>'):'')
+    +lineA+lineB+dotsA+dotsB+xl+'</svg>';
+  var legend='<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:6px">'
+    +'<span style="font-size:10.5px;display:inline-flex;align-items:center;gap:5px;color:var(--text-secondary)"><i style="width:10px;height:3px;border-radius:2px;background:var(--primary-dark);display:inline-block"></i>'+metaA.l+(lastA!=null?' · <b style="color:var(--text-primary)">'+anFmt(lastA,metaA.fmt)+'</b>':'')+'</span>'
+    +'<span style="font-size:10.5px;display:inline-flex;align-items:center;gap:5px;color:var(--text-secondary)"><i style="width:10px;height:0;border-top:2px dashed var(--warning);display:inline-block"></i>'+metaB.l+(lastB!=null?' · <b style="color:var(--text-primary)">'+anFmt(lastB,metaB.fmt)+'</b>':'')+'</span>'
+    +'</div>';
+  return svg+legend;
+}
+function rpComboCard(icon,title,mkA,mkB){
+  var toggle='<div class="an-seg" style="margin-left:auto"><button class="an-seg-btn'+(anAdsComboMode==='mensal'?' active':'')+'" onclick="anAdsComboSetMode(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(anAdsComboMode==='diario'?' active':'')+'" onclick="anAdsComboSetMode(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></div>';
+  return '<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti '+icon+'"></i> '+title+'</div>'+toggle+'</div>'
+    +rpComboChart(mkA,mkB)+'</div>';
+}
 function anAdsBody(){
   var years=anAdsYears();if(!years.includes(anAdsYear))anAdsYear=years[years.length-1];
   var mi=anAdsCurMi();
@@ -5365,9 +5899,10 @@ function anAdsBody(){
   if(!anAdsHasAny(anAdsYear,mi)){
     h+='<div class="an-hint"><i class="ti ti-info-circle"></i> Sem dados de '+anAdsLabel()+' em '+AN_MES_LONG[mi]+'/'+anAdsYear+' ainda. Importe o relatório diário do '+anAdsLabel()+' (com coluna de Data) ou use "Inserir manual" — os dados começam em Março. Os cards e o gráfico abaixo se preenchem automaticamente.</div>';
   }
+  var pairs=anAdsComboPairs();
   h+=anAdsCards(mi);
-  h+=anAdsCharts(mi);
-  h+=anAdsTable(mi);
+  h+=rpComboCard(pairs[0][2],pairs[0][3],pairs[0][0],pairs[0][1]);
+  h+=rpComboCard(pairs[1][2],pairs[1][3],pairs[1][0],pairs[1][1]);
   return h;
 }
 function hADSENSE(){
@@ -6024,12 +6559,16 @@ var CENTRAL_TYPES=[
   {k:'pgview',  l:'Páginas e Telas (visualizações/usuários/rejeição)'},
   {k:'pages',   l:'Top Páginas (sessões)'},
   {k:'trafch',  l:'Canais de Tráfego'},
+  {k:'traf_general', l:'Aquisição de Tráfego (geral, soma dos canais)'},
+  {k:'user_channel',  l:'Aquisição de Usuários (não tem tela própria de canal)'},
+  {k:'user_general',  l:'Aquisição de Usuários (geral, soma dos canais)'},
   {k:'camp',    l:'Origem da Campanha'},
   {k:'seo_pages_device',  l:'Páginas por Dispositivo (mensal)'},
   {k:'seo_pages_device_d',l:'Páginas por Dispositivo (diário)'},
   {k:'seo_query_device',  l:'Consultas por Dispositivo (mensal)'},
   {k:'seo_query_device_d',l:'Consultas por Dispositivo (diário)'},
   {k:'seo_general', l:'Busca (Oportunidades/Decaimento/Impressão)'},
+  {k:'gsc_general', l:'Busca (totais mensais — cliques/impressões/CTR/posição)'},
   {k:'seg',     l:'Segmentos (Dispositivo/País/Aspecto)'},
   {k:'unknown', l:'Não identificado'}
 ];
@@ -6051,55 +6590,88 @@ function centralHeaderDim(rows){
   for(var r=0;r<clean.length;r++){if(clean[r].length>=2)return String(clean[r][0]||'');}
   return '';
 }
-function centralDetectOne(rows,fname){
-  var dev=centralDeviceFromName(fname);
+// um arquivo com colunas de Cliques E Impressões juntas é, com altíssima confiança, um relatório do Search
+// Console (Busca/Páginas/Consultas por dispositivo) — nunca um relatório de Páginas e Telas/Top Páginas do
+// GA4, mesmo que a dimensão (1ª coluna) também se chame "Página"/"Páginas mais comuns" nos dois casos.
+function centralLooksLikeGSC(rows){
+  var clean=rows.filter(function(cols){if(!cols||!cols.length)return false;var f=String(cols[0]==null?'':cols[0]).trim();if(f.charAt(0)==='#')return false;return cols.some(function(c){return String(c==null?'':c).trim()!=='';});});
+  for(var r=0;r<clean.length;r++){var cols=clean[r];if(cols.length<2)continue;
+    var hasClicks=cols.some(function(c){return anSeoMatch(c,['clique','clicks']);});
+    var hasImpr=cols.some(function(c){return anSeoMatch(c,['impress']);});
+    if(hasClicks&&hasImpr)return true;
+    if(hasClicks||hasImpr)return false; // já achou uma linha de cabeçalho plausível sem o par completo — não é GSC
+  }
+  return false;
+}
+function centralDetectOne(rows,fname,batchDevice){
+  var dev=centralDeviceFromName(fname)||batchDevice||null;
   var headerDim=centralHeaderDim(rows);
   var looksLikeChannel=anTchIsChannelDim(headerDim);
-  var looksLikeUserChannel=looksLikeChannel&&/usu[áa]rio/i.test(headerDim)&&headerDim.toLowerCase().indexOf('sess')<0; // "canal do primeiro usuário" — relatório sem tela própria no dashboard hoje
-  // 0) Se a primeira coluna do cabeçalho já indica claramente "canal de sessão" (Aquisição de Tráfego), vai
-  //    direto para Canais de Tráfego — nunca tenta Páginas e Telas/Top Páginas nesse caso (que aceitariam
-  //    por engano via fallback, já que "usuários"/"sessões" também aparecem nas métricas de canal)
-  if(looksLikeChannel&&!looksLikeUserChannel){
+  var isUserChannel=looksLikeChannel&&/usu[áa]rio/i.test(headerDim)&&headerDim.toLowerCase().indexOf('sess')<0; // "canal do primeiro usuário"
+  var isSessionChannel=looksLikeChannel&&!isUserChannel; // "canal da sessão" (Aquisição de Tráfego)
+  // 0) Canal de sessão (Aquisição de Tráfego): popula tanto "Canais de Tráfego" (por canal) quanto
+  //    "Tráfego" geral (soma de todos os canais, via anParse — o mesmo parser genérico usado no "Inserir
+  //    manual" da seção). Nunca tenta Páginas e Telas/Top Páginas nesse caso (que aceitariam por engano).
+  if(isSessionChannel){
+    var types=[];
     var tchEarly=anTchParse(rows);
-    if(tchEarly.mi>=0&&Object.keys(tchEarly.channels).length)return{type:'trafch',data:tchEarly,fname:fname};
-    return{type:'unknown',data:null,fname:fname};
+    if(tchEarly.mi>=0&&Object.keys(tchEarly.channels).length)types.push('trafch');
+    var trafGen=anParse('traf',rows);
+    if(trafGen.mode==='month')types.push('traf_general');
+    if(!types.length)return{type:'unknown',data:null,fname:fname,types:[]};
+    return{type:types[0],data:{trafch:tchEarly,traf_general:trafGen},fname:fname,types:types};
   }
-  if(looksLikeUserChannel)return{type:'unknown',data:null,fname:fname}; // "canal do primeiro usuário" não tem tela própria — evita classificar errado em outra
-  var looksLikePageDim=anPgIsPageDim(headerDim);
+  // 0b) Canal de usuário (Aquisição de Usuários): não tem tela própria por canal, mas popula "Usuários"
+  //     geral (soma de todos os canais)
+  if(isUserChannel){
+    var userGen=anParse('user',rows);
+    if(userGen.mode==='month')return{type:'user_general',data:{user_general:userGen},fname:fname,types:['user_general']};
+    return{type:'unknown',data:null,fname:fname,types:[]};
+  }
+  // 0c) "Gráfico.csv" do pacote do Search Console: totais de Cliques/Impressões/CTR/Posição POR DIA, sem
+  //     quebra por página/consulta — alimenta a aba "Busca" geral (anSectionBody), que já sabe agregar
+  //     linhas diárias em totais mensais (mesma lógica do "Inserir manual"/"Importar CSV" de lá).
+  if(/^data$/i.test((headerDim||'').trim())&&centralLooksLikeGSC(rows)){
+    var gscGen=anParse('gsc',rows);
+    if(gscGen.mode==='month')return{type:'gsc_general',data:{gsc_general:gscGen},fname:fname,types:['gsc_general']};
+    return{type:'unknown',data:null,fname:fname,types:[]};
+  }
+  var looksLikePageDim=anPgIsPageDim(headerDim)&&!centralLooksLikeGSC(rows);
   // 1) Páginas e Telas (Título da página) — checa ANTES de Top Páginas, pois ambos aceitam rótulos parecidos
   //    na dimensão; a diferença real está em qual coluna de métrica cada um reconhece. Só tenta os dois
-  //    quando a dimensão do cabeçalho já parece página/URL — sem essa blindagem, o fallback permissivo de
-  //    ambos os parsers (aceitam qualquer dimensão se acharem 1 métrica reconhecida) rouba arquivos de
-  //    Campanha/Canal/outros que também têm colunas chamadas "Sessões"/"Usuários".
+  //    quando a dimensão do cabeçalho já parece página/URL E não tem cara de Search Console (Cliques +
+  //    Impressões) — sem essa blindagem dupla, o fallback permissivo de ambos os parsers (aceitam qualquer
+  //    dimensão se acharem 1 métrica reconhecida) rouba arquivos de Campanha/Canal/Páginas do GSC.
   if(looksLikePageDim){
     var pv=pvParse(rows);
-    if(pv.mode==='month')return{type:'pgview',data:pv,fname:fname};
+    if(pv.mode==='month')return{type:'pgview',data:{pgview:pv},fname:fname,types:['pgview']};
     // 2) Top Páginas (Caminho/URL, métrica Sessões)
     var pg=anPgParse(rows);
-    if(pg.mode==='month'||pg.mode==='wide')return{type:'pages',data:pg,fname:fname};
+    if(pg.mode==='month'||pg.mode==='wide')return{type:'pages',data:{pages:pg},fname:fname,types:['pages']};
   }
   // 3) Canais de Tráfego (dimensão explícita "canal") — checa antes de Campanha, que é mais permissiva
   var tch=anTchParse(rows);
-  if(tch.mi>=0&&Object.keys(tch.channels).length)return{type:'trafch',data:tch,fname:fname};
+  if(tch.mi>=0&&Object.keys(tch.channels).length)return{type:'trafch',data:{trafch:tch},fname:fname,types:['trafch']};
   // 4) Segmentos do GSC (Dispositivo/País/Aspecto) — dimensão vem explícita no próprio arquivo
   var seg=anSegParse(rows);
-  if(seg.dim&&seg.dim!=='other'&&seg.rows.length)return{type:'seg',data:seg,fname:fname};
+  if(seg.dim&&seg.dim!=='other'&&seg.rows.length)return{type:'seg',data:{seg:seg},fname:fname,types:['seg']};
   // 5) Search Console genérico (Consultas ou Páginas, com Cliques/Impressões/Posição) — pode ser geral OU
-  //    filtrado por dispositivo; só o nome do arquivo revela isso, daí a ambiguidade tratada abaixo
+  //    filtrado por dispositivo. O dispositivo vem do nome do arquivo OU do Filtros.csv do mesmo lote
+  //    (batchDevice) — só na ausência total dessa informação o arquivo é tratado como Busca geral, ambíguo.
   var seo=anSeoParse(rows);
   if(seo.rows.length){
     var isPageDim=seo.dimLbl&&/p[áa]gina|page|url/i.test(seo.dimLbl);
     var baseType=isPageDim?'seo_pages_device':'seo_query_device';
-    if(dev)return{type:baseType,data:seo,fname:fname,device:dev,needsDay:false};
-    // sem indicação de dispositivo no nome: trata como Busca geral, mas marca como ambíguo para revisão
-    return{type:'seo_general',data:seo,fname:fname,ambiguous:true};
+    if(dev)return{type:baseType,data:{_:seo},fname:fname,device:dev,types:[baseType]};
+    // sem indicação de dispositivo (nem no nome, nem no Filtros.csv do lote): trata como Busca geral, ambíguo
+    return{type:'seo_general',data:{_:seo},fname:fname,ambiguous:true,types:['seo_general']};
   }
   // 6) Origem da Campanha (mais permissiva — fica por último para não roubar arquivos de Canais)
   var camp=anCampParse(rows);
-  if(camp.mi>=0&&Object.keys(camp.sources).length)return{type:'camp',data:camp,fname:fname};
-  return{type:'unknown',data:null,fname:fname};
+  if(camp.mi>=0&&Object.keys(camp.sources).length)return{type:'camp',data:{camp:camp},fname:fname,types:['camp']};
+  return{type:'unknown',data:null,fname:fname,types:[]};
 }
-var _centralFiles=[]; // [{fname, rows, detected:{type,data,...}, overrideType, overrideDevice, overrideDaily}]
+var _centralFiles=[]; // [{fname, rows, detected:{type,data,types,...}, overrideTypes:[...], overrideDevice, overrideDaily}]
 var _centralBusy=false;
 function centralOpen(){
   if(anProp==='all'){toast('Selecione uma propriedade específica antes de usar o Upload Central.','ti-info-circle');return;}
@@ -6113,69 +6685,119 @@ function centralPickFiles(){
   var inp=document.createElement('input');inp.type='file';inp.accept='.csv,.xlsx,.xls,text/csv';inp.multiple=true;
   inp.onchange=function(e){
     var files=Array.from(e.target.files||[]);if(!files.length)return;
-    var pending=files.length;
+    var pending=files.length,batch=[];
     files.forEach(function(f){
       var ext=(f.name.split('.').pop()||'').toLowerCase();
       function onRows(rows){
-        var det=centralDetectOne(rows,f.name);
-        _centralFiles.push({fname:f.name,rows:rows,detected:det,overrideType:det.type,overrideDevice:det.device||null,skip:det.type==='unknown'});
-        pending--;if(pending===0)centralRenderBody();
+        batch.push({fname:f.name,rows:rows});
+        pending--;if(pending===0)centralAddBatch(batch);
       }
-      if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];onRows(XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''}));}catch(err){pending--;toast('Falha ao ler '+f.name+': '+err.message,'ti-alert-circle');if(pending===0)centralRenderBody();}};rd.readAsArrayBuffer(f);}).catch(function(){pending--;if(pending===0)centralRenderBody();});}
+      if(ext==='xlsx'||ext==='xls'){loadXLSX().then(function(XLSX){var rd=new FileReader();rd.onload=function(ev){try{var wb=XLSX.read(ev.target.result,{type:'array'});var ws=wb.Sheets[wb.SheetNames[0]];onRows(XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''}));}catch(err){pending--;toast('Falha ao ler '+f.name+': '+err.message,'ti-alert-circle');if(pending===0)centralAddBatch(batch);}};rd.readAsArrayBuffer(f);}).catch(function(){pending--;if(pending===0)centralAddBatch(batch);});}
       else{var rd=new FileReader();rd.onload=function(ev){var txt=ev.target.result;if(txt.charCodeAt(0)===0xFEFF)txt=txt.slice(1);onRows(txt.split(/\r?\n/).filter(function(l){return l.trim();}).map(function(l){return _csvRow(l);}));};rd.readAsText(f,'UTF-8');}
     });
   };inp.click();
 }
+// detecta o dispositivo aplicado a um lote a partir do arquivo "Filtros.csv" que o Search Console gera
+// junto com o pacote de exportação (Aspecto da pesquisa, Consultas, Dispositivos, Páginas, Países, etc.)
+// — esse arquivo é a única peça que revela o filtro de dispositivo quando o nome dos demais é genérico
+// (ex.: "Páginas.csv", sem "Celular"/"Computador" no nome).
+function centralFiltersDeviceFromBatch(batch){
+  for(var i=0;i<batch.length;i++){
+    var fname=(batch[i].fname||'').toLowerCase();
+    if(fname.indexOf('filtro')<0)continue;
+    var rows=batch[i].rows;
+    for(var r=0;r<rows.length;r++){var cols=rows[r];if(!cols||cols.length<2)continue;
+      var k=String(cols[0]||'').toLowerCase();
+      if(k.indexOf('dispositivo')>=0){
+        var v=String(cols[1]||'').toLowerCase();
+        if(/celular|mobile/.test(v))return'mobile';
+        if(/computador|desktop/.test(v))return'desktop';
+        if(/tablet/.test(v))return'tablet';
+      }
+    }
+  }
+  return null;
+}
+function centralAddBatch(batch){
+  var batchDevice=centralFiltersDeviceFromBatch(batch);
+  batch.forEach(function(item){
+    var fname=(item.fname||'').toLowerCase();
+    if(fname.indexOf('filtro')>=0)return; // Filtros.csv é só metadado para desambiguação — não tem destino próprio
+    var det=centralDetectOne(item.rows,item.fname,batchDevice);
+    _centralFiles.push({fname:item.fname,rows:item.rows,detected:det,overrideTypes:det.types.slice(),overrideDevice:det.device||null,dailyMode:!!det.isDaily,skip:det.types.length===0});
+  });
+  centralRenderBody();
+}
 function centralRemoveFile(idx){_centralFiles.splice(idx,1);centralRenderBody();}
-function centralSetType(idx,type){_centralFiles[idx].overrideType=type;_centralFiles[idx].skip=(type==='unknown');centralRenderBody();}
+function centralToggleType(idx,type,checked){
+  var f=_centralFiles[idx];
+  if(checked){if(f.overrideTypes.indexOf(type)<0)f.overrideTypes.push(type);}
+  else{f.overrideTypes=f.overrideTypes.filter(function(t){return t!==type;});}
+  f.skip=(f.overrideTypes.length===0);
+  centralRenderBody();
+}
 function centralSetDevice(idx,dev){_centralFiles[idx].overrideDevice=dev;centralRenderBody();}
 function centralSetDaily(idx,checked){_centralFiles[idx].dailyMode=checked;centralRenderBody();}
 function centralRenderBody(){
   var h='<h4 style="display:flex;align-items:center;gap:7px"><i class="ti ti-cloud-upload" style="color:var(--primary)"></i> Upload Central — '+propLabel(anProp)+' · '+anYear+'</h4>';
-  h+='<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 12px">Selecione quantos arquivos quiser de uma vez. O sistema identifica o tipo de cada um pelo conteúdo (e pelo nome do arquivo, quando precisa saber o dispositivo). Revise a lista antes de confirmar — você pode corrigir qualquer linha.</p>';
+  h+='<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 12px">Selecione quantos arquivos quiser de uma vez — inclusive o pacote completo do Search Console (Consultas, Páginas, Dispositivos, Países, Aspecto da pesquisa, Gráfico, Filtros). O sistema identifica o(s) destino(s) de cada um pelo conteúdo, pelo nome do arquivo e, quando presente, pelo "Filtros.csv" do pacote (que revela automaticamente se o lote foi filtrado por Celular/Computador/Tablet). Alguns arquivos alimentam mais de uma tela ao mesmo tempo — marque/desmarque os destinos antes de confirmar.</p>';
   h+='<button class="an-btn prim" onclick="centralPickFiles()" style="margin-bottom:14px"><i class="ti ti-upload"></i> Selecionar arquivos</button>';
   if(!_centralFiles.length){
     h+='<div class="an-empty" style="padding:30px 10px"><i class="ti ti-files"></i><p>Nenhum arquivo selecionado ainda</p><span>Clique em "Selecionar arquivos" e escolha 1 ou vários CSVs/XLSX de uma vez.</span></div>';
   }else{
-    h+='<div class="hwrap"><table class="htbl" style="font-size:11.5px"><thead><tr><th style="text-align:left">Arquivo</th><th style="text-align:left">Tipo detectado</th><th>Dispositivo</th><th>Diário?</th><th></th></tr></thead><tbody>';
+    h+='<div class="hwrap"><table class="htbl" style="font-size:11.5px"><thead><tr><th style="text-align:left">Arquivo</th><th style="text-align:left">Destino(s)</th><th>Dispositivo</th><th>Diário?</th><th></th></tr></thead><tbody>';
     _centralFiles.forEach(function(f,idx){
       var det=f.detected;
-      var needsDevice=(f.overrideType==='seo_pages_device'||f.overrideType==='seo_pages_device_d'||f.overrideType==='seo_query_device'||f.overrideType==='seo_query_device_d');
-      var ambiguous=det.ambiguous&&f.overrideType==='seo_general';
-      var typeSel='<select class="fsel" style="font-size:11px" onchange="centralSetType('+idx+',this.value)">'+CENTRAL_TYPES.map(function(t){return '<option value="'+t.k+'"'+(t.k===f.overrideType?' selected':'')+'>'+t.l+'</option>';}).join('')+'</select>';
+      var needsDevice=f.overrideTypes.some(function(t){return t==='seo_pages_device'||t==='seo_pages_device_d'||t==='seo_query_device'||t==='seo_query_device_d';});
+      var ambiguous=det.ambiguous&&f.overrideTypes.indexOf('seo_general')>=0;
+      var unrecognized=det.types.length===0;
+      // checkboxes: mostra todos os destinos detectados (geralmente 1, às vezes 2) + opção "Não identificado"
+      var options=det.types.length?det.types:[];
+      var typeChecks=options.map(function(t){var checked=f.overrideTypes.indexOf(t)>=0;return '<label style="display:flex;align-items:center;gap:5px;white-space:nowrap"><input type="checkbox" '+(checked?'checked':'')+' onchange="centralToggleType('+idx+',\''+t+'\',this.checked)"> '+centralTypeLabel(t)+'</label>';}).join('');
+      typeChecks='<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-start">'+typeChecks+'</div>';
+      if(unrecognized)typeChecks='<span style="color:var(--text-secondary)">Não identificado — não será importado</span>';
       var devSel=needsDevice?('<select class="fsel" style="font-size:11px" onchange="centralSetDevice('+idx+',this.value)"><option value="">—</option><option value="mobile"'+(f.overrideDevice==='mobile'?' selected':'')+'>Celular</option><option value="desktop"'+(f.overrideDevice==='desktop'?' selected':'')+'>Computador</option><option value="tablet"'+(f.overrideDevice==='tablet'?' selected':'')+'>Tablet</option></select>'):'—';
-      var dailyChk=(needsDevice||f.overrideType==='seo_general')?('<input type="checkbox" '+(f.dailyMode?'checked':'')+' onchange="centralSetDaily('+idx+',this.checked)">'):'—';
+      var dailyChk=(needsDevice||f.overrideTypes.indexOf('seo_general')>=0)?('<input type="checkbox" '+(f.dailyMode?'checked':'')+' onchange="centralSetDaily('+idx+',this.checked)">'):'—';
       var rowStyle=ambiguous?' style="background:rgba(245,158,11,.08)"':(f.skip?' style="opacity:.5"':'');
       h+='<tr'+rowStyle+'><td style="text-align:left;max-width:220px;overflow:hidden;text-overflow:ellipsis" title="'+anEsc(f.fname)+'">'+(ambiguous?'<i class="ti ti-alert-triangle" style="color:var(--warning);font-size:11px"></i> ':'')+anEsc(f.fname)+'</td>'
-        +'<td style="text-align:left">'+typeSel+'</td><td>'+devSel+'</td><td>'+dailyChk+'</td>'
+        +'<td style="text-align:left">'+typeChecks+'</td><td>'+devSel+'</td><td>'+dailyChk+'</td>'
         +'<td><button class="an-ic-btn del" onclick="centralRemoveFile('+idx+')"><i class="ti ti-trash" style="font-size:11px"></i></button></td></tr>';
     });
     h+='</tbody></table></div>';
     var validCount=_centralFiles.filter(function(f){return!f.skip;}).length;
-    h+='<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'central-ov\').remove()">Cancelar</button><button class="pr" onclick="centralApplyAll()" '+(validCount?'':'disabled')+'><i class="ti ti-check" style="font-size:11px"></i> Importar '+validCount+' arquivo(s)</button></div>';
+    var totalDestinos=_centralFiles.reduce(function(s,f){return s+(f.skip?0:f.overrideTypes.length);},0);
+    h+='<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'central-ov\').remove()">Cancelar</button><button class="pr" onclick="centralApplyAll()" '+(validCount?'':'disabled')+'><i class="ti ti-check" style="font-size:11px"></i> Importar '+validCount+' arquivo(s) → '+totalDestinos+' destino(s)</button></div>';
   }
   document.getElementById('central-body').innerHTML=h;
 }
-// aplica cada arquivo usando o parser/armazenamento já existente do tipo escolhido — reaproveita 100%
-// a lógica de import de cada tela, só trocando a origem do clique manual pela central
-function centralApplyOne(f){
-  var det=f.detected,type=f.overrideType;
-  if(type==='pgview'){var p=pvParse(f.rows);if(p.mode!=='month')return false;var o=pvObj(anYear,anProp);o[p.mi]=p.pages;return true;}
-  if(type==='pages'){var p2=anPgParse(f.rows);if(p2.mode==='month'){Object.keys(p2.pages).forEach(function(n){var rec=p2.pages[n];if(rec.ses!=null)anPgSetCell(anYear,anProp,n,'ses',p2.mi,rec.ses);});return true;}if(p2.mode==='wide'){var wmk=anPgCurMetric();Object.keys(p2.pages).forEach(function(n){var arr=p2.pages[n];for(var i=0;i<12;i++)anPgSetCell(anYear,anProp,n,wmk,i,arr[i]);});return true;}return false;}
-  if(type==='trafch'){var p3=anTchParse(f.rows);if(p3.mi<0)return false;Object.keys(p3.channels).forEach(function(name){var rec=p3.channels[name];AN_SECTIONS.trafch.metrics.forEach(function(m){if(rec[m.k]!=null)anTchSetCell(anYear,anProp,name,m.k,p3.mi,rec[m.k]);});});return true;}
-  if(type==='camp'){var p4=anCampParse(f.rows);if(p4.mi<0)return false;
+// aplica UM destino específico de um arquivo, usando os dados já parseados em f.detected.data (evita
+// reparsear o arquivo a cada destino) — reaproveita 100% a lógica de armazenamento de cada tela
+function centralApplyDestination(f,type){
+  var data=f.detected.data||{};
+  if(type==='pgview'){var p=data.pgview;if(!p||p.mode!=='month')return false;var o=pvObj(anYear,anProp);o[p.mi]=p.pages;return true;}
+  if(type==='pages'){var p2=data.pages;if(!p2)return false;if(p2.mode==='month'){Object.keys(p2.pages).forEach(function(n){var rec=p2.pages[n];if(rec.ses!=null)anPgSetCell(anYear,anProp,n,'ses',p2.mi,rec.ses);});return true;}if(p2.mode==='wide'){var wmk=anPgCurMetric();Object.keys(p2.pages).forEach(function(n){var arr=p2.pages[n];for(var i=0;i<12;i++)anPgSetCell(anYear,anProp,n,wmk,i,arr[i]);});return true;}return false;}
+  if(type==='trafch'){var p3=data.trafch;if(!p3||p3.mi<0)return false;Object.keys(p3.channels).forEach(function(name){var rec=p3.channels[name];AN_SECTIONS.trafch.metrics.forEach(function(m){if(rec[m.k]!=null)anTchSetCell(anYear,anProp,name,m.k,p3.mi,rec[m.k]);});});return true;}
+  if(type==='traf_general'){var p3b=data.traf_general;if(!p3b||p3b.mode!=='month')return false;Object.keys(p3b.data).forEach(function(mk){var v=p3b.data[mk][p3b.monthIdx];if(v!=null)anSetCell(anYear,'traf',anProp,mk,p3b.monthIdx,v);});return true;}
+  if(type==='user_general'){var p3c=data.user_general;if(!p3c||p3c.mode!=='month')return false;Object.keys(p3c.data).forEach(function(mk){var v=p3c.data[mk][p3c.monthIdx];if(v!=null)anSetCell(anYear,'user',anProp,mk,p3c.monthIdx,v);});return true;}
+  if(type==='gsc_general'){var p3d=data.gsc_general;if(!p3d||p3d.mode!=='month')return false;
+    // o "Gráfico.csv" não tem cabeçalho de comentários do GA4/GSC com a data — o mês já vem certo dentro de
+    // cada array (12 posições, só uma preenchida), então acha o índice não-nulo em vez de usar monthIdx
+    var mi3d=p3d.monthIdx;if(mi3d<0){Object.keys(p3d.data).some(function(mk){var arr=p3d.data[mk];for(var i=0;i<12;i++){if(arr[i]!=null){mi3d=i;return true;}}return false;});}
+    if(mi3d<0)return false;
+    Object.keys(p3d.data).forEach(function(mk){var v=p3d.data[mk][mi3d];if(v!=null)anSetCell(anYear,'gsc',anProp,mk,mi3d,v);});return true;}
+  if(type==='camp'){var p4=data.camp;if(!p4||p4.mi<0)return false;
     var oc=anCampObj(anYear,anProp);Object.keys(p4.sources).forEach(function(name){oc[name]=oc[name]||{};var rec=p4.sources[name];Object.keys(rec).forEach(function(mk){if(!Array.isArray(oc[name][mk]))oc[name][mk]=Array(12).fill(null);oc[name][mk][p4.mi]=rec[mk];});});
     return true;}
-  if(type==='seg'){var p5=anSegParse(f.rows);if(!p5.dim||!p5.rows.length)return false;var mi5=segMi!=null?segMi:new Date().getMonth();var o5=anSegObj(anYear,anProp);o5[p5.dim]=o5[p5.dim]||{};o5[p5.dim][mi5]=p5.rows;return true;}
-  if(type==='seo_general'){var p6=anSeoParse(f.rows);if(!p6.rows.length)return false;var mi6=f.dailyMode?(new Date().getDate()-1):new Date().getMonth();var o6=anSeoObj(anYear,anProp);o6[mi6]=p6.rows;anSeoDimSet(anYear,anProp,mi6,p6.dimLbl);return true;}
+  if(type==='seg'){var p5=data.seg;if(!p5||!p5.dim||!p5.rows.length)return false;var mi5=segMi!=null?segMi:new Date().getMonth();var o5=anSegObj(anYear,anProp);o5[p5.dim]=o5[p5.dim]||{};o5[p5.dim][mi5]=p5.rows;return true;}
+  if(type==='seo_general'){var p6=data._;if(!p6||!p6.rows.length)return false;var mi6=f.dailyMode?(new Date().getDate()-1):new Date().getMonth();var o6=anSeoObj(anYear,anProp);o6[mi6]=p6.rows;anSeoDimSet(anYear,anProp,mi6,p6.dimLbl);return true;}
   if(type==='seo_pages_device'||type==='seo_query_device'){
-    var p7=anSeoParse(f.rows);if(!p7.rows.length||!f.overrideDevice)return false;
+    var p7=data._;if(!p7||!p7.rows.length||!f.overrideDevice)return false;
     var mi7=new Date().getMonth();var isQ=type==='seo_query_device';
     var o7=isQ?qDevObj(anYear,anProp):pgDevObj(anYear,anProp);o7[f.overrideDevice]=o7[f.overrideDevice]||{};o7[f.overrideDevice][mi7]=p7.rows;
     return true;
   }
   if(type==='seo_pages_device_d'||type==='seo_query_device_d'){
-    var p8=anSeoParse(f.rows);if(!p8.rows.length||!f.overrideDevice)return false;
+    var p8=data._;if(!p8||!p8.rows.length||!f.overrideDevice)return false;
     var now=new Date(),mi8=now.getMonth(),day8=now.getDate();var isQ8=type==='seo_query_device_d';
     var o8=isQ8?qDevDObj(anYear,anProp):pgDevDObj(anYear,anProp);o8[f.overrideDevice]=o8[f.overrideDevice]||{};o8[f.overrideDevice][mi8]=o8[f.overrideDevice][mi8]||{};o8[f.overrideDevice][mi8][day8]=p8.rows;
     return true;
@@ -6186,12 +6808,17 @@ function centralApplyAll(){
   _centralBusy=true;
   var toApply=_centralFiles.filter(function(f){return!f.skip;});
   var okCount=0,failCount=0;
-  toApply.forEach(function(f){try{if(centralApplyOne(f))okCount++;else failCount++;}catch(err){console.error('central import error',f.fname,err);failCount++;}});
+  toApply.forEach(function(f){
+    f.overrideTypes.forEach(function(type){
+      try{if(centralApplyDestination(f,type))okCount++;else failCount++;}
+      catch(err){console.error('central import error',f.fname,type,err);failCount++;}
+    });
+  });
   sv();
   _centralBusy=false;
   var ov=document.getElementById('central-ov');if(ov)ov.remove();
   anR();
-  toast(okCount+' arquivo(s) importado(s)'+(failCount?(' · '+failCount+' falharam (confira o tipo escolhido)'):'')+'.','ti-file-import');
+  toast(okCount+' destino(s) importado(s)'+(failCount?(' · '+failCount+' falharam (confira os destinos marcados)'):'')+'.','ti-file-import');
 }
 </script>
 </body>
