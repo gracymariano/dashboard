@@ -2804,7 +2804,7 @@ function anDemoEditOpen(){
     +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">'
       +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">Feminino</div>'+inp('rp-demo-gf',g.f)+'</div>'
       +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">Masculino</div>'+inp('rp-demo-gm',g.m)+'</div>'
-      +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">Outro/ND</div>'+inp('rp-demo-go',g.o)+'</div>'
+      +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">unknown</div>'+inp('rp-demo-go',g.o)+'</div>'
     +'</div>'
     +'<div style="font-size:12px;font-weight:700;color:var(--navy);margin:14px 0 6px">Faixa etária (%)</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">'
@@ -2814,12 +2814,13 @@ function anDemoEditOpen(){
       +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">45–54</div>'+inp('rp-demo-a4',a.a4)+'</div>'
       +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">55–64</div>'+inp('rp-demo-a5',a.a5)+'</div>'
       +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">65+</div>'+inp('rp-demo-a6',a.a6)+'</div>'
+      +'<div><div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px">unknown</div>'+inp('rp-demo-a7',a.a7)+'</div>'
     +'</div>'
     +'<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'rp-demo-ov\').remove()">Cancelar</button><button class="pr" onclick="anDemoSave('+mi+')"><i class="ti ti-check" style="font-size:11px"></i> Salvar</button></div></div>';
   document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o)o.remove();});
 }
 function anDemoSave(mi){
-  var obj={gender:{f:_rpNum('rp-demo-gf'),m:_rpNum('rp-demo-gm'),o:_rpNum('rp-demo-go')},age:{a1:_rpNum('rp-demo-a1'),a2:_rpNum('rp-demo-a2'),a3:_rpNum('rp-demo-a3'),a4:_rpNum('rp-demo-a4'),a5:_rpNum('rp-demo-a5'),a6:_rpNum('rp-demo-a6')}};
+  var obj={gender:{f:_rpNum('rp-demo-gf'),m:_rpNum('rp-demo-gm'),o:_rpNum('rp-demo-go')},age:{a1:_rpNum('rp-demo-a1'),a2:_rpNum('rp-demo-a2'),a3:_rpNum('rp-demo-a3'),a4:_rpNum('rp-demo-a4'),a5:_rpNum('rp-demo-a5'),a6:_rpNum('rp-demo-a6'),a7:_rpNum('rp-demo-a7')}};
   var o=anDemoObj(anYear,anProp);o[mi]=obj;sv();
   var ov=document.getElementById('rp-demo-ov');if(ov)ov.remove();anR();toast('Dados demográficos salvos.','ti-check');
 }
@@ -2837,8 +2838,8 @@ function rpDemoBlock(){
   var head='<div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti ti-users"></i> Perfil demográfico'+(data?(' · '+AN_MES_LONG[mi]+'/'+anYear):'')+'</div>'+editBtn+'</div>';
   if(!data)return '<div class="an-card" style="margin-bottom:14px">'+head+'<div class="an-empty" style="padding:18px 0"><i class="ti ti-users"></i><p>Nenhum dado ainda</p><span>Google Analytics → Público-alvo → Dados demográficos (Gênero / Idade)</span></div></div>';
   var g=data.gender||{},a=data.age||{};
-  var genderHtml=rpBarList([{label:'Feminino',val:g.f,color:'#EC4899'},{label:'Masculino',val:g.m,color:'#3B82F6'},{label:'Outro/ND',val:g.o,color:'#9CA3AF'}]);
-  var ageHtml=rpBarList([{label:'18–24',val:a.a1,color:'#16C79A'},{label:'25–34',val:a.a2,color:'#16C79A'},{label:'35–44',val:a.a3,color:'#16C79A'},{label:'45–54',val:a.a4,color:'#16C79A'},{label:'55–64',val:a.a5,color:'#16C79A'},{label:'65+',val:a.a6,color:'#16C79A'}]);
+  var genderHtml=rpBarList([{label:'Feminino',val:g.f,color:'#EC4899'},{label:'Masculino',val:g.m,color:'#3B82F6'},{label:'unknown',val:g.o,color:'#9CA3AF'}]);
+  var ageHtml=rpBarList([{label:'18–24',val:a.a1,color:'#16C79A'},{label:'25–34',val:a.a2,color:'#16C79A'},{label:'35–44',val:a.a3,color:'#16C79A'},{label:'45–54',val:a.a4,color:'#16C79A'},{label:'55–64',val:a.a5,color:'#16C79A'},{label:'65+',val:a.a6,color:'#16C79A'},{label:'unknown',val:a.a7,color:'#9CA3AF'}]);
   return '<div class="an-card" style="margin-bottom:14px">'+head
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:6px">'
       +'<div><div style="font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px">Gênero</div>'+genderHtml+'</div>'
@@ -2964,6 +2965,63 @@ function rpInsightKpis(rows){
   var top=rpAggByQuery(rows).slice().sort(function(a,b){return b.c-a.c;})[0];
   return{pctRende:(rendeC/totalC*100),riskC:riskC,topQ:top?top.q:null};
 }
+/* ═══════════════════════════════════════════════════════════════
+   USUÁRIOS ATIVOS POR CIDADE — importa o CSV de "Detalhes demográficos:
+   Cidade" do GA4 (que vem com linhas de comentário # no topo, tratadas aqui).
+   ═══════════════════════════════════════════════════════════════ */
+function anCityObj(year,prop){var s=anStore();s.city=s.city||{};s.city[year]=s.city[year]||{};s.city[year][prop]=s.city[year][prop]||{};return s.city[year][prop];}
+function anCityGet(year,prop,mi){return anCityObj(year,prop)[mi]||null;}
+function anCityLastMi(year,prop){var o=anCityObj(year,prop);var mis=Object.keys(o).map(Number).sort(function(a,b){return b-a;});return mis.length?mis[0]:null;}
+function anCitySet(year,prop,mi,rows){var o=anCityObj(year,prop);o[mi]=rows;sv();}
+function rpParseCityCSV(text){
+  if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);
+  var lines=text.split(/\r?\n/).filter(function(l){return l.trim()&&l.trim().charAt(0)!=='#';});
+  if(!lines.length)return [];
+  var header=_csvRow(lines[0]);
+  var idxCity=header.findIndex(function(h){return /cidade|city/i.test(h);});
+  var idxUsers=header.findIndex(function(h){return /usu[áa]rios ativos|active users/i.test(h);});
+  var idxNew=header.findIndex(function(h){return /novos usu[áa]rios|new users/i.test(h);});
+  var idxRev=header.findIndex(function(h){return /receita/i.test(h);});
+  if(idxCity<0||idxUsers<0)return [];
+  var rows=[];
+  for(var i=1;i<lines.length;i++){
+    var cols=_csvRow(lines[i]);if(!cols||cols.length<=idxCity)continue;
+    var city=cols[idxCity],users=Number(cols[idxUsers])||0;if(!city)continue;
+    rows.push({city:city,users:users,newUsers:idxNew>=0?(Number(cols[idxNew])||0):null,revenue:idxRev>=0?(Number(cols[idxRev])||0):null});
+  }
+  rows.sort(function(a,b){return b.users-a.users;});
+  return rows;
+}
+function anCityImportOpen(){
+  if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,text/csv';
+  inp.onchange=function(e){
+    var f=e.target.files&&e.target.files[0];if(!f)return;
+    var rd=new FileReader();
+    rd.onload=function(ev){
+      var rows=rpParseCityCSV(ev.target.result);
+      if(!rows.length){toast('Não consegui identificar as colunas de Cidade / Usuários ativos nesse arquivo.','ti-alert-circle');return;}
+      anCitySet(anYear,anProp,rpCurMonthIdx(),rows);anR();toast(rows.length+' cidades importadas.','ti-check');
+    };
+    rd.readAsText(f,'UTF-8');
+  };
+  inp.click();
+}
+function rpCityBlock(){
+  if(anProp==='all')return '';
+  var mi=rpCurMonthIdx(),rows=anCityGet(anYear,anProp,mi);
+  if(!rows){var lastMi=anCityLastMi(anYear,anProp);if(lastMi!=null){rows=anCityGet(anYear,anProp,lastMi);mi=lastMi;}}
+  var impBtn='<button class="an-btn prim" onclick="anCityImportOpen()"><i class="ti ti-upload"></i> '+(rows?'Atualizar':'Importar CSV')+'</button>';
+  var head='<div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti ti-map-pin"></i> Usuários ativos por cidade'+(rows?(' · '+AN_MES_LONG[mi]+'/'+anYear):'')+'</div>'+impBtn+'</div>';
+  if(!rows)return '<div class="an-card" style="margin-bottom:14px">'+head+'<div class="an-empty" style="padding:18px 0"><i class="ti ti-map-pin"></i><p>Nenhum dado ainda</p><span>Google Analytics → Público-alvo → Detalhes demográficos → Cidade → exportar CSV</span></div></div>';
+  var total=rows.reduce(function(s,r){return s+(r.users||0);},0)||1,top=rows.slice(0,10);
+  var listHtml=top.map(function(r,idx){
+    var pct=total>0?(r.users/total*100):0;
+    return '<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px"><span style="color:var(--text-secondary)">'+(idx+1)+'. '+anEsc(r.city)+'</span><span style="font-weight:700;color:var(--text-primary)">'+anFmt(r.users,'int')+' ('+pct.toFixed(1).replace('.',',')+'%)</span></div><div style="height:7px;border-radius:4px;background:rgba(0,0,0,.06)"><div style="height:100%;border-radius:4px;width:'+pct.toFixed(2)+'%;background:#16C79A"></div></div></div>';
+  }).join('');
+  return '<div class="an-card" style="margin-bottom:14px">'+head+'<div style="margin-top:6px">'+listHtml+'</div><div class="an-card-sub" style="margin-top:8px">'+rows.length+' cidade(s) no arquivo importado · total '+anFmt(total,'int')+' usuários ativos</div></div>';
+}
+
 function hRAIOX(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
@@ -2995,6 +3053,7 @@ function hRAIOX(){
     +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Fala língua de gente</div><div style="font-size:1.05rem;font-weight:800;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(kpis.topQ?anEsc(kpis.topQ):'')+'">"'+(kpis.topQ?anEsc(kpis.topQ):'—')+'"</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">consulta com mais cliques no período</div></div>'
     +'</div>';
   h+=rpDemoBlock();
+  h+=rpCityBlock();
   h+=rpInsightsBlock();
   return h+'</div>';
 }
@@ -3620,7 +3679,7 @@ function anSetGoalMonth(mi){anGoalMonth[anSection]=parseInt(mi,10);anR();}
 function anCmpProps(){if(!Array.isArray(anCmpSel[anSection])||!anCmpSel[anSection].length)anCmpSel[anSection]=AN_REAL.slice();return anCmpSel[anSection];}
 
 /* ── Persistência (reaproveita ac + sv → Supabase) ── */
-function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};if(!s.qdev)s.qdev={};if(!s.qdevd)s.qdevd={};if(!s.seodim)s.seodim={};if(!s.trafchsrc)s.trafchsrc={};if(!s.pgview)s.pgview={};if(!s.idxpg)s.idxpg={};if(!s.brands)s.brands=[];if(!s.demo)s.demo={};if(!s.raioxNotes)s.raioxNotes={};return s;}
+function anStore(){if(!ac.an||typeof ac.an!=='object')ac.an={};var s=ac.an;if(!s.data)s.data={};if(!s.notes)s.notes={};if(!s.goals)s.goals={};if(!s.mgoals)s.mgoals={};if(!s.campsrc)s.campsrc={};if(!s.pages)s.pages={};if(!s.ads)s.ads={};if(!s.adm)s.adm={};if(!s.seo)s.seo={};if(!s.ret)s.ret={};if(!s.rev)s.rev={};if(!s.time)s.time={};if(!s.tlists)s.tlists={};if(!s.seoseg)s.seoseg={};if(!s.social)s.social={};if(!s.ui)s.ui={};if(!s.pgdev)s.pgdev={};if(!s.fx)s.fx={};if(!s.editorial)s.editorial={};if(!s.pgdevd)s.pgdevd={};if(!s.qdev)s.qdev={};if(!s.qdevd)s.qdevd={};if(!s.seodim)s.seodim={};if(!s.trafchsrc)s.trafchsrc={};if(!s.pgview)s.pgview={};if(!s.idxpg)s.idxpg={};if(!s.brands)s.brands=[];if(!s.demo)s.demo={};if(!s.raioxNotes)s.raioxNotes={};if(!s.city)s.city={};return s;}
 function anEmpty(section){var o={};AN_SECTIONS[section].metrics.forEach(function(m){o[m.k]=Array(12).fill(null);});return o;}
 function anRaw(year,section,prop){var s=anStore();s.data[year]=s.data[year]||{};s.data[year][section]=s.data[year][section]||{};if(!s.data[year][section][prop])s.data[year][section][prop]=anEmpty(section);
   var d=s.data[year][section][prop];AN_SECTIONS[section].metrics.forEach(function(m){if(!Array.isArray(d[m.k]))d[m.k]=Array(12).fill(null);});return d;}
