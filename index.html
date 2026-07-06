@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guardar Dinheiro — Hub de Performance - TESTE 123456</title>
+<title>Guardar Dinheiro — Hub de Performance</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/dist/tabler-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -2661,8 +2661,7 @@ function rpTopQSetMode(m){rpTopQMode=m;anR();}
 function rpTopQSetDay(v){rpTopQDay=parseInt(v,10);anR();}
 function rpTopQRows(mi){
   if(rpTopQMode==='mensal'){
-    if(anSeoDimGet(anYear,anProp,mi)!=='Consulta')return [];
-    return anSeoRows(anYear,anProp,mi).filter(function(r){return r.p!=null;}).slice().sort(function(a,b){return a.p-b.p;});
+    return rpAggByQuery(rpQueryRowsForMonth(mi)).filter(function(r){return r.p!=null;}).sort(function(a,b){return a.p-b.p;});
   }
   var tD=dIM(Number(anYear),mi),day=rpTopQDay||Math.min(new Date().getDate(),tD);
   var map={};
@@ -2687,7 +2686,7 @@ function rpTopQView(){
   var h='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+dayCtrl+toggle+'</div></div>';
   var rows=rpTopQRows(mi);
   if(!rows.length){
-    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-list-numbers"></i><p>Sem dados</p>'+(rpTopQMode==='mensal'?'<span>Importe o relatório de Consultas do mês em SEO → Busca (Manual/CSV)</span>':'<span>Precisa ter Consultas por Dispositivo importadas nesse dia (aba Consultas/Disp. → Acompanhamento diário)</span>')+'</div></div>';
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-list-numbers"></i><p>Sem dados</p>'+(rpTopQMode==='mensal'?'<span>Importe Consultas em SEO → Busca ou Consultas por Dispositivo (mensal) para esse mês</span>':'<span>Precisa ter Consultas por Dispositivo importadas nesse dia (aba Consultas/Disp. → Acompanhamento diário)</span>')+'</div></div>';
     return h;
   }
   var top=rows.slice(0,50);
@@ -2728,7 +2727,7 @@ function anBrandMatch(query,brand){
 function rpBrandRows(mi){
   var brands=anBrandList(),srcRows;
   if(rpBrandMode==='mensal'){
-    srcRows=(anSeoDimGet(anYear,anProp,mi)==='Consulta')?anSeoRows(anYear,anProp,mi):[];
+    srcRows=rpQueryRowsForMonth(mi);
   }else{
     var tD=dIM(Number(anYear),mi),day=rpBrandDay||Math.min(new Date().getDate(),tD),map={};
     PGDEV_LIST.forEach(function(d){qDevDRows(anYear,anProp,d.k,mi,day).forEach(function(r){
@@ -2774,7 +2773,7 @@ function rpBrandView(){
   var h='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+dayCtrl+toggle+'</div><div class="an-camp-ctrl-r"><button class="an-btn" onclick="rpBrandEditOpen()"><i class="ti ti-tag"></i> Editar marcas</button></div></div>';
   var brandRows=rpBrandRows(mi),withData=brandRows.filter(function(b){return b.i>0;});
   if(!withData.length){
-    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-tag"></i><p>Sem dados para as marcas monitoradas</p>'+(rpBrandMode==='mensal'?'<span>Importe o relatório de Consultas do mês em SEO → Busca</span>':'<span>Precisa ter Consultas por Dispositivo importadas nesse dia</span>')+'</div></div>';
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-tag"></i><p>Sem dados para as marcas monitoradas</p>'+(rpBrandMode==='mensal'?'<span>Importe Consultas em SEO → Busca ou Consultas por Dispositivo (mensal) para esse mês</span>':'<span>Precisa ter Consultas por Dispositivo importadas nesse dia</span>')+'</div></div>';
     return h;
   }
   var body=brandRows.map(function(b){
@@ -2874,9 +2873,26 @@ function rpInsightsSave(){var txt=document.getElementById('rp-insights-txt').val
    citada, para montar as personas, a distribuição de valores e os KPIs
    de comportamento. Mesma fonte de dados da aba SEO → Marca.
    ═══════════════════════════════════════════════════════════════ */
+/* Unifica as fontes de Consultas: import geral (SEO → Busca) + Consultas por Dispositivo
+   (mensal, se existir; senão soma os dias importados daquele mês, para não contar 2x). */
+function rpDeviceQueryRowsForMonth(mi){
+  var hasMonthly=PGDEV_LIST.some(function(d){return qDevRows(anYear,anProp,d.k,mi).length>0;});
+  var rows=[];
+  if(hasMonthly){
+    PGDEV_LIST.forEach(function(d){rows=rows.concat(qDevRows(anYear,anProp,d.k,mi));});
+    return rows;
+  }
+  var tD=dIM(Number(anYear),mi);
+  for(var day=1;day<=tD;day++){PGDEV_LIST.forEach(function(d){rows=rows.concat(qDevDRows(anYear,anProp,d.k,mi,day));});}
+  return rows;
+}
+function rpQueryRowsForMonth(mi){
+  var rows=(anSeoDimGet(anYear,anProp,mi)==='Consulta')?anSeoRows(anYear,anProp,mi).slice():[];
+  return rows.concat(rpDeviceQueryRowsForMonth(mi));
+}
 function rpAllQueryRows(){
   var rows=[];
-  for(var mi=0;mi<12;mi++){if(anSeoDimGet(anYear,anProp,mi)==='Consulta')rows=rows.concat(anSeoRows(anYear,anProp,mi));}
+  for(var mi=0;mi<12;mi++)rows=rows.concat(rpQueryRowsForMonth(mi));
   return rows;
 }
 function rpAggByQuery(rows){
@@ -2956,7 +2972,7 @@ function hRAIOX(){
   h+='<div class="an-card an-camp-ctrl" style="margin-bottom:14px"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div></div>';
   var rows=rpAllQueryRows();
   if(!rows.length){
-    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-scan"></i><p>Sem consultas suficientes em '+anYear+'</p><span>Importe os relatórios de Consultas em SEO → Busca — essa análise é calculada automaticamente a partir deles</span></div></div>';
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-scan"></i><p>Sem consultas suficientes em '+anYear+'</p><span>Importe Consultas em SEO → Busca ou Consultas por Dispositivo (Celular/Computador/Tablet) — essa análise soma as duas fontes automaticamente</span></div></div>';
     return h+'</div>';
   }
   var personas=rpPersonasData();
@@ -6824,4 +6840,3 @@ function centralApplyAll(){
 </script>
 </body>
 </html>
-
