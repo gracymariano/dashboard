@@ -1951,7 +1951,7 @@ function hVG(){
     +'<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===year?' selected':'')+'>'+y+'</option>';}).join('')+'</select>'
     +'<span class="an-camp-cl">Sensibilidade padrão</span>'
     +'<select class="fsel" onchange="anDashSetThresh(this.value)">'+[10,15,25].map(function(t){return '<option value="'+t+'"'+(t===thresh?' selected':'')+'>±'+t+'%</option>';}).join('')+'</select></div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="centralOpen()"><i class="ti ti-cloud-upload"></i> Upload Central</button><button class="an-btn" onclick="anDashThrOpen()"><i class="ti ti-adjustments"></i> Limites por métrica</button></div></div>';
+    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anDashThrOpen()"><i class="ti ti-adjustments"></i> Limites por métrica</button></div></div>';
   // Metas + ritmo
   var metas=anDashMetas(year);
   var metaRisk=metas.filter(function(m){return m.status==='risco'&&m.isCur;}).map(function(m){return {kind:'meta',label:m.label,sec:m.secL,fmt:m.fmt,goal:m.goal,proj:m.proj,mi:m.mi};});
@@ -3030,28 +3030,28 @@ function hRAIOX(){
   h+='<div class="an-card an-camp-ctrl" style="margin-bottom:14px"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div></div>';
   var rows=rpAllQueryRows();
   if(!rows.length){
-    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-scan"></i><p>Sem consultas suficientes em '+anYear+'</p><span>Importe Consultas em SEO → Busca ou Consultas por Dispositivo (Celular/Computador/Tablet) — essa análise soma as duas fontes automaticamente</span></div></div>';
-    return h+'</div>';
+    h+='<div class="an-card" style="margin-bottom:14px"><div class="an-empty"><i class="ti ti-scan"></i><p>Sem consultas suficientes em '+anYear+'</p><span>Importe Consultas em SEO → Busca ou Consultas por Dispositivo (Celular/Computador/Tablet) — essa análise soma as duas fontes automaticamente. As seções abaixo (Demografia, Cidade, Insights) não dependem disso e já podem ser preenchidas.</span></div></div>';
+  }else{
+    var personas=rpPersonasData();
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">'
+      +rpPersonaCard('Persona 1 · O Poupador Digital','R$ 1–10 mil · '+anFmt(personas.poup.clicks,'int')+' cliques nessa faixa',
+        'Está guardando as <b>primeiras reservas</b>: busca valores pequenos e concretos. Quer ver o dinheiro render <b>sem risco e sem jargão</b>.',
+        personas.poup.chips,'rgba(22,199,154,.06)','rgba(22,199,154,.22)')
+      +rpPersonaCard('Persona 2 · O Acumulador','R$ 100 mil+ · '+anFmt(personas.acum.clicks,'int')+' cliques nessa faixa',
+        'Já construiu <b>patrimônio maior</b> e decide onde estacioná-lo. Compara opções para valores altos — decisões grandes, perguntas diretas.',
+        personas.acum.chips,'rgba(124,58,237,.06)','rgba(124,58,237,.22)')
+      +'</div>';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">'
+      +'<div class="an-card"><div class="an-card-ttl rp-title-sm">Valores mais buscados</div><div class="an-card-sub" style="margin-bottom:8px">Cliques por faixa de valor mencionada na consulta · '+anYear+'</div>'+rpValueBarChart(rpValueDistribution(rows))+'</div>'
+      +'<div class="an-card"><div class="an-card-ttl rp-title-sm">Marca pesquisada</div><div class="an-card-sub" style="margin-bottom:8px">Cliques por marca · '+anYear+' (mesma classificação de SEO → Marca)</div>'+rpDonutChart(rpBrandYearAgg())+'</div>'
+      +'</div>';
+    var kpis=rpInsightKpis(rows);
+    h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px">'
+      +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Quer número, não aula</div><div class="rp-num-accent" style="font-size:1.9rem">'+kpis.pctRende.toFixed(0)+'%</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">dos cliques contêm "quanto rende"</div></div>'
+      +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Perfil conservador</div><div style="font-size:1.3rem;font-weight:800;color:var(--navy)">CDI &amp; caixinha</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">'+anFmt(kpis.riskC,'int')+' clique(s) em ações/cripto — quase nada</div></div>'
+      +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Fala língua de gente</div><div style="font-size:1.05rem;font-weight:800;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(kpis.topQ?anEsc(kpis.topQ):'')+'">"'+(kpis.topQ?anEsc(kpis.topQ):'—')+'"</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">consulta com mais cliques no período</div></div>'
+      +'</div>';
   }
-  var personas=rpPersonasData();
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">'
-    +rpPersonaCard('Persona 1 · O Poupador Digital','R$ 1–10 mil · '+anFmt(personas.poup.clicks,'int')+' cliques nessa faixa',
-      'Está guardando as <b>primeiras reservas</b>: busca valores pequenos e concretos. Quer ver o dinheiro render <b>sem risco e sem jargão</b>.',
-      personas.poup.chips,'rgba(22,199,154,.06)','rgba(22,199,154,.22)')
-    +rpPersonaCard('Persona 2 · O Acumulador','R$ 100 mil+ · '+anFmt(personas.acum.clicks,'int')+' cliques nessa faixa',
-      'Já construiu <b>patrimônio maior</b> e decide onde estacioná-lo. Compara opções para valores altos — decisões grandes, perguntas diretas.',
-      personas.acum.chips,'rgba(124,58,237,.06)','rgba(124,58,237,.22)')
-    +'</div>';
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">'
-    +'<div class="an-card"><div class="an-card-ttl rp-title-sm">Valores mais buscados</div><div class="an-card-sub" style="margin-bottom:8px">Cliques por faixa de valor mencionada na consulta · '+anYear+'</div>'+rpValueBarChart(rpValueDistribution(rows))+'</div>'
-    +'<div class="an-card"><div class="an-card-ttl rp-title-sm">Marca pesquisada</div><div class="an-card-sub" style="margin-bottom:8px">Cliques por marca · '+anYear+' (mesma classificação de SEO → Marca)</div>'+rpDonutChart(rpBrandYearAgg())+'</div>'
-    +'</div>';
-  var kpis=rpInsightKpis(rows);
-  h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px">'
-    +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Quer número, não aula</div><div class="rp-num-accent" style="font-size:1.9rem">'+kpis.pctRende.toFixed(0)+'%</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">dos cliques contêm "quanto rende"</div></div>'
-    +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Perfil conservador</div><div style="font-size:1.3rem;font-weight:800;color:var(--navy)">CDI &amp; caixinha</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">'+anFmt(kpis.riskC,'int')+' clique(s) em ações/cripto — quase nada</div></div>'
-    +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Fala língua de gente</div><div style="font-size:1.05rem;font-weight:800;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(kpis.topQ?anEsc(kpis.topQ):'')+'">"'+(kpis.topQ?anEsc(kpis.topQ):'—')+'"</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">consulta com mais cliques no período</div></div>'
-    +'</div>';
   h+=rpDemoBlock();
   h+=rpCityBlock();
   h+=rpInsightsBlock();
