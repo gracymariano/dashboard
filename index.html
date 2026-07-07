@@ -2628,6 +2628,12 @@ function anIdxQuickSave(){
   var ov=document.getElementById('an-idxq-ov');if(ov)ov.remove();
   anR();toast('Indexação de hoje registrada.','ti-check');
 }
+function rpFmtMil(v){
+  if(v==null)return '—';
+  if(v>=1000000){var m=v/1000000,rm=Math.round(m*10)/10;return (Number.isInteger(rm)?String(rm):rm.toFixed(1).replace('.',','))+' mi';}
+  if(v>=1000){var k=v/1000,r=Math.round(k*10)/10;return (Number.isInteger(r)?String(r):r.toFixed(1).replace('.',','))+' mil';}
+  return String(Math.round(v));
+}
 function anIdxBlock(){
   if(anProp==='all')return '';
   var addBtn='<button class="an-btn prim" onclick="anIdxQuickOpen()"><i class="ti ti-plus"></i> Registrar hoje</button>';
@@ -2649,10 +2655,18 @@ function anIdxBlock(){
   var lI=ptsI.length>1?('<polyline points="'+ptsI.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'" fill="none" stroke="var(--success)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>'):'';
   var lN=ptsN.length>1?('<polyline points="'+ptsN.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'" fill="none" stroke="var(--danger)" stroke-width="2" stroke-dasharray="4 3" stroke-linejoin="round" stroke-linecap="round"/>'):'';
   var svg='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block;margin-top:10px">'+lI+lN+'</svg>';
-  return wrapOpen+'<div style="display:flex;gap:28px;flex-wrap:wrap;align-items:baseline;margin-top:4px">'
-    +'<div><div class="rp-num-accent">'+(pct!=null?pct.toFixed(1).replace('.',',')+'%':'—')+'</div><div style="font-size:11px;color:var(--text-secondary)">indexadas do total conhecido</div></div>'
-    +'<div><div style="font-size:24px;font-weight:700;color:var(--success);letter-spacing:-.5px;line-height:1">'+(idx?anFmt(idx.v,'int'):'—')+'</div><div style="font-size:11px;color:var(--text-secondary);margin-top:4px">indexadas ('+(idx?(idx.d+1)+'/'+HMESES[idx.mi]:'—')+')</div></div>'
-    +'<div><div style="font-size:24px;font-weight:700;color:var(--danger);letter-spacing:-.5px;line-height:1">'+(nidx?anFmt(nidx.v,'int'):'—')+'</div><div style="font-size:11px;color:var(--text-secondary);margin-top:4px">não indexadas ('+(nidx?(nidx.d+1)+'/'+HMESES[nidx.mi]:'—')+')</div></div>'
+  return wrapOpen+'<div style="font-size:11px;color:var(--text-secondary);margin-top:2px;margin-bottom:10px">'+(pct!=null?pct.toFixed(1).replace('.',',')+'% indexadas do total conhecido':'')+'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+    +'<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);border-radius:12px;padding:14px 16px">'
+      +'<div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--danger);margin-bottom:6px">NÃO INDEXADAS</div>'
+      +'<div style="font-size:1.8rem;font-weight:800;color:var(--navy);letter-spacing:-.02em;line-height:1">'+(nidx?rpFmtMil(nidx.v):'—')+'</div>'
+      +'<div style="font-size:10.5px;color:var(--text-secondary);margin-top:4px">'+(nidx?(nidx.d+1)+'/'+HMESES[nidx.mi]:'—')+'</div>'
+    +'</div>'
+    +'<div style="background:rgba(22,199,154,.08);border:1px solid rgba(22,199,154,.18);border-radius:12px;padding:14px 16px">'
+      +'<div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--success);margin-bottom:6px">INDEXADAS</div>'
+      +'<div style="font-size:1.8rem;font-weight:800;color:var(--navy);letter-spacing:-.02em;line-height:1">'+(idx?rpFmtMil(idx.v):'—')+'</div>'
+      +'<div style="font-size:10.5px;color:var(--text-secondary);margin-top:4px">'+(idx?(idx.d+1)+'/'+HMESES[idx.mi]:'—')+'</div>'
+    +'</div>'
     +'</div>'+svg+'</div>';
 }
 
