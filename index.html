@@ -2636,9 +2636,9 @@ function rpFmtMil(v){
 }
 function anIdxBlock(){
   if(anProp==='all')return '';
-  var addBtn='<button class="an-btn prim" onclick="anIdxQuickOpen()"><i class="ti ti-plus"></i> Registrar hoje</button>';
+  var addBtn='<button class="an-btn prim" onclick="anIdxQuickOpen()">Inserir Manualmente</button>';
   var wrapOpen='<div class="an-card" style="margin-bottom:14px;background:linear-gradient(135deg,rgba(22,199,154,.07),rgba(0,139,139,.03));border:1px solid rgba(22,199,154,.2)">'
-    +'<div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti ti-list-check"></i> Páginas indexadas × não indexadas</div>'+addBtn+'</div>';
+    +'<div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti ti-list-check"></i> Páginas Indexadas e Não Indexadas</div>'+addBtn+'</div>';
   var idx=anIdxLastVal(anYear,anProp,'idx'),nidx=anIdxLastVal(anYear,anProp,'nidx');
   if(!idx&&!nidx){
     return wrapOpen+'<div class="an-empty" style="padding:18px 0"><i class="ti ti-list-check"></i><p>Nenhum dado ainda</p><span>Registre diariamente quantas páginas o Google indexou vs. não indexou (Search Console → Indexação → Páginas)</span></div></div>';
@@ -2654,7 +2654,7 @@ function anIdxBlock(){
   var ptsI=[],ptsN=[];vI.forEach(function(v,i){if(v!=null)ptsI.push([xAt(i),y(v)]);});vN.forEach(function(v,i){if(v!=null)ptsN.push([xAt(i),y(v)]);});
   var lI=ptsI.length>1?('<polyline points="'+ptsI.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'" fill="none" stroke="var(--success)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>'):'';
   var lN=ptsN.length>1?('<polyline points="'+ptsN.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'" fill="none" stroke="var(--danger)" stroke-width="2" stroke-dasharray="4 3" stroke-linejoin="round" stroke-linecap="round"/>'):'';
-  var svg='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block;margin-top:10px">'+lI+lN+'</svg>';
+  var svg=(ptsI.length>1||ptsN.length>1)?('<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block;margin-top:10px">'+lI+lN+'</svg>'):'';
   return wrapOpen+'<div style="font-size:11px;color:var(--text-secondary);margin-top:2px;margin-bottom:10px">'+(pct!=null?pct.toFixed(1).replace('.',',')+'% indexadas do total conhecido':'')+'</div>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
     +'<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.18);border-radius:12px;padding:14px 16px">'
@@ -3978,7 +3978,7 @@ function anEntryBar(){
   return '<div class="an-entry">'
     +'<span class="lbl"><i class="ti ti-database"></i> Dados anuais · '+propLabel(anProp)+(isAll?' (somatório — selecione um site para editar)':'')+'</span>'
     +yrSel
-    +'<button class="an-btn" '+(isAll?'onclick="anNeedsProp()"':'onclick="anManualOpen()"')+'><i class="ti ti-edit"></i> Manual</button>'
+    +'<button class="an-btn prim" '+(isAll?'onclick="anNeedsProp()"':'onclick="anManualOpen()"')+'>Inserir Manualmente</button>'
     +'<button class="an-btn prim" '+(isAll?'onclick="anNeedsProp()"':'onclick="anImportOpen()"')+'><i class="ti ti-upload"></i> Importar CSV</button>'
     +'<button class="an-btn" onclick="anModelDownload()"><i class="ti ti-download"></i> Modelo</button>'
     +'</div>';
@@ -4381,7 +4381,7 @@ function anCampControls(disabled){
   var mkSel='<select class="fsel" onchange="anCampSetMetric(this.value)"'+(disabled?' disabled':'')+'>'+ms.map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select>';
   return '<div class="an-card an-camp-ctrl">'
     +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Métrica</span>'+mkSel+'<span class="an-camp-cl">Mês (detalhe)</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anCampManualOpen()"><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anCampManualOpen()">Inserir Manualmente</button>'
     +'<button class="an-btn" onclick="anCampModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
     +'<button class="an-btn prim" onclick="anCampImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
 }
@@ -4626,7 +4626,7 @@ function anTchControls(disabled){
   var mkSel='<select class="fsel" onchange="anTchSetMetric(this.value)"'+(disabled?' disabled':'')+'>'+ms.map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select>';
   return '<div class="an-card an-camp-ctrl">'
     +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Métrica</span>'+mkSel+'<span class="an-camp-cl">Mês (detalhe)</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anTchManualOpen()"><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anTchManualOpen()">Inserir Manualmente</button>'
     +'<button class="an-btn" onclick="anTchModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
     +'<button class="an-btn prim" onclick="anTchImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
 }
@@ -4872,7 +4872,7 @@ function anRevView(){
   var h='',years=anYears();
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anRevManualOpen()"><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anRevManualOpen()">Inserir Manualmente</button>'
     +'<button class="an-btn" onclick="anRevModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
     +'<button class="an-btn prim" onclick="anRevImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
   h+='<div class="an-card">'+anRevPivot()+'</div>';
@@ -5625,7 +5625,7 @@ function anRetView(){
   var h='';var years=anYears();
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anRetManualOpen()"><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anRetManualOpen()">Inserir Manualmente</button>'
     +'<button class="an-btn" onclick="anRetModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
     +'<button class="an-btn prim" onclick="anRetImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-repeat"></i><p>Selecione uma propriedade</p><span>A retenção é exibida por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
@@ -5829,7 +5829,7 @@ function anAdsControls(mi){
   var moSel='<select class="fsel" onchange="anAdsSetMi(this.value)">'+months+'</select>';
   return '<div class="an-card an-camp-ctrl">'
     +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anAdsManualOpen()"><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anAdsManualOpen()">Inserir Manualmente</button>'
     +'<button class="an-btn" onclick="anAdsModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
     +'<button class="an-btn prim" onclick="anAdsImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
 }
@@ -6114,7 +6114,7 @@ function anPgControls(){
   var mSel=PG_METRICS.map(function(m){return '<button class="an-mtab'+(mk===m.k?' active':'')+'" onclick="anPgSetMetric(\''+m.k+'\')">'+m.l+'</button>';}).join('');
   return '<div class="an-card an-camp-ctrl">'
     +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Métrica</span>'+mSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anPgManualOpen()"><i class="ti ti-pencil"></i> Inserir manual</button>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anPgManualOpen()">Inserir Manualmente</button>'
     +'<button class="an-btn" onclick="anPgModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
     +'<button class="an-btn prim" onclick="anPgImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
 }
