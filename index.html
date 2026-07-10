@@ -4821,12 +4821,19 @@ function anCampPreview(rows,fname){
   var names=Object.keys(parsed.sources);
   if(parsed.mi<0||!names.length){toast('Não reconheci o formato de origem da campanha. Baixe o modelo para conferir as colunas.','ti-alert-circle');return;}
   var metsLbl=parsed.mk.map(function(k){return anMeta('camp',k).l;}).join(', ');
-  var top=names.slice().sort(function(a,b){return(parsed.sources[b].sessoes||0)-(parsed.sources[a].sessoes||0);}).slice(0,8);
-  var prev=top.map(function(n){return '<tr><td style="text-align:left;font-weight:600">'+anEsc(n)+'</td><td>'+(parsed.sources[n].sessoes!=null?anFmt(parsed.sources[n].sessoes,'int'):'—')+'</td><td>'+(parsed.sources[n].usuarios_ativos!=null?anFmt(parsed.sources[n].usuarios_ativos,'int'):'—')+'</td></tr>';}).join('');
+  var head=AN_SECTIONS.camp.head;
+  var sortKey=parsed.mk.indexOf(head)>=0?head:parsed.mk[0];
+  var cols=parsed.mk.slice(0,3);
+  var top=names.slice().sort(function(a,b){return(parsed.sources[b][sortKey]||0)-(parsed.sources[a][sortKey]||0);}).slice(0,8);
+  var prev=top.map(function(n){
+    var tds=cols.map(function(k){var v=parsed.sources[n][k];return '<td>'+(v!=null?anFmt(v,anMeta('camp',k).fmt):'—')+'</td>';}).join('');
+    return '<tr><td style="text-align:left;font-weight:600">'+anEsc(n)+'</td>'+tds+'</tr>';
+  }).join('');
+  var thead=cols.map(function(k){return '<th>'+anMeta('camp',k).l+'</th>';}).join('');
   var o=document.createElement('div');o.className='ov';o.id='an-cimp-ov';
   o.innerHTML='<div class="mx" style="width:620px;max-width:96vw;max-height:88vh;overflow:auto"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar origens — '+propLabel(anProp)+'</h4>'
     +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br>Mês detectado: <strong style="color:var(--navy)">'+AN_MES_LONG[parsed.mi]+'/'+parsed.year+'</strong> · <strong>'+names.length+'</strong> origens · Métricas: '+anEsc(metsLbl)+'</p>'
-    +'<div class="hwrap"><table class="htbl imp-prev"><thead><tr><th style="text-align:left">Origem</th><th>Sessões</th><th>Usuários</th></tr></thead><tbody>'+prev+'</tbody></table></div>'
+    +'<div class="hwrap"><table class="htbl imp-prev"><thead><tr><th style="text-align:left">Origem</th>'+thead+'</tr></thead><tbody>'+prev+'</tbody></table></div>'
     +(names.length>8?'<p style="font-size:11px;color:var(--text-secondary);margin-top:6px">+ '+(names.length-8)+' outras origens</p>':'')
     +'<div style="margin:12px 0 4px;font-size:12px;font-weight:600;color:var(--navy)">Modo de importação</div>'
     +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;margin-bottom:6px;cursor:pointer"><input type="radio" name="cimode" value="update" checked> <span>Atualizar o mês — substitui os valores das origens enviadas neste mês (recomendado)</span></label>'
@@ -5026,12 +5033,21 @@ function anTchPreview(rows,fname){
   var names=Object.keys(parsed.channels);
   if(parsed.mi<0||!names.length){toast('Não reconheci o formato de canal. Baixe o modelo para conferir as colunas, ou confirme que é o relatório "Aquisição de tráfego" (canal da sessão).','ti-alert-circle');return;}
   var metsLbl=parsed.mk.map(function(k){return anMeta('trafch',k).l;}).join(', ');
-  var top=names.slice().sort(function(a,b){return(parsed.channels[b].sessoes||0)-(parsed.channels[a].sessoes||0);}).slice(0,8);
-  var prev=top.map(function(n){return '<tr><td style="text-align:left;font-weight:600">'+anEsc(n)+'</td><td>'+(parsed.channels[n].sessoes!=null?anFmt(parsed.channels[n].sessoes,'int'):'—')+'</td><td>'+(parsed.channels[n].receita!=null?anFmt(parsed.channels[n].receita,'money'):'—')+'</td></tr>';}).join('');
+  // Mostra dinamicamente até 3 métricas que o arquivo realmente trouxe (em vez de Sessões/Receita fixos,
+  // que ficam vazios quando o relatório exportado é de outro tipo, ex.: engajamento em vez de sessão bruta)
+  var head=AN_SECTIONS.trafch.head; // métrica preferida pra ordenar o "top" (sessões), se estiver no arquivo
+  var sortKey=parsed.mk.indexOf(head)>=0?head:parsed.mk[0];
+  var cols=parsed.mk.slice(0,3);
+  var top=names.slice().sort(function(a,b){return(parsed.channels[b][sortKey]||0)-(parsed.channels[a][sortKey]||0);}).slice(0,8);
+  var prev=top.map(function(n){
+    var tds=cols.map(function(k){var v=parsed.channels[n][k];return '<td>'+(v!=null?anFmt(v,anMeta('trafch',k).fmt):'—')+'</td>';}).join('');
+    return '<tr><td style="text-align:left;font-weight:600">'+anEsc(n)+'</td>'+tds+'</tr>';
+  }).join('');
+  var thead=cols.map(function(k){return '<th>'+anMeta('trafch',k).l+'</th>';}).join('');
   var o=document.createElement('div');o.className='ov';o.id='an-timp-ov';
   o.innerHTML='<div class="mx" style="width:620px;max-width:96vw;max-height:88vh;overflow:auto"><h4><i class="ti ti-file-import" style="color:var(--primary)"></i> Importar Canais de Tráfego — '+propLabel(anProp)+'</h4>'
     +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br>Mês detectado: <strong style="color:var(--navy)">'+AN_MES_LONG[parsed.mi]+'/'+parsed.year+'</strong> · <strong>'+names.length+'</strong> canais · Métricas: '+anEsc(metsLbl)+'</p>'
-    +'<div class="hwrap"><table class="htbl imp-prev"><thead><tr><th style="text-align:left">Canal</th><th>Sessões</th><th>Receita</th></tr></thead><tbody>'+prev+'</tbody></table></div>'
+    +'<div class="hwrap"><table class="htbl imp-prev"><thead><tr><th style="text-align:left">Canal</th>'+thead+'</tr></thead><tbody>'+prev+'</tbody></table></div>'
     +(names.length>8?'<p style="font-size:11px;color:var(--text-secondary);margin-top:6px">+ '+(names.length-8)+' outros canais</p>':'')
     +'<div style="margin:12px 0 4px;font-size:12px;font-weight:600;color:var(--navy)">Modo de importação</div>'
     +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;margin-bottom:6px;cursor:pointer"><input type="radio" name="timode" value="update" checked> <span>Atualizar o mês — substitui os valores dos canais enviados neste mês (recomendado)</span></label>'
