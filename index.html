@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guardar Dinheiro — Hub de Performance</title>
+<title>Guardar Dinheiro</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/dist/tabler-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -42,30 +42,30 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .page-body{flex:1;padding:28px 32px;max-width:1400px;width:100%}
 
 /* ── SIDEBAR ── */
-.sidebar{width:var(--sidebar-w);background:var(--navy);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:100;overflow-y:auto}
-.sb-logo{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.sidebar{width:var(--sidebar-w);background:#FFFFFF;border-right:1px solid rgba(11,34,57,.08);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:100;overflow-y:auto}
+.sb-logo{padding:24px 20px 16px;border-bottom:1px solid rgba(11,34,57,.08)}
 .sb-logo-row{display:flex;align-items:center;gap:10px}
 .sb-logo-ico{width:36px;height:36px;background:var(--grad);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.sb-logo-mark{width:42px;height:42px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(255,255,255,.04);border-radius:10px}
+.sb-logo-mark{width:42px;height:42px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(22,199,154,.08);border-radius:10px}
 .sb-logo-mark img{height:34px;width:auto;display:block}
-.sb-logo-name{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.3px}
-.sb-logo-tag{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px}
+.sb-logo-name{font-size:14px;font-weight:700;color:var(--navy);letter-spacing:-.3px}
+.sb-logo-tag{font-size:10px;color:var(--text-secondary);margin-top:1px}
 .sb-nav{flex:1;padding:16px 12px}
-.sb-section{font-size:9px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1px;padding:12px 8px 6px;margin-top:8px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:var(--radius-xs);cursor:pointer;font-size:13px;font-weight:500;color:rgba(255,255,255,.6);border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:all .2s;margin-bottom:2px}
-.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.9)}
+.sb-section{font-size:9px;font-weight:700;color:rgba(11,34,57,.35);text-transform:uppercase;letter-spacing:1px;padding:12px 8px 6px;margin-top:8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:var(--radius-xs);cursor:pointer;font-size:13px;font-weight:500;color:rgba(11,34,57,.65);border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:all .2s;margin-bottom:2px}
+.nav-item:hover{background:rgba(11,34,57,.05);color:var(--navy)}
 .nav-item.active{background:var(--grad);color:#fff;font-weight:600;box-shadow:0 4px 16px rgba(22,199,154,.3)}
 .nav-item i{font-size:17px;flex-shrink:0}
 .nav-item svg{width:18px;height:18px;flex-shrink:0}
-.sb-footer{padding:16px 12px;border-top:1px solid rgba(255,255,255,.06)}
-.sb-savebadge{margin-top:10px;font-size:10.5px;color:rgba(255,255,255,.55);display:flex;align-items:center;gap:5px;padding:4px 2px}
-.sb-user{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--radius-xs);background:rgba(255,255,255,.04)}
+.sb-footer{padding:16px 12px;border-top:1px solid rgba(11,34,57,.08)}
+.sb-savebadge{margin-top:10px;font-size:10.5px;color:var(--text-secondary);display:flex;align-items:center;gap:5px;padding:4px 2px}
+.sb-user{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--radius-xs);background:rgba(11,34,57,.04)}
 .sb-avatar{width:34px;height:34px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
-.sb-user-name{font-size:12px;font-weight:600;color:#fff}
-.sb-user-email{font-size:10px;color:rgba(255,255,255,.4)}
+.sb-user-name{font-size:12px;font-weight:600;color:var(--navy)}
+.sb-user-email{font-size:10px;color:var(--text-secondary)}
 .ze-card{margin:12px;background:linear-gradient(135deg,rgba(22,199,154,.12),rgba(0,139,139,.12));border:1px solid rgba(22,199,154,.2);border-radius:var(--radius-sm);padding:12px}
 .ze-card-title{font-size:11px;font-weight:700;color:#16C79A;display:flex;align-items:center;gap:5px;margin-bottom:4px}
-.ze-card-text{font-size:10px;color:rgba(255,255,255,.5);line-height:1.5}
+.ze-card-text{font-size:10px;color:var(--text-secondary);line-height:1.5}
 
 /* ── TOP HEADER ── */
 .top-header{background:var(--card);border-bottom:1px solid rgba(0,0,0,.06);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;gap:16px}
@@ -81,7 +81,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 /* ── PAGE HEADER ── */
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
-.page-title{font-family:'Inter Tight','Inter',sans-serif;font-size:clamp(1.55rem,2.4vw,2.05rem);font-weight:800;color:var(--text-primary);letter-spacing:-.03em;line-height:1.1}
+.page-title{font-family:'Inter Tight','Inter',sans-serif;font-size:clamp(1.55rem,2.4vw,2.05rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .page-sub{font-size:13px;color:var(--text-secondary);margin-top:3px}
 .page-actions{display:flex;align-items:center;gap:8px}
 
@@ -239,11 +239,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .PI{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;background:var(--primary-light)}
 .PF .PN{font-size:13px;font-weight:600}.PF .PD{font-size:11px;color:var(--text-secondary)}
 .PW{display:flex;align-items:center;gap:8px;margin-top:6px}.PWB{flex:1;height:4px;background:rgba(0,0,0,.06);border-radius:2px;overflow:hidden}.PWF{height:100%;border-radius:2px;transition:width .5s}.PWP{font-size:10px;color:var(--text-secondary);font-weight:600}
-.cd{border-radius:var(--radius-xs);padding:6px;min-height:80px;cursor:pointer;background:var(--card);border:1.5px solid rgba(0,0,0,.06);transition:all .2s}
+.cd{border-radius:16px;padding:9px 10px;min-height:104px;cursor:pointer;background:var(--tag-bg,var(--card));border:1.5px solid rgba(0,0,0,.04);transition:all .2s}
 .cd:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow)}
 .cd.sl{border-color:var(--primary);border-width:2px}
-.cd .cn{font-size:9px;font-weight:600;margin-bottom:3px;color:var(--text-secondary)}
-.cd .ct{font-size:7px;padding:2px 5px;border-radius:4px;display:inline-block;margin-bottom:2px;font-weight:600}
+.cd .cn{font-size:11px;font-weight:700;margin-bottom:4px;color:var(--navy)}
+.cd .ct{font-size:9px;padding:3px 7px;border-radius:20px;display:inline-block;margin-bottom:3px;font-weight:700}
 .cg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:1rem}
 .ch{font-size:9px;font-weight:700;color:var(--text-secondary);text-align:center;padding:4px 0;text-transform:uppercase;letter-spacing:.4px}
 .ce{opacity:.25;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;border-style:dashed}
@@ -252,7 +252,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .dp h3{font-size:14px;font-weight:600;margin-bottom:3px}
 .dp .dd{font-size:11px;color:var(--text-secondary);margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,.05)}
 .cl{list-style:none}
-.cl li{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:12px;border-bottom:1px solid rgba(0,0,0,.04)}
+.cl li{display:flex;align-items:center;gap:10px;padding:12px 14px;font-size:12.5px;border-radius:14px;margin-bottom:8px;border-left:4px solid var(--tag-c,var(--border));background:var(--tag-bg,var(--bg));transition:all .2s}
+.cl li.td{opacity:.55}
+.cdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.cl li:hover .ta{opacity:1}
 .cl li:last-child{border-bottom:none}
 .cl li .cb{width:16px;height:16px;border-radius:4px;border:1.5px solid rgba(0,0,0,.15);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;margin-top:1px;background:var(--card);transition:all .2s}
 .cl li .cb:hover{border-color:var(--primary)}
@@ -267,11 +270,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .leg span i{width:7px;height:7px;border-radius:2px;display:inline-block}
 .cc-cg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:.7rem}
 .cc-ch{font-size:8px;font-weight:700;color:var(--text-secondary);text-align:center;padding:4px 0;text-transform:uppercase;letter-spacing:.3px}
-.cc-cd{border-radius:6px;padding:5px;min-height:70px;background:var(--card);border:1.5px solid rgba(0,0,0,.06);position:relative;transition:all .2s}
+.cc-cd{border-radius:14px;padding:8px;min-height:128px;background:var(--card);border:1.5px solid rgba(0,0,0,.04);position:relative;transition:all .2s}
 .cc-cd:hover{border-color:var(--primary)}
 .cc-cd.emp{opacity:.2;border-style:dashed}
-.cc-cd .dn{font-size:8px;font-weight:700;margin-bottom:3px;color:var(--text-secondary)}
-.cc-pk{font-size:7px;padding:2px 4px;border-radius:3px;margin-bottom:2px;line-height:1.3;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cc-cd .dn{font-size:10px;font-weight:700;margin-bottom:4px;color:var(--navy)}
+.cc-pk{font-size:8px;padding:3px 6px;border-radius:8px;margin-bottom:3px;line-height:1.35;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 .cc-pk.cm{background:#FBEAF0;color:#72243E}.cc-pk.ca{background:#EEEDFE;color:#3C3489}.cc-pk.cb{background:#EAF3DE;color:#27500A}.cc-pk.cr{background:#FCEBEB;color:#791F1F}.cc-pk.ce{background:#E6F1FB;color:#0C447C}.cc-pk.cl{background:#FAEEDA;color:#633806}.cc-pk.c35{background:#E0F2F1;color:#00695C}.cc-pk.cc{background:#FFF8E1;color:#F57F17}
 .cc-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.8rem}
 .cc-st{background:var(--card);border-radius:var(--radius-xs);padding:10px 14px;flex:1;min-width:100px;box-shadow:var(--shadow)}
@@ -285,6 +288,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .cc-tb{padding:6px 14px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid rgba(0,0,0,.08);background:var(--card);color:var(--text-secondary);font-family:inherit;transition:all .2s}
 .cc-tb.a{background:var(--grad);color:#fff;border-color:transparent}
 .cc-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.cc-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;margin-bottom:8px;border-left:4px solid var(--tag-c,var(--border));background:var(--tag-bg,var(--bg))}
+.cc-row-date{font-size:11px;font-weight:700;color:var(--navy);text-align:center;flex-shrink:0;width:46px;line-height:1.4}
+.cc-row-date span{display:block;font-size:9px;font-weight:600;color:var(--text-secondary)}
+.cc-row-body{flex:1;min-width:0}
+.cc-row-title{font-size:12.5px;font-weight:600;color:var(--navy)}
+.cc-row-kw{font-size:10px;color:var(--text-secondary);margin-top:2px}
+.cc-star{color:var(--red)}
 .cc-tbl th{text-align:left;padding:6px 8px;font-size:10px;font-weight:700;color:#fff;background:var(--grad)}
 .cc-tbl td{padding:6px 8px;border-bottom:1px solid rgba(0,0,0,.04)}
 .cc-tbl tr:hover td{background:rgba(0,0,0,.02)}
@@ -484,7 +494,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .an-mcard{background:var(--card);border:1px solid rgba(11,34,57,.06);border-radius:var(--radius-sm);padding:17px;transition:all .2s;box-shadow:0 3px 14px rgba(11,34,57,.04)}
 .an-mcard:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
 .an-mcard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px;min-height:32px}
-.an-mcard-lbl{font-size:11.5px;color:var(--text-secondary);font-weight:600;line-height:1.35}
+.an-mcard-lbl{font-size:14px;font-weight:800;line-height:1.35;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.01em}
 .an-mcard-tools{display:flex;align-items:center;gap:7px;flex-shrink:0}
 .an-edit{border:none;background:transparent;color:var(--text-secondary);cursor:pointer;padding:3px;border-radius:7px;display:flex;align-items:center;opacity:0;transition:all .15s;font-size:13px}
 .an-mcard:hover .an-edit{opacity:.65}
@@ -501,8 +511,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 /* ── Card genérico ── */
 .an-card{background:var(--card);border:1px solid rgba(11,34,57,.06);border-radius:var(--radius);padding:22px;margin-bottom:20px;box-shadow:0 4px 18px rgba(11,34,57,.04)}
 .an-card-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-.an-card-ttl{font-size:14px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px}
-.an-card-ttl i{color:var(--primary);font-size:17px}
+.an-card-ttl{font-size:19px;font-weight:800;display:flex;align-items:center;gap:8px;letter-spacing:-.015em;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.an-card-ttl i{color:var(--primary);font-size:19px}
 .an-card-sub{font-size:12px;color:var(--text-secondary);font-weight:500}
 /* ── Barra de entrada de dados ── */
 .an-entry{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:20px;background:var(--card);border:1px solid rgba(11,34,57,.06);border-radius:var(--radius-sm);padding:12px 16px}
@@ -680,11 +690,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .soc-card:hover{box-shadow:0 4px 14px rgba(11,34,57,.08);transform:translateY(-1px)}
 .soc-card.active{box-shadow:0 0 0 2px var(--snc) inset}
 .soc-card-ic{font-size:18px;color:var(--snc)}
-.soc-card-l{font-size:11.5px;color:var(--text-secondary);font-weight:600;margin-top:4px}
+.soc-card-l{font-size:14px;font-weight:800;margin-top:4px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.01em}
 .soc-card-v{font-size:22px;font-weight:800;color:var(--navy);line-height:1.1;margin-top:2px;font-variant-numeric:tabular-nums}
 .soc-card-s{font-size:10px;color:var(--text-secondary)}
 .soc-total{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px}
-.soc-total-l{font-size:12px;color:var(--text-secondary);font-weight:600}
+.soc-total-l{font-size:14px;font-weight:800;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.01em}
 .soc-total-v{font-size:30px;font-weight:800;color:var(--navy);line-height:1.1;font-variant-numeric:tabular-nums}
 .soc-mom{font-size:10px;font-weight:700;white-space:nowrap}
 .htbl.pg-prev,.htbl.imp-prev{min-width:0;font-size:11.5px}
@@ -740,7 +750,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <div class="sb-logo-mark"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFsAAABICAYAAACZdImsAAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAgP0lEQVR42uV9e3xdV3Xm9619zpWuJL+txI7jR+ImITGheUBhmBiklj5ooXRorqDMTNtf+sg0MNCB0naY3+RK/UHbX1sonbYUMj9om2kLSA0UCiUNECkJBBjywA62Ezu2k9iJH7Jsva90z95rzR97nyvZJCExNnWYm1w9ju7rrLP2enzft7aJs3gzMwJAP/q5ZWgLz/Tr12o1A2AkDf+/3cxMhoeHs9rgoPt+v+8LwT7ZmTpZ9veDpAJQAKhKjtnQbAfgGsDK+Waz+1gxizzPgQJADhRFeoF80YudeqxYdDCPB/MCQFFg4/LlBYA9JOfMjOe6h/N7NnI8QUu/v3LfzPgVtz1y11LprL5l/8TRVRNzjWrDN5dklUrHvBnIDDBADShgMAAKhZpAFTAzqBKBAsCgaqDGx5sTUAQQgakiayp+6YqX7/6VjVe8E8C/DAHSR4YfKM82M+FQH0mGChx2Ng7+6L1HH33n73zr468exVzXwbkTmJ6YQ9MX0ZiB8A0zAAgm8ZgRwQg1gxoQDDAj1OLfPAhVg4EA0nEABsJAqCqac/PhUKaXFtDab2y68vP14WH+YIWRel1SuMADs/te/dnH7nvXHz706dcf0GmcmJmEK8w7qTADSROYGZVE7jKaEYpowNK4IRk3xh+DKRGA6Olmrb+hNLYSUINCsKSjgwf8jH7t0OMXtwEY6O3VHwhjk8T1n/ykG+rrC9NmV39ozz/f8L++/YW3PhWOsTndMJFcl1su6pAVBDQ6Mha+KgAB48oArPTaGM0IggYYFVBG/yVBM0h5Iaz0bIExrgjnVSRo5Zx26edr7JvvvDkb6O3zD04/9mt/sWfolq8d342ZmQYyMlSl3anBBTF4IAZYECQgJFQBMt5Vo6GlTBkECENIBpf41OTNBghaRpbWS6c8aAr6AJbX9IVubDNjz0i/G+gd8P/4+Mg7PvboFz74yIl9ocLM2p3LgppThpQhCUEMA0KCZQhgNIxauUpKb9ZkpuTJ8SWi/y9aGdHmBFJCBQwQg6nFlUAt3+SFa2wzY99Qn9zVN+Q/sftLf/SlyQfffXD8gHZKpwRTqrXSFQwEgeixTEkQFj0VhAEQKJLPAwTEonHj4yzZKz6KjA4cPZ3R9ukN1ICg8b1hCgsvjJ4me2ZDg0MYkk+/6VPhtr1f/OAdUw+849DU0dCFdpkz3/JNYTQy01qOUcJacRkmoFmMx0D6mS3LSXpuTH6W1kWM32S8eESsWlJUSR4ef3EuA4Utn39BGnsEw66Pvf7zT9z1tuHGtnccGT9UdLCSN0UXDCaLEpyxLLYhCysDtsibY9wmhAYF4wVRa5mPIoAhrhRLV680OqNBAwglwLR6Kk4gUgadc/v2tG3u4OCg62Wv33H8ya3fnPj2B46MPe47s2oGR2TRTCkwpIbRyiWN1t9YWgoKWLxLMlxcCQZHQNInEDOIBThTZDAIASeACEEaKAqReCwj4Ui00SH4pip9LuALz9gleGRmy//14O1/t3dufy4mIggUGhwFmRBOABeLsGhcUwhCNCyjsSgIwYL38KFAYfM6b02dt6YWNh+aNhfmbT400+/lvWnzWljTCps3b00rbM68NbQo7zob5v2Mn/dHZye0u9op13Rv3FvAUBscfGE1NUMYkr6+vvD3ez5z0+H84AaZ8p5WyUAPsQyhNC7LiBtvIYUFAggI2giB1c4u113tRFtw0LmAoIA3g6WQE0u6GA6MrnUspPhclnyhjDYkXJaz0l6V4BU04idW/dDdb9v80ncdq9cFEQV8YRi7bnXpQ5+eaJzY9OHdt/738eZkaJPceShgEg0d/R5UwBhjNxlrYDFYI3i4tg65cslarGtbcc95XUs/e2Hb6qcyVh7J8xzzFsNrfioClccvOUqAqkjwU4EcOYSkmtnSSnXliqx6USOY37B01beXAQ+QDC8EICo7JSsKeuE/s/vL/+1Y+1gXZ703ZGSqgyW12lYGILVYUwMQmHpANq/YgOtWv3j7aze99HfWuRW3z2nx/YBY+ULAtHkqgjdncy/6y4f/9wO7J/dUMssZzBgScOQNUBDBympCEGLuM++Er+6+tvlTm7a+7fL28/+apAfA+vCwA4D+np7vCbcYGhpirVazIYDdAIERjA6NWq1W0xcKedAy9rANZ73s9Z9+4tPv+lax/U/GRie9EZkaUBo7AAhGmCk8BGoC82qzCHzV6peNvnvLm19L8n4AHLRB6WNfOE1P/bciAyzhQGfl4km5DEf6R9TMusbGj14/MzNlTmIlu7iMoyFVGURuhCDYVNbUa1ZeOfvuS9/wRpL3D9twZmY4HUObmaAew/O/0T1SbLWaqw8PZ/UzfNG5KIToYTt88a3bP7b3qfnDoGVQA3xqSyIOLfCpDXeaYVrn9aIVm+R1K3t+fusFV32qXB2n80HqVpcBDqgACGaXjM7MLJkoJlqJs/waSZqFPJDnHQskz6LEujgBF4von/yknwoUKLAh70BnZ+csgAMAXEZOLvIUDppJDfiew1UGAP0j/QJAH3ri/uuKtjm4pgXAHIQQiyWdpBbGJYzNWISuJcvdRq75m55113yqPlw/bUMPDg66PvaFeZu/8v/sv+vm3972928Ym57IlYQ5QuFi+xQUQQ1BI4RLEpA8oi4a4NVglBbaZRpJBq8BZgRFIjRghIdEIMsMecRptCKV0c0r1oR3b7vz9pcsveChX9h02Wc7mO0r2Z+aDbpBnH6OOKkaOeHHrgMAoZkxgjwsoU8pC+PYKc7qHC+U9bp1Y+8Hgym29Gw5rQ8waNHQ+44f+OE/2PmZr907tac6dWIKpLNYfwtMJBpIA0IATAXGiK94lCxPJCMi3CURKtCIeS/uZ8v8oxopNzNACRhFJMvOv2fyMDo6O29YcXQv/nzPV//gFx/61/t+ZtVFn3792ov/imSDAAbN3OnQbxkADIwMKABMNqc2N6QBR0dVjWgcHEwi6sYE2IupumpV1nL5Qy/uPG+7GUj0Pe9qo16vSx/7wtj81Iv/cOfg7TvH91dpLJZWOnJvgSUwoAYoiVwSo+MkooNMtJqWeLgsUGsg4CI6qFjcIEU2SB2AdF4pLVrw0ZH8+HQ4aMABY/uuycnrRjoeve6Wb3fe+IkDj3ziTRde+qckx1GHWL+VJPfzaNcHYGbWHnxjvYV5OIuxQhCxC0lMDczgYFAJurK6FF2Vzo+TtP6RuivL7+dTG6fva/9u3x2f2Dazd42ZBpK5MYAuYiJgBLOgIVb5jICWlcfNQGHCxEq8JtHIZjj5P8AYgawSpDEASoOnUQl6gmbMqsask7Ss6cOB8fHwxfHDl/bv+drNv/q1z31l2+TxN1Tfl2vqs55zEpV00gago0DzfMx7pIIDjoQj4Jig0UQKACJt5rCmuvwBAKcVQvpHRtzAwIB+/uj/vf4hPrHFZucLE3ECA0QhVAgj5CpioFj8vfW3AEJBOQX4ogHpuUJb6G4J0BTONGI6WsIO6XnJxQmDCGAZEJzRHFwnM7fEMj14eNR/4vFHtvzXr33+n/527/bPmdnVyeDuecXsMYz5udDwuXMIanCprmYCL50ATMy4GJCLoHv5+bOnm5kHenuDmeXv2/53Nx6fPabV9jZnalAaXAoDbLE2rboJZoZgMWSUSbtkaCRywYmzKckMaz0mLc50YRi5zuRQXMAwk/HZgokDDOZNcppQRe8++qQe0MbPHJyducrMriP52HOJ4wL0x1edbSytVLKKqTdB6RnppAytD06z2JibwlHc6SZFAHbvse2vmnCTW1goMqhEj1SUWh9ZhCpKDMHxO1u070l/bx1jZI8ITWhk7BFoC48VLgqRCfItX1vMEmVXcqmESCRRhUG6pZIdOTZe1B+6e93bv/mlz5rZFX1kqFtdvotnRw1ee0fX6q68s320ESxjJrrIwMbYNZohAU9AEeZxbPLIaXWIO0Z2EAC2j+/7+RPFMRBBQUqWyjJSojAnkQqSUD9DSSaw5dUld7nAmyUGCUjAWTwuFskHAWER/o3JHgZLKU4XcZySYrq2WKUYoTwBaoEKkfvZZvjo3h1Xrurs+qKZ1Uje+2wengERluzE8kaVHZpRXAk80RSRwtUW9QUYKi5XVxGZnZn9IQBf6Ub388KRR8pSc2ZsTRPzcBJVUKCBlAinJqDLFvXRTCdsrc7WtVieeBUiJAaLRo4xWVqhwSV8BylxskQrmJyoJO7TyUaONH4CLRkjI4yRJ63k5nww/+f7HrygHfiYmV3VNzRURPf8zlo8Cm6ic+xpzE3vqVYrJFQXt+oLS08gFOR09PNNFGz+Ui65jfSP6CIRyHO29mprn+zI2rXCzCpCZCwZmxiuHABnkdFxEhO1sEQZW2gjHA2ObIUQSTHYxWIwPT8SHln5OpakEOU5ikGErTsZOc543vH1y3BDMeQAlAGahWxmfLr48P5tl31s9/Y/HerrC/024p659OsHSWpbe/4kW3XZwoeWVIVI6QsKaczPY//MY1c0Q7NtYGBA0V9/zsZ+65ZYvWxZcdGta9rPE28+D1aYaTBoYapNC1qY18KCefPatCI0zWvTvDXNw5tXb8Ga5tWb12DBghUWrNBg3nzreKHemr5phW9akV7TqzdvwYIG86GwInj1GrxRg9BMSjquzAG26CIypl+lgeZA71GFZU8dGw8f3vfgLz/cnPmNLTu65elwFQLA8HA96+0d8F8+8Im/2FU8cNP4+FQwc1mgQRPrGCwifqFE/9SHzo4Vbuvyre993YYf/5936p3Pq12vm0k/YJ8/9PX37Jp85J2HGmMrfYgL3hsQzMU6ODUsXkuMhgjpPMwMnoKgSdKADKBL7P7JTL8aETRpT4xQRudTNTTF0HSCE/OzaDSaEJMgpFgwmp6sMTSLjZCm96cqPAmIKPOKvHnDZfs//LKfvJxk0yKkYCeXfj09AAawcenljz41+QQnOAGRbEEmluKZ0FLCMDiIjM8es8f56G+p6l+SPDw4OOj6+p4b2jdA6kD88X1mdsuumcfXj85OLIKKTr4tpiBOlhoXWIRLRUny0zwHxXe+npB0ltmENVdONhqXHZg99rM7x4+8bO/UxIrDUxPIkAXJxLWkGWWilJiAzSIWk6mAZjI33wxfOrr/oqH9O99uZn8yNDQkCSH4TtTPzNbc+vD7HznU3LfUzJk3Y8SzJXlULMi8GdQEwZrqXJu8YtUr73jTpjf+KsmDiTV5zi1sbbDmhvqGzgmZbw6gabbmQzu/+ot3PLXnN+9vHFs732j6NpdlIcmMIhxQ6lgSV6qMRLdkdsI38MubrtS/3vqz60keqtfrMjAQ4RBJYLnWBmuO5OFleedd1a4Og4USPkh1a1yq0NDqyCqoSMPPh2264yfueOKO/vKiJUz7OcXwob6hYGY0M/l+3evpXhscdHUzGbRBVx8ezoqIpR9+65br/uifXvPLL7tpw9VfvXD1qkwzai6R7C5lGbBSzJyqJSFogV3M9a6pwxw68PD1Zta2c8vCeEurg7yp+yYOYYiXLt3yD2NzR14/gyk4uiQss5bAhow1KwAEAdosd0eOHvZ3LXnghuIAzzOzt5CcAoD6cD3r7+nXZxPhtQD7p3nMd7tgZ4NRMTPeeP/9GcknzezH1+xbcdsf7rrrtROz85qrSGCs1aNoKNX6ji0cJhPD2NyM/NOubW94y4Yr/tzXb5bv0I309vQEAHZ599bPrpjrfqpSqbgow4uZZnHnxQXmEmbAEnZmJ6afCveMf/11f/bwP9xzz+FtbzGz9oHeAb+YAXm6+6KOcrERMWiD7tme13ruGZ7fIWm3vPSlRT2u0rlf33ztT//Uyos/We3IRV0IkgAyUhMOswAFpFrazU5PhyPt+LFjpm/GwEALOznJc+6777782muv5bYjX77hgcbdHzoycSzAXOYtsugBbFUDwVLsRsKR1aGhQX0OWdm+Cusr63dcVN308UuXbvjC5cs37kFLTHbyubUzm55HQN1MBk6J9WaWA6g8k2E6sraZRmjGD3AWvHzQzPX106zfzv+1rww+dNvR3Su6UKEPRrPodUrGqJIqGzNDU82vXr0ye8/FL735xkuufm8dI26AvZ6nLqEhDEkNtert+/7miW2Nby5HyMyCShMSyz9IKs1S4kyiR29ACEBQ1XlTY97hVnSuRN4UmLmjHewwb+AsmhaCQc2MLsPapd37X7fq2o9es3rzR2Nt2o9+9Geffuobv3/f+O6fa8w0OhVGcVkUWKphVj3UUzcu7z76E+uu/sjLl1/0V093sc7EbXh4OOvt7fX/vHfXDe87eO9H9x49FNpZcT5pES2BZmq6yODwqLZlP9Z94d9/auv1/8lqNYehoZCduoQs1jgzl51/3W+Ojh7+28fH94YcS4RsgJan1j0BM1a+eJowogMlk3YjvFcdmxhVVWbIsvMKaKrP052AzSn2+qNrGo25H9k7e3T3ZuAr4IC9/MBPvvWbzV3v+tax3XDSBuXCbE1hhuANGhTf9gfXjjWmP/TU5LGRC8hdZYI+k8Ye6elR1Ovyuotf9Ll/Gd395M7s0LpqYWq0JC9kS2OOhLcL4SYbDROP16rZJpKPW+yVTmkpRRTo58Vdl9x6SftVt5+3Ym3m0fAClwwd22jBImSNiArUBOwniE2EzDRCtsbCzBWwXJ21IbM2y61D2q06r/OP8ri79+iuX0C82MuOTI/dtGv08dCRd/gOddamzpyHWaHmmrD2INaBiuVNbT7sD+Oe4/t+JWHkZ1wCMUDqq3sgJI9evWLdF1ZXO9E034IzIiajrWmIUkvNABsNzZXHgG4ANpSQm1Ozcav+fcWan7phXfaiR/P2PPNgcMzgmADtBOjENl5ihi7BqmRwmqFiHhkC6UgISQaCSkGgmmfTFc6HWTvSHCuxcZsMMyFXdZUQxKSgoaAgPocM9Flg0xXMLUiFatNsVs9m/f3Wnn4zM/7IeZtu31hZiiaVmfEk7KhEH0tGK4fZeJjH9rFD6wGg9kySYXJAa7UaSB76990/Xbuk46qjmUBADZk55BoF6EwKeEGJJSdgPonfI/stIAWZMTHzDi2oGAQKQE3LNQGSk4dmRr+xpHMJAk21XKoEHF3E2BUQjbwkxbENZ3f2sZZGtn94+ard57mqMkROSRJbDyzMDJXzRBBYUxQnZqcuStgbn3HZ9bEvDNtwtqJtxbdeuarnP25ZerVBzM1JQylMALu1APryZ0HkKZ2USF1LPpzQswT4mwIW0nddKItItLm2tsiR60koIBIR4FiqaNPSFTmrCqqUBwhgd7OY29fRUWWgaRT7L8RrIM33WIRv59SjS/KrAGBkZOTZZ2p62evNBh25+UujU4deg5D/w8PNbWsmGzM+Y3vGxLgDBrFIpAoio8QWvZSMQkmS4hjjXQL5Q+I6S9Q5Ys3x/5L3LMkCsAT8kZC3iFOE8H1Qb8ZbcybMT1AIU7WysZHE2pfIOktGyxSzvnnkGfXZ33lV+8KgDbpurh02s1fdeXDF57ZXvnnpUyeOBidtyOAcmOZdVBJ3WNYOCcjSxG1b0qAQUCFEDVnm0JblaFv8UWwOBh9F9YrWQJOU7GEabBIooAX2nnhi28m0xFlTyV6wMuu8bO74GKqVTErn0sTsBJNWKFErICIYbczsiWDfc5yD7GNfMDNHco+ZvWLl2Or3POJ2/dau6V2YnmsYkQcxcSXcbWm6q6TWWqw1CV0gQgAX2RDnBE4WmpKgAYDCEdDEE7am+AQLAzSp7PQazjaQRQA2DayYsqKCXMwZaIsQ0QUHS8UBIW6+gEIfAYAtQ6P2fCZ8Q6pjTwB495RNfSF79PbffVwe//GpfCqbmppGCN4TjgIiqIkANBJ0MX1qGV9aI9LR8+f9vBrVLcCkDpk4FCk5ilnUidjC6gCRWBVBU70/m5YewYgAsC8+sedVY+2oVASelEyQEnWq4uSkEUXFsrzNfmTtpumYZWvPb3Y9wbBkP7mES+7MmN25e2L3qx6cefCGp+YO/fTMskb3odnR2OgUAeqD0XJEvD2oEknFFGFJKjCus/7S6gXtly5fP1G+T8W5yLJDU8m+MKIXp38T+SwGOsP6jlUXnE1j9/ePAIDd/eTOrUdmJ9BWzieTYFppLi2AEvUOMK7t7NJrlq2uPueY/QxImyWNnl689OK7AdxtZpu3T377HY+O7bliz8SjS0PuLirauXo2NNFEoGtvk6Z6BDMQGSgOCAGb8q7synzzPT0rr/lIfbieDfQOeA0BRh+rFcaSkRAYATNtoY7U6E3VvJKkrJEEObP4SNQimtnlP3/PrTU/O2tVyZ2mKmkx9dpqKAnNq+2y0rU9AmAHANYAPe3NXUr9tZlJ/0i/kNwL4O3xCmYorFi2Z/zJix+YfYgTY1NLLmxff+mszibBTw5xgg7LbdPq9XOXVNf+I8m5X7/vI3kZiyXF+BLwAaJ6lWUpCMIEyCDYM3rwkbORIM2MN95yi1Qo4YMP33vLrqmjWTtEDSosuzdLBHLUbkXqDqpL2zvkiiVrdpI8XqvVHMnwPe+kU+6eU7e69Iz0SO9Ir/oBbyQnADy46KF3fbcT6xnpNwBwDshEkElrJhUWtJWAHBbKTAdgdXXJirNRgfTvGMpvufHG5tfHn3zbzTtuv252vhE6XcUFROUrF+RXaKE3ZvDB44JqJy5bdcFnYMYrRkaIoaEzs21RxBAGdAADegrwz34AW4aG2N3dzcV+19OTHLEH6EFPIGmvHq7HBCmKCgUFiMBYcSgVDi6CX63J4ljlrFt2/kVnMozU0zZMGBhoHvXNt7/nvtv+bO/Rg9qVt4lqadQ0wl0iF+V0BsU0d9kGtk387NqNd4G0frMwAJw5Yz9TbH/Gi/Msz3UuejUZ2WtabHwiKxJHBKFJpcWAZtGYRb0uFyxZwtN0Y9YBbgE4NDSEATI4AI/OHHtj/zc++YGvHn/MOvKcCEott44otYOp/nCISKYXhq5qh7t8SfenhDxQGxx0TAqpDOfQrSfFmihVVhABpMJBQIsim9b2RjRUxFGDR0XcVRgY0BsHBoDBmsOOIQPqz8czdGCRY5jZBX+97xv1m3f/669/48Qe7ZR2BMTiVFDuEBEzoSXtmmn0rebsDK9afSHffPnLP/77AGq1GoZOtxr5ftxUQyKWLYkZI+oS1aua1FKEc5mbbzR0V77vP+xsHHjv5e0XDpAsvvvaWVQ9ANAY8jZsmx+79suP3d/zG/d//D8/Mn1k+bHpibBM2l2AoRKIWRc72qS1RjBtGVzNYGTo6uqUq6urR65sX3Z3FPsvgGTnpLFbClZykSB4YXcdQiGM8btNKDtO7LBb9zf/xxLrfON7tv3VofnC0wcYJIeIg2qszRMNHgezVOENsGC46Ru3nt8m7uKxrFl9rHEcM5PTcCahUyquSK1rcECeVhRLry5lnCQyADO+wNXnb+R/efHW95CcH7RBt/ian5PGFgEyAtmiLS/i1hpxNwaKpHl2g5pDe9bJ3WP7Q6Wt4/Isa7vc0xDEEAhoEl2HcvQDcZsNX87EE2jOB/hmAQYLDhnaJRM1OCvRyHTRmZj1svnN0iYzwQAfgl+6fFm2den6v1mXV79eHx7O+k5RiJ2TxnZYEEJSAZ+yvUCh5Q476QLk8CjoUJV2Z/NBi+asmUUMUVsSNKRt7bgA4Ze4jQIVU+ZwDI7OEDcBK7H61nZUdrKiIMrdonc7ijYy5euXbHzynVds/R2SqFv9O+i5c9PYLBWrsZiWRKYaiQwCn+DrdBTOIr9ppCxMzxDlpmBmpXMqDIv2CkyNETTBvwlUSlu0RUCt1GwnWXEcjjIEEqKxOhrz8/pzm6/J3nHZa95L8ujw8NPPg56TxqZIUo1qa6ui2KqXM5nRAFJOryWTLIyIKMwELl0gtIabLHn5gmiGZNqnCmkgKk1apFKzzBUlTEwIhAl4EtqJ0PAvX7M5f8vaq95/SaXrw882eHuOGXukLEeiSqXFyCDhaKVhQwu+ZQv8sVZ8LeNqKBsNLEwjWKqNW7M1aRg1Xc24X2AoxzuktQYkhRUlWkOAY80Z/5LzNuW/dP5V79q6cv0HbLDmnk3Je26GEYneJWWgTJ65WPpUdkyLN+limpdseXNKXpLwdUsxZWHgg61NwsqNxQIAcWn/QQ2R+zQp550gNHggzDW9+7GLrs7f0v2S979m7aUfuH5w0A3WaspnmQk4x4wd2xrnIiqegfAsd6qMhHJpZMdyEDbGXkFMpAJtzcGw3HymxZdGQ0jSLJby54Wd2iKLVCo8NI0OqwWYOcCJIgAdy7rc1uq6yRs39/7pSzpX918/WIuG/i6qrHPSs019cBnTYHS5sZws+HSibBwXDKpGuCSYR4rlpolDQ3xMpLDYKi9avCYidNsSJJQMuUsX0ahFKIwhd+d3rMSrV13+hXdf8qO/S3I7kuSZz2HK5Zwy9s7RnSYUtEnHiuPFEaM5wgW4ELUpBVLdRwImC3EkpsdW4kQari73eC3H9spJsKBl6Rfju0kcz2baPjpOXKsmJi5znR2yTpbgxR3r9r5u7ZV//KPnv+gjv62+hXU/1/M7p4xdq9Vw25tuw3n5eVPH8QTnOetzdQhm5iWkskRSiRYgSdhZOrtSWvOi1jIiWzCtppisjLsAlZvp0vsYr4VUJw50bHdtTsShC+36oqXrH/jh5Zv/+Pp1V32W5FwM80Y+z80Czqmt2cyipPzA9PYrHxh94K7HsXu5NQuIa4dPdJpH3EEtaNyxwZvEzc3T3igeBtXY2RWpNS/ngUrFrTHuAqSIukPViLW0WQZtKpZ1LD+yJlv60BK03fHKzVd/7hVLNj1cxuNyX5TTZY1xjhmcJO3J0SdfdMjt+73ZxlTbgYkn7pr1jZkAsyIoCheAtAfJmuqGiw5PHz9YFEURHFAEjZUj4nYZpUGLk/rTBS/fsHTNprnCT1bzytjG6upGxbVt+7mL/93+jJwOp9BjNbxw9qN6HuB9/d/+H4yoQ+rD9aweR0POiFOeszs8mpkMDfVxCMBNtSs48l36oDNTdgLo6dH+s/TPsfw/yxwDf1X5HiEAAAAASUVORK5CYII=" alt="Guardar Dinheiro"></div>
       <div>
         <div class="sb-logo-name">Guardar Dinheiro</div>
-        <div class="sb-logo-tag">Hub de Performance</div>
       </div>
     </div>
   </div>
@@ -770,7 +779,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <div class="sb-user-email">gracy.mariano@gmail.com</div>
       </div>
     </div>
-    <div class="sb sb-savebadge"><i class="ti ti-device-floppy" style="font-size:10px"></i> Salvo</div>
   </div>
 </aside>
 
@@ -785,15 +793,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       </div>
     </div>
     <div class="header-right">
-      <select class="period-sel" onchange="hubFil=this.value">
-        <option value="hoje">Hoje</option>
-        <option value="7d">7 dias</option>
-        <option value="30d" selected>30 dias</option>
-        <option value="90d">90 dias</option>
-        <option value="mes">Este mês</option>
-        <option value="ano">Este ano</option>
-      </select>
-      <button class="btn-outline"><i class="ti ti-download"></i> Exportar</button>
       <button class="notif-btn"><i class="ti ti-bell"></i></button>
     </div>
   </header>
@@ -940,6 +939,8 @@ const SITES=['gd','blog','cora'];
 const CATS=['reels','artigos','pins','melhorias'];
 const CATL={reels:'Reels',artigos:'Artigos',pins:'Pins',melhorias:'Melhorias'};
 const CATC={reels:'var(--red)',artigos:'var(--blu)',pins:'var(--cor)',melhorias:'var(--pur)'};
+const TAG_EMOJI={seo:'🔍',conteudo:'✍️',pinterest:'📌',comercial:'💼',dados:'📊',produto:'🎁',ads:'📢',planejamento:'🗓️'};
+const TAG_COLORS={seo:['#E6F1FB','#0C447C'],conteudo:['#EEEDFE','#3C3489'],pinterest:['#FBEAF0','#72243E'],comercial:['#FAEEDA','#633806'],dados:['#EAF3DE','#27500A'],produto:['#FAECE7','#712B13'],ads:['#FCEBEB','#791F1F'],planejamento:['#F1EFE8','#444441']};
 async function ld(){try{const d=await sbGet('gd_v4');if(d){cT=d.t||{};ac=d.a||{};tE=d.e||{}}else{// migrar dados existentes do localStorage, se houver
 const s=localStorage.getItem('gd_v4');if(s){try{const lsd=JSON.parse(s);cT=lsd.t||{};ac=lsd.a||{};tE=lsd.e||{};await sbSet('gd_v4',{t:cT,a:ac,e:tE});localStorage.removeItem('gd_v4')}catch(e2){}}}}catch(e){console.error('ld error',e)}}
 var _svPending=false; // true enquanto o salvamento no Supabase ainda está em andamento — usado para avisar antes de recarregar/fechar a página
@@ -1265,7 +1266,8 @@ function delAllPages(m,s,label){
 // ===== ROADMAP =====
 function rR(a){
   const m=MO[cM],cp=gCP(cM),tt=totalTasks(cM);
-  let h=mN();
+  let h=pageHeader('Plano de Execução','Calendário mensal de metas e tarefas por categoria');
+  h+=mN();
   h+=renderSMART(m);
   h+=`<div class="PB"><div class="PI" style="background:${m.pc}18;color:${m.pc}"><i class="ti ${m.pi}"></i></div><div class="PF"><div class="PN">Fase: ${m.ph}</div><div class="PD">${m.pd}</div><div class="PW"><div class="PWB"><div class="PWF" style="width:${cp}%;background:${m.pc}"></div></div><div class="PWP">${cp}%</div></div></div></div>`;
   // Meta + Realizado lado a lado
@@ -1284,7 +1286,7 @@ function rR(a){
     h+=`<div class="rc"><div class="rl">${CATL[k]}</div><div class="rv" style="color:${CATC[k]}">${count} <span style="font-size:9px;color:var(--tx3)">/ ${tg}</span></div><div class="B" style="margin-top:3px"><div class="BF" style="width:${p}%;background:${CATC[k]}"></div></div></div>`});
   h+=`</div></div></div></div>`;
   // Legend
-  h+=`<div class="leg"><span><i style="background:#E6F1FB"></i>SEO</span><span><i style="background:#EEEDFE"></i>Conteúdo</span><span><i style="background:#FBEAF0"></i>Pinterest</span><span><i style="background:#FAEEDA"></i>Comercial</span><span><i style="background:#EAF3DE"></i>Dados</span><span><i style="background:#FAECE7"></i>Produto</span><span><i style="background:#FCEBEB"></i>Ads</span><span><i style="background:#F1EFE8"></i>Planejamento</span></div>`;
+  h+=`<div class="leg"><span>🔍 SEO</span><span>✍️ Conteúdo</span><span>📌 Pinterest</span><span>💼 Comercial</span><span>📊 Dados</span><span>🎁 Produto</span><span>📢 Ads</span><span>🗓️ Planejamento</span></div>`;
   // Calendar
   const fd=fDw(m.y,m.mo),td=dIM(m.y,m.mo),dm={};
   m.days.forEach(d=>dm[d.d]=d);
@@ -1294,7 +1296,7 @@ function rR(a){
   while(dn<=td){let w=(fd+dn-1)%7;if(w>=5){dn++;continue}
     if(dm[dn]){const tk=gTk(cM,dn),tt2=gTt(cM,dn),tg=gTg(cM,dn),tl=gTl(cM,dn);
       const dd=tk.length>0&&tk.every((_,i)=>cT[K(cM,dn,i)]);
-      h+=`<div class="cd ${selD===dn?'sl':''} ${dd?'ad':''}" onclick="selD=${dn};R()"><div class="cn">${String(dn).padStart(2,'0')}</div><div class="ct t-${tg}">${tl}</div><div class="ck">${tt2}</div><div class="cx ${dd?'xd':''}" onclick="event.stopPropagation();togAll(${cM},${dn});R()">${dd?'<i class="ti ti-check"></i>':''}</div></div>`
+      h+=`<div class="cd ${selD===dn?'sl':''} ${dd?'ad':''}" style="--tag-bg:${TAG_COLORS[tg]?TAG_COLORS[tg][0]:'var(--card)'}" onclick="selD=${dn};R()"><div class="cn">${String(dn).padStart(2,'0')}</div><div class="ct t-${tg}">${TAG_EMOJI[tg]||''} ${tl}</div><div class="ck">${tt2}</div><div class="cx ${dd?'xd':''}" onclick="event.stopPropagation();togAll(${cM},${dn});R()">${dd?'<i class="ti ti-check"></i>':''}</div></div>`
     }else{h+=`<div class="cd ce" onclick="addDay(${cM},${dn})"><div class="cn" style="color:var(--tx3)">${String(dn).padStart(2,'0')}</div><div class="ah"><i class="ti ti-plus"></i></div></div>`}
     dn++}h+='</div>';
   // Detail
@@ -1303,7 +1305,8 @@ function rR(a){
     h+=`<div class="dp"><div style="display:flex;align-items:center;justify-content:space-between"><h3>${tt2}</h3><div style="display:flex;gap:4px"><span class="E" onclick="eDt(${cM},${selD})"><i class="ti ti-edit" style="font-size:13px"></i></span><span class="E" onclick="cDg(${cM},${selD})"><i class="ti ti-tag" style="font-size:13px"></i></span></div></div>`;
     h+=`<div class="dd"><span class="ct t-${tg}" style="margin-right:4px">${tl}</span>${String(selD).padStart(2,'0')} de ${mn[m.mo]} de ${m.y}</div>`;
     h+=`<ul class="cl">${tk.map((t,i)=>{const k=K(cM,selD,i),done=cT[k],cls=gCls(cM,selD,i);
-      return`<li class="${done?'td':''}"><div class="cb ${done?'xd':''}" onclick="cT['${k}']=!cT['${k}'];sv();R()">${done?'<i class="ti ti-check"></i>':''}</div><span style="flex:1">${t}</span><select class="cls-sel" onchange="sCls(${cM},${selD},${i},this.value);R()" title="Classificar"><option value="" ${!cls?'selected':''}>—</option>${CATS.map(c=>`<option value="${c}" ${cls===c?'selected':''}>${CATL[c]}</option>`).join('')}</select><span class="ta"><span class="E" onclick="eT2(${cM},${selD},${i})"><i class="ti ti-pencil" style="font-size:11px"></i></span><span class="E" onclick="rT2(${cM},${selD},${i})"><i class="ti ti-trash" style="font-size:11px"></i></span></span></li>`}).join('')}</ul>`;
+      const tc=TAG_COLORS[tg]||['var(--bg)','var(--text-secondary)'];
+      return`<li class="${done?'td':''}" style="--tag-bg:${tc[0]};--tag-c:${tc[1]}"><div class="cb ${done?'xd':''}" onclick="cT['${k}']=!cT['${k}'];sv();R()">${done?'<i class="ti ti-check"></i>':''}</div><span style="flex:1">${TAG_EMOJI[tg]||''} ${t}</span><span class="cdot" style="background:${tc[1]}"></span><select class="cls-sel" onchange="sCls(${cM},${selD},${i},this.value);R()" title="Classificar"><option value="" ${!cls?'selected':''}>—</option>${CATS.map(c=>`<option value="${c}" ${cls===c?'selected':''}>${CATL[c]}</option>`).join('')}</select><span class="ta"><span class="E" onclick="eT2(${cM},${selD},${i})"><i class="ti ti-pencil" style="font-size:11px"></i></span><span class="E" onclick="rT2(${cM},${selD},${i})"><i class="ti ti-trash" style="font-size:11px"></i></span></span></li>`}).join('')}</ul>`;
     h+=`<button class="ab" onclick="aT2(${cM},${selD})"><i class="ti ti-plus" style="font-size:11px"></i> Adicionar tarefa</button></div>`}
   a.innerHTML=h;
 }
@@ -1433,8 +1436,10 @@ function _cfCSV(){
   R();
 }
 // ===== CORA CORA NEWS EDITORIAL CALENDAR =====
-let ccView='cal',ccFil='all';
+let ccView='list',ccFil='all';
 const CC_CATS={Menopausa:'cm',Autoestima:'ca','Bem-Estar':'cb',Relacionamentos:'cr',Espiritualidade:'ce',Lifestyle:'cl','Mulher 35+':'c35',Casa:'cc'};
+const CC_EMOJI={Menopausa:'🌸',Autoestima:'✨','Bem-Estar':'🧘',Relacionamentos:'❤️',Espiritualidade:'🙏',Lifestyle:'🌿','Mulher 35+':'💫',Casa:'🏠'};
+const CC_COLORS={Menopausa:['#FBEAF0','#72243E'],Autoestima:['#EEEDFE','#3C3489'],'Bem-Estar':['#EAF3DE','#27500A'],Relacionamentos:['#FCEBEB','#791F1F'],Espiritualidade:['#E6F1FB','#0C447C'],Lifestyle:['#FAEEDA','#633806'],'Mulher 35+':['#E0F2F1','#00695C'],Casa:['#FFF8E1','#F57F17']};
 const CC_POSTS=[
 {day:1,slot:1,t:'Perimenopausa aos 40: 10 sintomas que você não deve ignorar',cat:'Menopausa',kw:'perimenopausa sintomas aos 40 anos',vol:1300,dif:'Baixa',pri:1},
 {day:1,slot:2,t:'O que comer na menopausa? Guia completo de alimentação',cat:'Bem-Estar',kw:'alimentação na menopausa o que comer',vol:1600,dif:'Baixa',pri:1},
@@ -1497,41 +1502,333 @@ const CC_POSTS=[
 {day:30,slot:1,t:'Guia completo: tudo sobre menopausa em um só lugar',cat:'Menopausa',kw:'menopausa guia completo',vol:1000,dif:'Média',pri:1},
 {day:30,slot:2,t:'Carta para mim mesma aos 40: exercício de autoestima',cat:'Autoestima',kw:'autoestima depois dos 40',vol:1600,dif:'Baixa',pri:1}
 ];
+const BG_CATS={Sazonal:'bs',Bancos:'bb',Investimentos:'bi',Orçamento:'bo','Educação Financeira':'be'};
+const BG_EMOJI={Sazonal:'🎉',Bancos:'🏦',Investimentos:'📈',Orçamento:'💰','Educação Financeira':'🎓'};
+const BG_COLORS={Sazonal:['#FCEBEB','#791F1F'],Bancos:['#E6F1FB','#0C447C'],Investimentos:['#EAF3DE','#27500A'],Orçamento:['#FAEEDA','#633806'],'Educação Financeira':['#EEEDFE','#3C3489']};
+/* ═══════════════════════════════════════════════════════════════
+   GERADOR do calendário do Blog Guardar Dinheiro — 3 posts/dia,
+   seg-sex, de 13/jul a 31/dez/2026 (~124 dias úteis = ~372 posts).
+   Em vez de digitar centenas de linhas, os pools abaixo (bancos ×
+   ângulo, valor × banco) geram combinações reais e distintas —
+   e os dois pools evergreen (Educação Financeira/Orçamento) somados
+   ao calendário sazonal fixo completam o terceiro post do dia.
+   Volumes/dificuldade são estimativas direcionais (sem ferramenta
+   de keyword conectada), geradas de forma determinística (mesmo
+   valor sempre, não muda a cada carregamento da página).
+   ═══════════════════════════════════════════════════════════════ */
+const BG_BANKS=['Nubank','Inter','PicPay','C6 Bank','Mercado Pago','PagBank','Caixa Tem','Will Bank','Neon'];
+const BG_VALORES=[500,1000,2000,3000,5000,10000,20000,50000,100000];
+const BG_VOL_CYCLE=[880,1150,1400,1700,2050,2450,2900,1050,1550,2250,3100,1300,1900,2650];
+const BG_DIF_CYCLE=['Baixa','Média','Alta','Média'];
+function bgVolAt(i){return BG_VOL_CYCLE[i%BG_VOL_CYCLE.length];}
+function bgDifAt(i){return BG_DIF_CYCLE[i%BG_DIF_CYCLE.length];}
+const BG_BANK_ANGLES=[
+  function(a,b){return{t:a+' ou '+b+': qual rende mais em 2026?',kw:a.toLowerCase()+' ou '+b.toLowerCase()+' qual rende mais'};},
+  function(a,b){return{t:a+' x '+b+': qual cobra menos tarifa?',kw:a.toLowerCase()+' ou '+b.toLowerCase()+' tarifa'};},
+  function(a,b){return{t:a+' ou '+b+': qual tem o melhor app?',kw:a.toLowerCase()+' ou '+b.toLowerCase()+' melhor app'};}
+];
+function bgBankPool(){
+  var pool=[];
+  for(var i=0;i<BG_BANKS.length;i++)for(var j=i+1;j<BG_BANKS.length;j++){
+    BG_BANK_ANGLES.forEach(function(ang){pool.push(ang(BG_BANKS[i],BG_BANKS[j]));});
+  }
+  return pool;
+}
+function bgInvestPool(){
+  var pool=[];
+  BG_VALORES.forEach(function(v){BG_BANKS.forEach(function(b){
+    var vf=v.toLocaleString('pt-BR');
+    pool.push({t:'Quanto rende R$ '+vf+' no '+b+' por 1 ano?',kw:'quanto rende '+v+' no '+b.toLowerCase()});
+  });});
+  return pool;
+}
+const BG_EDU_POOL=[
+  {t:'Reserva de emergência: quanto guardar e onde deixar esse dinheiro',kw:'reserva de emergência quanto guardar'},
+  {t:'Score de crédito: o que é e como melhorar o seu',kw:'como melhorar o score de crédito'},
+  {t:'Previdência privada vale a pena? PGBL x VGBL explicados',kw:'previdência privada vale a pena'},
+  {t:'Empréstimo consignado: quando vale a pena e quando é armadilha',kw:'empréstimo consignado vale a pena'},
+  {t:'Consórcio ou financiamento: qual sai mais barato?',kw:'consórcio ou financiamento'},
+  {t:'O que é Selic e por que ela mexe com o seu dinheiro guardado',kw:'o que é taxa selic'},
+  {t:'Seguro de vida: vale a pena contratar e quanto custa',kw:'seguro de vida vale a pena'},
+  {t:'Como sair das dívidas do cartão de crédito em 6 passos',kw:'como sair das dívidas do cartão'},
+  {t:'Nome sujo: como negociar dívidas e limpar o CPF',kw:'como limpar nome sujo'},
+  {t:'Come-cotas: o que é e como afeta seus investimentos',kw:'o que é come cotas'},
+  {t:'Imposto de Renda sobre investimentos: o que você precisa saber',kw:'imposto de renda sobre investimentos'},
+  {t:'FGTS: quando vale a pena sacar e quando deixar quieto',kw:'quando sacar o fgts'},
+  {t:'Cartão de crédito internacional: como evitar o IOF alto',kw:'cartão de crédito internacional iof'},
+  {t:'Educação financeira para casais: como dividir as contas sem brigar',kw:'como dividir contas com o parceiro'},
+  {t:'O que fazer com um dinheiro extra inesperado (herança, prêmio, PLR)',kw:'o que fazer com dinheiro extra'},
+  {t:'Aposentadoria: quanto você precisa guardar todo mês para se aposentar bem',kw:'quanto guardar para se aposentar'},
+  {t:'Cartão de débito x crédito: qual usar em cada situação',kw:'cartão de débito ou crédito'},
+  {t:'Golpes financeiros mais comuns em 2026 e como se proteger',kw:'golpes financeiros comuns'},
+  {t:'Como funciona o Pix parcelado e quando vale a pena usar',kw:'pix parcelado vale a pena'},
+  {t:'MEI: vale a pena abrir um CNPJ para organizar as finanças?',kw:'vale a pena abrir mei'}
+];
+const BG_ORC_POOL=[
+  {t:'Método 50-30-20: como organizar seu salário em 3 partes',kw:'método 50 30 20'},
+  {t:'5 assinaturas que você provavelmente esqueceu que paga',kw:'cancelar assinaturas esquecidas'},
+  {t:'Quanto gastar com streaming sem pesar no orçamento',kw:'quanto gastar com streaming'},
+  {t:'Como economizar na conta de luz sem passar aperto',kw:'como economizar na conta de luz'},
+  {t:'Planilha de gastos: vale a pena usar ou é perda de tempo?',kw:'planilha de gastos vale a pena'},
+  {t:'Como fazer compras no mercado gastando menos (sem cortar tudo)',kw:'como economizar no mercado'},
+  {t:'Aplicativos gratuitos para controlar gastos em 2026',kw:'aplicativos para controlar gastos'},
+  {t:'Vale a pena trocar de plano de celular para economizar?',kw:'como economizar no plano de celular'},
+  {t:'Quanto do salário deveria ir para o lazer? O que dizem os especialistas',kw:'quanto gastar com lazer do salário'},
+  {t:'Como negociar aluguel e economizar sem precisar se mudar',kw:'como negociar aluguel'},
+  {t:'Carro ou transporte por app: o que sai mais barato no fim do mês',kw:'carro ou uber o que é mais barato'},
+  {t:'Como organizar as contas quando o salário atrasa ou varia',kw:'organizar orçamento com salário variável'},
+  {t:'Delivery: quanto ele realmente pesa no seu orçamento mensal',kw:'quanto gasto com delivery por mês'},
+  {t:'Como fazer um orçamento familiar com filhos pequenos',kw:'orçamento familiar com filhos'},
+  {t:'Academia ou treino em casa: o que compensa mais no bolso',kw:'academia ou treino em casa custo'},
+  {t:'Como economizar no supermercado usando a lista certa',kw:'lista de compras para economizar'},
+  {t:'Farmácia: como economizar em remédios de uso contínuo',kw:'como economizar em remédios'},
+  {t:'Vale a pena ter mais de um cartão de crédito?',kw:'vale a pena ter dois cartões de crédito'},
+  {t:'Como organizar as finanças no home office (luz, internet, café)',kw:'organizar gastos home office'},
+  {t:'Orçamento para quem ganha salário mínimo: é possível guardar dinheiro?',kw:'como guardar dinheiro ganhando pouco'}
+];
+const BG_SAZONAL_FIXED=[
+{month:6,day:16,t:'Como organizar as finanças nas férias de julho sem sair no vermelho',kw:'economizar nas férias'},
+{month:7,day:7,t:'Dia dos Pais sem dívida: como presentear com orçamento controlado',kw:'presente dia dos pais barato'},
+{month:8,day:25,t:'Volta às aulas: como planejar material e uniforme sem sufoco (semestre 2)',kw:'economizar na volta às aulas'},
+{month:9,day:1,t:'Dia das Crianças: como educar os filhos financeiramente com os presentes',kw:'educação financeira para crianças'},
+{month:9,day:22,t:'Outono no bolso: revisão de orçamento do meio pro fim do ano',kw:'revisão de orçamento fim de ano'},
+{month:10,day:6,t:'Black Friday 2026: como se planejar com um mês de antecedência',kw:'como se planejar para black friday'},
+{month:10,day:13,t:'Black Friday: quais "promoções" são armadilha e quais valem a pena',kw:'black friday vale a pena'},
+{month:10,day:20,t:'Lista de compras da Black Friday: separe o essencial do impulso',kw:'lista black friday'},
+{month:10,day:27,t:'Como usar a 1ª parcela do 13º salário sem gastar tudo de uma vez',kw:'primeira parcela 13 salário'},
+{month:11,day:3,t:'13º salário (2ª parcela): o que fazer com esse dinheiro extra',kw:'o que fazer com o 13 salário'},
+{month:11,day:10,t:'Natal econômico: 10 ideias de presente que não pesam no bolso',kw:'presentes de natal baratos'},
+{month:11,day:17,t:'Ceia de Natal econômica: como montar sem gastar uma fortuna',kw:'ceia de natal barata'},
+{month:11,day:22,t:'Melhor banco digital para quem está começando a guardar dinheiro',kw:'melhor banco digital para guardar dinheiro'},
+{month:11,day:26,t:'Ano novo, orçamento novo: como planejar 2027 financeiramente',kw:'planejamento financeiro para o ano novo'},
+{month:11,day:29,t:'Metas financeiras que realmente funcionam (e como não desistir em fevereiro)',kw:'metas financeiras para o ano novo'},
+{month:11,day:31,t:'Réveillon econômico: como comemorar a virada sem começar o ano no vermelho',kw:'réveillon barato'}
+];
+function genBGPosts(){
+  var bankPool=bgBankPool(),investPool=bgInvestPool();
+  var edu=BG_EDU_POOL,orc=BG_ORC_POOL;
+  var sazMap={};BG_SAZONAL_FIXED.forEach(function(s){sazMap[s.month+'-'+s.day]=s;});
+  var posts=[],bi=0,ii=0,ei=0,oi=0,alt=0;
+  var start=new Date(2026,6,13),end=new Date(2026,11,31); // 13/jul a 31/dez/2026
+  for(var d=new Date(start);d<=end;d.setDate(d.getDate()+1)){
+    var wd=d.getDay();if(wd===0||wd===6)continue; // só dias úteis
+    var mo=d.getMonth(),dy=d.getDate();
+    // slot 1 — Bancos (cicla pelo pool de comparações)
+    var b=bankPool[bi%bankPool.length];bi++;
+    posts.push({month:mo,day:dy,slot:1,t:b.t,cat:'Bancos',kw:b.kw,vol:bgVolAt(bi),dif:bgDifAt(bi),pri:2});
+    // slot 2 — Investimentos (cicla pelo pool quanto-rende)
+    var v=investPool[ii%investPool.length];ii++;
+    posts.push({month:mo,day:dy,slot:2,t:v.t,cat:'Investimentos',kw:v.kw,vol:bgVolAt(ii+7),dif:bgDifAt(ii+1),pri:2});
+    // slot 3 — Sazonal (se a data bater) senão alterna Educação Financeira / Orçamento
+    var saz=sazMap[mo+'-'+dy];
+    if(saz){
+      posts.push({month:mo,day:dy,slot:3,t:saz.t,cat:'Sazonal',kw:saz.kw,vol:bgVolAt(bi+ii),dif:'Média',pri:1});
+    }else if(alt%2===0){
+      var e=edu[ei%edu.length];ei++;
+      posts.push({month:mo,day:dy,slot:3,t:e.t,cat:'Educação Financeira',kw:e.kw,vol:bgVolAt(ei+3),dif:bgDifAt(ei+2),pri:2});
+    }else{
+      var o=orc[oi%orc.length];oi++;
+      posts.push({month:mo,day:dy,slot:3,t:o.t,cat:'Orçamento',kw:o.kw,vol:bgVolAt(oi+5),dif:bgDifAt(oi+3),pri:2});
+    }
+    alt++;
+  }
+  return posts;
+}
+const BG_POSTS=genBGPosts();
+
+/* ═══════════════════════════════════════════════════════════════
+   GERADOR do calendário do Receitascom — mesma lógica do Blog
+   Guardar Dinheiro (3 posts/dia, seg-sex, 13/jul a 31/dez/2026),
+   adaptado para o nicho de culinária.
+   ═══════════════════════════════════════════════════════════════ */
+const RC_CATS={Sazonal:'rs',Rápidas:'rr','Doces & Sobremesas':'rd',Saudáveis:'rh',Dicas:'rc'};
+const RC_EMOJI={Sazonal:'🎄',Rápidas:'🍳','Doces & Sobremesas':'🍰',Saudáveis:'🥗',Dicas:'👨‍🍳'};
+const RC_COLORS={Sazonal:['#FCEBEB','#791F1F'],Rápidas:['#FAEEDA','#633806'],'Doces & Sobremesas':['#FBEAF0','#72243E'],Saudáveis:['#EAF3DE','#27500A'],Dicas:['#E6F1FB','#0C447C']};
+const RC_DISH_SAVORY=['Frango','Risoto de Frango','Macarrão','Sopa','Salada Completa','Omelete','Wrap','Sanduíche Natural','Escondidinho','Estrogonofe'];
+const RC_FLAVOR_SAVORY=['com Legumes','ao Molho Branco','com Queijo','Apimentado','com Ervas','Light','Sem Glúten','Rápido de Fazer','com Batata Doce','Vegetariano'];
+const RC_DISH_SWEET=['Bolo','Torta Doce','Mousse','Pudim','Brigadeiro','Panqueca Doce','Bolo de Caneca','Brownie','Cheesecake','Pavê'];
+const RC_FLAVOR_SWEET=['de Chocolate','de Limão','de Coco','de Morango','de Cenoura','de Banana','de Milho','de Maçã','de Doce de Leite','sem Açúcar'];
+function rcSavoryPool(){
+  var pool=[];
+  RC_DISH_SAVORY.forEach(function(d){RC_FLAVOR_SAVORY.forEach(function(f){
+    pool.push({t:'Receita de '+d+' '+f+': pronta em poucos passos',kw:'receita de '+d.toLowerCase()+' '+f.toLowerCase()});
+  });});
+  return pool;
+}
+function rcSweetPool(){
+  var pool=[];
+  RC_DISH_SWEET.forEach(function(d){RC_FLAVOR_SWEET.forEach(function(f){
+    pool.push({t:'Receita de '+d+' '+f+': simples e deliciosa',kw:'receita de '+d.toLowerCase()+' '+f.toLowerCase()});
+  });});
+  return pool;
+}
+const RC_TECNICAS=[
+  {t:'Como fazer arroz soltinho: passo a passo',kw:'como fazer arroz soltinho'},
+  {t:'Como fazer ovo pochê perfeito em casa',kw:'como fazer ovo pochê'},
+  {t:'Como deixar o frango desfiado no ponto certo',kw:'como fazer frango desfiado'},
+  {t:'Massa de pizza caseira: a receita que sempre dá certo',kw:'massa de pizza caseira'},
+  {t:'Como fazer molho branco sem empelotar',kw:'como fazer molho branco'},
+  {t:'Pão caseiro fofinho: o passo a passo completo',kw:'pão caseiro fofinho'},
+  {t:'Como temperar carne moída para ela não ficar sem graça',kw:'como temperar carne moída'},
+  {t:'Purê de batata cremoso: o segredo é esse',kw:'purê de batata cremoso'},
+  {t:'Como temperar o feijão do jeitinho certo',kw:'como temperar feijão'},
+  {t:'Legumes no vapor sem perder o nutriente',kw:'como cozinhar legumes no vapor'},
+  {t:'Molho de tomate caseiro: melhor que o pronto',kw:'molho de tomate caseiro'},
+  {t:'Farofa crocante: a técnica que faz toda a diferença',kw:'como fazer farofa crocante'},
+  {t:'Maionese caseira em 5 minutos',kw:'como fazer maionese caseira'},
+  {t:'Caldo de legumes caseiro para usar em várias receitas',kw:'caldo de legumes caseiro'},
+  {t:'Carne assada suculenta: o truque que ninguém conta',kw:'como fazer carne assada suculenta'},
+  {t:'Peixe grelhado sem ressecar: o ponto certo',kw:'como grelhar peixe sem ressecar'},
+  {t:'Massa de torta salgada: a base perfeita',kw:'massa de torta salgada'},
+  {t:'Recheio de salgadinho de festa: 3 opções fáceis',kw:'recheio de salgadinho'},
+  {t:'Molho de pimenta caseiro do jeito certo',kw:'molho de pimenta caseiro'},
+  {t:'Como saber o ponto certo do macarrão al dente',kw:'ponto certo do macarrão'}
+];
+const RC_DICAS_POOL=[
+  {t:'5 temperos que transformam qualquer prato',kw:'temperos que transformam o prato'},
+  {t:'Como aproveitar talos e cascas na cozinha',kw:'como aproveitar talos e cascas'},
+  {t:'Substitutos de ingredientes: o que usar quando falta algo',kw:'substituto de ingrediente na receita'},
+  {t:'Como organizar a geladeira para os alimentos durarem mais',kw:'como organizar a geladeira'},
+  {t:'Congelamento de alimentos: o que pode e o que não pode',kw:'o que pode congelar'},
+  {t:'Panela de pressão x panela comum: quando usar cada uma',kw:'panela de pressão ou panela comum'},
+  {t:'Air fryer: dicas para aproveitar melhor o aparelho',kw:'dicas para air fryer'},
+  {t:'Como cortar cebola sem chorar (dica que funciona de verdade)',kw:'como cortar cebola sem chorar'},
+  {t:'Ervas frescas x secas: quando usar cada uma',kw:'ervas frescas ou secas'},
+  {t:'Cozinha organizada: como montar sua bancada de trabalho',kw:'como organizar a bancada da cozinha'},
+  {t:'Receitas com sobras: o que fazer com o que sobrou do jantar',kw:'receitas com sobras de comida'},
+  {t:'Como fazer molhos caseiros para salada',kw:'molho caseiro para salada'},
+  {t:'Panificação para iniciantes: o essencial pra começar',kw:'panificação para iniciantes'},
+  {t:'Como escolher frutas e verduras mais frescas no mercado',kw:'como escolher frutas frescas'},
+  {t:'Utensílios de cozinha essenciais para quem está montando a casa',kw:'utensílios de cozinha essenciais'},
+  {t:'Como afiar e cuidar das facas de cozinha',kw:'como afiar faca de cozinha'},
+  {t:'Especiarias que todo mundo deveria ter em casa',kw:'especiarias essenciais na cozinha'},
+  {t:'Como fazer uma marinada que deixa a carne mais macia',kw:'marinada para carne macia'},
+  {t:'Armazenamento de temperos: como manter o sabor por mais tempo',kw:'como armazenar temperos'},
+  {t:'Como equilibrar o sal em uma receita que ficou salgada',kw:'como corrigir comida salgada'}
+];
+const RC_SAUDAVEIS_POOL=[
+  {t:'Receitas saudáveis para o café da manhã em 10 minutos',kw:'café da manhã saudável rápido'},
+  {t:'Lanches saudáveis para levar pro trabalho',kw:'lanche saudável para trabalho'},
+  {t:'Receitas fit com menos de 300 calorias',kw:'receita fit menos de 300 calorias'},
+  {t:'Sobremesas saudáveis sem açúcar refinado',kw:'sobremesa sem açúcar refinado'},
+  {t:'Receitas com quinoa: pratos práticos e nutritivos',kw:'receitas com quinoa'},
+  {t:'Smoothies e vitaminas para começar bem o dia',kw:'receita de smoothie saudável'},
+  {t:'Receitas vegetarianas fáceis para o dia a dia',kw:'receita vegetariana fácil'},
+  {t:'Snacks saudáveis para as crianças',kw:'snack saudável para criança'},
+  {t:'Receitas low carb para o jantar',kw:'receita low carb jantar'},
+  {t:'Saladas completas que substituem uma refeição',kw:'salada que substitui refeição'},
+  {t:'Receitas com grão-de-bico: versáteis e nutritivas',kw:'receitas com grão de bico'},
+  {t:'Como montar uma marmita saudável para a semana',kw:'marmita saudável semanal'},
+  {t:'Receitas com aveia além do mingau',kw:'receitas com aveia'},
+  {t:'Sopas leves e nutritivas para o dia a dia',kw:'sopa leve e nutritiva'},
+  {t:'Receitas sem glúten para o dia a dia',kw:'receita sem glúten fácil'},
+  {t:'Iogurte natural: receitas doces e salgadas',kw:'receitas com iogurte natural'},
+  {t:'Receitas com batata doce além do purê',kw:'receitas com batata doce'},
+  {t:'Sucos detox: quais realmente funcionam',kw:'suco detox que funciona'},
+  {t:'Receitas ricas em fibra para o intestino funcionar melhor',kw:'receita rica em fibra'},
+  {t:'Substitutos saudáveis para o açúcar refinado',kw:'substituto saudável para açúcar'}
+];
+const RC_SAZONAL_FIXED=[
+{month:7,day:6,t:'Churrasco para o Dia dos Pais: receitas simples que impressionam',kw:'receitas para churrasco dia dos pais'},
+{month:9,day:9,t:'Receitas divertidas para fazer com as crianças no Dia das Crianças',kw:'receitas para fazer com crianças'},
+{month:11,day:4,t:'Panetone caseiro: vale a pena fazer em casa?',kw:'panetone caseiro vale a pena'},
+{month:11,day:11,t:'Ceia de Natal completa: cardápio econômico para até 10 pessoas',kw:'cardápio ceia de natal econômico'},
+{month:11,day:18,t:'Receita de peru de Natal suculento e fácil',kw:'receita de peru de natal'},
+{month:11,day:22,t:'Sobremesas de Natal que não precisam de forno',kw:'sobremesa de natal sem forno'},
+{month:11,day:28,t:'Receita de bacalhau para a ceia sem complicação',kw:'receita de bacalhau para ceia'},
+{month:11,day:31,t:'Lentilha e 12 uvas da sorte: as tradições (e receitas) do Ano Novo',kw:'receita lentilha ano novo'}
+];
+function genRCPosts(){
+  var savory=rcSavoryPool(),sweet=rcSweetPool();
+  var tec=RC_TECNICAS,dic=RC_DICAS_POOL,sau=RC_SAUDAVEIS_POOL;
+  var sazMap={};RC_SAZONAL_FIXED.forEach(function(s){sazMap[s.month+'-'+s.day]=s;});
+  var posts=[],si=0,swi=0,ti=0,alt=0;
+  var start=new Date(2026,6,13),end=new Date(2026,11,31);
+  for(var d=new Date(start);d<=end;d.setDate(d.getDate()+1)){
+    var wd=d.getDay();if(wd===0||wd===6)continue;
+    var mo=d.getMonth(),dy=d.getDate();
+    var s=savory[si%savory.length];si++;
+    posts.push({month:mo,day:dy,slot:1,t:s.t,cat:'Rápidas',kw:s.kw,vol:bgVolAt(si),dif:bgDifAt(si),pri:2});
+    var sw=sweet[swi%sweet.length];swi++;
+    posts.push({month:mo,day:dy,slot:2,t:sw.t,cat:'Doces & Sobremesas',kw:sw.kw,vol:bgVolAt(swi+4),dif:bgDifAt(swi+1),pri:2});
+    var saz=sazMap[mo+'-'+dy];
+    if(saz){
+      posts.push({month:mo,day:dy,slot:3,t:saz.t,cat:'Sazonal',kw:saz.kw,vol:bgVolAt(si+swi),dif:'Média',pri:1});
+    }else if(alt%3===0){
+      var t=tec[ti%tec.length];ti++;
+      posts.push({month:mo,day:dy,slot:3,t:t.t,cat:'Dicas',kw:t.kw,vol:bgVolAt(ti+2),dif:bgDifAt(ti+2),pri:2});
+    }else if(alt%3===1){
+      var dcIdx=Math.floor(alt/3)%dic.length,dc=dic[dcIdx];
+      posts.push({month:mo,day:dy,slot:3,t:dc.t,cat:'Dicas',kw:dc.kw,vol:bgVolAt(dcIdx+6),dif:bgDifAt(dcIdx+3),pri:2});
+    }else{
+      var saIdx=Math.floor(alt/3)%sau.length,sa=sau[saIdx];
+      posts.push({month:mo,day:dy,slot:3,t:sa.t,cat:'Saudáveis',kw:sa.kw,vol:bgVolAt(saIdx+9),dif:bgDifAt(saIdx+1),pri:2});
+    }
+    alt++;
+  }
+  return posts;
+}
+const RC_POSTS=genRCPosts();
+
+const CONTENT_CALS={
+  cora:{posts:CC_POSTS,cats:CC_CATS,emoji:CC_EMOJI,colors:CC_COLORS,label:'Cora Cora News',sub:'2 conteúdos/dia · Keywords priorizadas por oportunidade',months:[5]},
+  blog:{posts:BG_POSTS,cats:BG_CATS,emoji:BG_EMOJI,colors:BG_COLORS,label:'Blog Guardar Dinheiro',sub:'3 conteúdos/dia · seg-sex até 31/dez · volumes estimados (sem ferramenta de keyword conectada)',months:[6,7,8,9,10,11]},
+  rec:{posts:RC_POSTS,cats:RC_CATS,emoji:RC_EMOJI,colors:RC_COLORS,label:'Receitascom',sub:'3 conteúdos/dia · seg-sex até 31/dez · volumes estimados (sem ferramenta de keyword conectada)',months:[6,7,8,9,10,11]}
+};
+function ccCalFor(prop){return CONTENT_CALS[prop]||CONTENT_CALS.cora;}
+var ccMonth=null; // mês selecionado na visão Calendário; null = usa o primeiro mês do calendário da propriedade
+function ccSetMonth(v){ccMonth=parseInt(v,10);R();}
 function rCC(a){
-  const ps=ccFil==='all'?CC_POSTS:CC_POSTS.filter(p=>p.cat===ccFil);
-  const tVol=CC_POSTS.reduce((s,p)=>s+p.vol,0);
-  const uKw=[...new Set(CC_POSTS.map(p=>p.kw))].length;
-  const pBx=Math.round(CC_POSTS.filter(p=>p.dif==='Baixa').length/CC_POSTS.length*100);
-  const cats=Object.keys(CC_CATS);
-  let h=`<div class="S" style="margin-top:.7rem"><div class="ST"><i class="ti ti-heart" style="color:#D85A30"></i> Cora Cora News — Calendário Editorial Junho 2026 <span style="font-weight:400;text-transform:none;font-size:10px;color:var(--tx3)">2 conteúdos/dia · Keywords priorizadas por oportunidade</span></div></div>`;
-  // Stats
-  h+=`<div class="cc-stats"><div class="cc-st"><div class="sl">Posts</div><div class="sv">${CC_POSTS.length}</div><div class="ss">30 dias × 2/dia</div></div><div class="cc-st"><div class="sl">Keywords únicas</div><div class="sv">${uKw}</div><div class="ss">Long tail priorizadas</div></div><div class="cc-st"><div class="sl">Vol. potencial</div><div class="sv">${fN(tVol)}</div><div class="ss">buscas/mês</div></div><div class="cc-st"><div class="sl">% Dific. baixa</div><div class="sv">${pBx}%</div><div class="ss">Maior chance de rankear</div></div></div>`;
-  // Sub-tabs
+  const propKey=(anProp==='all')?'cora':anProp;
+  if(anProp!=='all'&&!CONTENT_CALS[anProp]){
+    let he=pageHeader('Conteúdo','Calendário editorial e prioridades de keyword')+anPropDropdown();
+    a.innerHTML=he+'<div class="an-card"><div class="an-empty"><i class="ti ti-calendar-event"></i><p>Sem calendário editorial para '+propLabel(anProp)+'</p><span>Ainda não montamos um calendário de conteúdo pra essa propriedade — é só pedir.</span></div></div>';
+    return;
+  }
+  const cal=ccCalFor(propKey);
+  const allPosts=cal.posts,cats=Object.keys(cal.cats);
+  const curMonth=(ccMonth!=null&&cal.months.indexOf(ccMonth)>=0)?ccMonth:cal.months[0];
+  const ps=(ccFil==='all'?allPosts:allPosts.filter(p=>p.cat===ccFil)).filter(p=>(p.month==null?cal.months[0]:p.month)===curMonth);
+  const psAll=ccFil==='all'?allPosts:allPosts.filter(p=>p.cat===ccFil);
+  const tVol=allPosts.reduce((s,p)=>s+p.vol,0);
+  const uKw=[...new Set(allPosts.map(p=>p.kw))].length;
+  const pBx=Math.round(allPosts.filter(p=>p.dif==='Baixa').length/allPosts.length*100);
+  let h=pageHeader('Conteúdo',cal.label+' — calendário editorial e prioridades de keyword');
+  h+=anPropDropdown(); // propriedade primeiro — mesmo padrão do resto do dashboard
+  h+=`<div class="S" style="margin-top:.7rem"><div class="ST"><i class="ti ti-heart" style="color:#D85A30"></i> Calendário Editorial <span style="font-weight:400;text-transform:none;font-size:10px;color:var(--tx3)">${cal.sub}</span></div></div>`;
+  h+=`<div class="cc-stats"><div class="cc-st"><div class="sl">Posts</div><div class="sv">${allPosts.length}</div><div class="ss">no calendário todo</div></div><div class="cc-st"><div class="sl">Keywords únicas</div><div class="sv">${uKw}</div><div class="ss">Long tail priorizadas</div></div><div class="cc-st"><div class="sl">Vol. potencial</div><div class="sv">${fN(tVol)}</div><div class="ss">buscas/mês (estim.)</div></div><div class="cc-st"><div class="sl">% Dific. baixa</div><div class="sv">${pBx}%</div><div class="ss">Maior chance de rankear</div></div></div>`;
   h+=`<div class="cc-tabs"><button class="cc-tb ${ccView==='cal'?'a':''}" onclick="ccView='cal';R()"><i class="ti ti-calendar-event" style="font-size:10px"></i> Calendário</button><button class="cc-tb ${ccView==='list'?'a':''}" onclick="ccView='list';R()"><i class="ti ti-list" style="font-size:10px"></i> Lista</button></div>`;
-  // Filters
   h+=`<div class="cc-fil"><button class="cc-fb ${ccFil==='all'?'a':''}" onclick="ccFil='all';R()">Todas</button>${cats.map(c=>`<button class="cc-fb ${ccFil===c?'a':''}" onclick="ccFil='${c}';R()">${c}</button>`).join('')}</div>`;
   if(ccView==='cal'){
+    if(cal.months.length>1){
+      h+=`<div style="margin-bottom:10px"><select class="fsel" onchange="ccSetMonth(this.value)">${cal.months.map(m=>`<option value="${m}" ${m===curMonth?'selected':''}>${AN_MES_LONG[m]} 2026</option>`).join('')}</select></div>`;
+    }
+    const y=2026,mo=curMonth,td=dIM(y,mo),lead=fDw(y,mo);
     const dw=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
     h+='<div class="cc-cg">';
     dw.forEach(d=>{h+=`<div class="cc-ch">${d}</div>`});
-    // Jun 2026 starts Monday
-    for(let d=1;d<=30;d++){
+    for(let i=0;i<lead;i++)h+='<div class="cc-cd emp"></div>';
+    for(let d=1;d<=td;d++){
       const dp=ps.filter(p=>p.day===d);
       h+=`<div class="cc-cd"><div class="dn">${d}</div>`;
-      dp.forEach(p=>{h+=`<span class="cc-pk ${CC_CATS[p.cat]||''}" title="${p.kw} (${fN(p.vol)}/mês)">${p.pri===1?'★ ':''}${p.t}</span>`});
+      dp.forEach(p=>{h+=`<span class="cc-pk ${cal.cats[p.cat]||''}" title="${p.kw} (${fN(p.vol)}/mês)">${p.pri===1?'★ ':''}${cal.emoji[p.cat]||''} ${p.t}</span>`});
       if(!dp.length&&ccFil!=='all')h+=`<span style="font-size:7px;color:var(--tx3)">—</span>`;
       h+='</div>';
     }
-    // fill remaining cells (Jun has 30 days starting Mon = needs 5 empty at end for grid of 35)
-    for(let i=0;i<5;i++) h+='<div class="cc-cd emp"></div>';
+    const rem=(7-((lead+td)%7))%7;
+    for(let i=0;i<rem;i++)h+='<div class="cc-cd emp"></div>';
     h+='</div>';
   }else{
-    h+=`<div style="overflow-x:auto"><table class="cc-tbl"><tr><th>Dia</th><th>Slot</th><th>Título</th><th>Categoria</th><th>Keyword</th><th>Vol.</th><th>Dific.</th><th>P</th></tr>`;
-    ps.forEach(p=>{
+    h+='<div>'+psAll.map(p=>{
+      const tc=cal.colors[p.cat]||['var(--bg)','var(--text-secondary)'];
       const dc=p.dif==='Baixa'?'var(--grn)':p.dif==='Média'?'var(--amb)':'var(--red)';
-      h+=`<tr><td style="font-weight:600">${p.day}/Jun</td><td>${p.slot===1?'AM':'PM'}</td><td style="max-width:220px">${p.t}</td><td><span class="cc-pk ${CC_CATS[p.cat]||''}" style="display:inline;white-space:nowrap">${p.cat}</span></td><td style="color:var(--tx2);font-size:9px">${p.kw}</td><td style="font-weight:600">${fN(p.vol)}</td><td style="color:${dc};font-weight:600">${p.dif}</td><td style="font-weight:700;color:${p.pri===1?'var(--red)':'var(--tx3)'}">P${p.pri}</td></tr>`;
-    });
-    h+='</table></div>';
+      const pmonth=(p.month==null?cal.months[0]:p.month);
+      return `<div class="cc-row" style="--tag-bg:${tc[0]};--tag-c:${tc[1]}">
+        <div class="cc-row-date">${String(p.day).padStart(2,'0')}/${AN_MES_LONG[pmonth].slice(0,3)}<span>${p.slot===1?'AM':'PM'}</span></div>
+        <div class="cc-row-body"><div class="cc-row-title">${cal.emoji[p.cat]||''} ${p.t}${p.pri===1?' <span class="cc-star">★</span>':''}</div><div class="cc-row-kw">${p.kw} · ${fN(p.vol)}/mês</div></div>
+        <span style="color:${dc};font-weight:700;font-size:10.5px;flex-shrink:0">${p.dif}</span>
+      </div>`;
+    }).join('')+'</div>';
   }
   a.innerHTML=h;
 }
@@ -1906,17 +2203,6 @@ function pageHeader(title, sub){
     <div>
       <h1 class="page-title">${title}</h1>
       ${sub?`<p class="page-sub">${sub}</p>`:''}
-    </div>
-    <div class="page-actions">
-      <select class="period-sel" onchange="hubFil=this.value">
-        <option value="hoje">Hoje</option>
-        <option value="7d">7 dias</option>
-        <option value="30d" selected>30 dias</option>
-        <option value="90d">90 dias</option>
-        <option value="mes">Este mês</option>
-        <option value="ano">Este ano</option>
-      </select>
-      <button class="btn-outline">↓ Exportar</button>
     </div>
   </div>`;
 }
@@ -2431,7 +2717,7 @@ function anSegView(){
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="segSetMi(this.value)">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select>';
   var ctrl='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" '+(isAll?'onclick="anNeedsProp()"':'onclick="anSegImportOpen()"')+'><i class="ti ti-upload"></i> Importar Search Console</button></div></div>';
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" '+(isAll?'onclick="anNeedsProp()"':'onclick="anSegImportOpen()"')+'>Inserir Manualmente</button></div></div>';
   var rows=anSegRows(anYear,anProp,dim,mi),body;
   if(!rows.length){
     body='<div class="an-card" style="text-align:center;padding:30px 16px;color:var(--text-secondary)"><i class="ti '+segDimObj(dim).ic+'" style="font-size:30px;color:var(--primary);opacity:.5"></i><p style="margin:10px 0 4px;font-weight:600;color:var(--navy)">Sem dados de '+segDimObj(dim).l+' em '+AN_MES_LONG[mi]+'/'+anYear+'</p><p style="font-size:11.5px;margin:0">Exporte do Search Console (aba '+segDimObj(dim).l+') e clique em <strong>Importar Search Console</strong>.</p></div>';
@@ -2538,7 +2824,7 @@ function hSOCIAL(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var h=pageHeader('Social','Redes sociais — seguidores, alcance e engajamento por perfil')
-    +anPropChips()
+    +anPropDropdown()
     +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:12px;color:var(--text-secondary);font-weight:600">Ano</span>'+ySel+'</div>'
     +socTotalCard()+socSummary()+socChart(socNet)+socTable();
   return '<div class="an-root">'+h+'</div>';
@@ -2557,7 +2843,7 @@ function rpWeightedPos(rows){var num=0,den=0;rows.forEach(function(r){if(r.p!=nu
 
 /* ── util: card com toggle Mensal/Diário (reaproveitado pelos dois gráficos abaixo) ── */
 function rpToggleCard(icon,title,mode,setterName,innerHtml,extraBtn){
-  var toggle='<div class="an-seg" style="margin-left:auto"><button class="an-seg-btn'+(mode==='mensal'?' active':'')+'" onclick="'+setterName+'(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(mode==='diario'?' active':'')+'" onclick="'+setterName+'(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></div>';
+  var toggle='<div class="an-seg" style="margin-left:auto;margin-bottom:0"><button class="an-seg-btn'+(mode==='mensal'?' active':'')+'" onclick="'+setterName+'(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(mode==='diario'?' active':'')+'" onclick="'+setterName+'(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></div>';
   return '<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti '+icon+'"></i> '+title+'</div>'+(extraBtn||'')+toggle+'</div>'+innerHtml+'</div>';
 }
 
@@ -2695,7 +2981,7 @@ function rpTopQView(){
   var mi=anSeoCurMi(),years=anYears();
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="anSeoSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
-  var toggle='<span class="an-seg" style="margin-left:6px"><button class="an-seg-btn'+(rpTopQMode==='mensal'?' active':'')+'" onclick="rpTopQSetMode(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(rpTopQMode==='diario'?' active':'')+'" onclick="rpTopQSetMode(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></span>';
+  var toggle='<span class="an-seg" style="margin-left:6px;margin-bottom:0"><button class="an-seg-btn'+(rpTopQMode==='mensal'?' active':'')+'" onclick="rpTopQSetMode(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(rpTopQMode==='diario'?' active':'')+'" onclick="rpTopQSetMode(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></span>';
   var dayCtrl='';
   if(rpTopQMode==='diario'){
     var tD=dIM(Number(anYear),mi),curDay=rpTopQDay||Math.min(new Date().getDate(),tD);
@@ -2786,7 +3072,7 @@ function rpBrandView(){
   var mi=anSeoCurMi(),years=anYears();
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="anSeoSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
-  var toggle='<span class="an-seg" style="margin-left:6px"><button class="an-seg-btn'+(rpBrandMode==='mensal'?' active':'')+'" onclick="rpBrandSetMode(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(rpBrandMode==='diario'?' active':'')+'" onclick="rpBrandSetMode(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></span>';
+  var toggle='<span class="an-seg" style="margin-left:6px;margin-bottom:0"><button class="an-seg-btn'+(rpBrandMode==='mensal'?' active':'')+'" onclick="rpBrandSetMode(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(rpBrandMode==='diario'?' active':'')+'" onclick="rpBrandSetMode(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></span>';
   var dayCtrl='';
   if(rpBrandMode==='diario'){var tD=dIM(Number(anYear),mi),curDay=rpBrandDay||Math.min(new Date().getDate(),tD),dsel='<select class="fsel" onchange="rpBrandSetDay(this.value)">';for(var d=1;d<=tD;d++)dsel+='<option value="'+d+'"'+(d===curDay?' selected':'')+'>'+d+'</option>';dsel+='</select>';dayCtrl='<span class="an-camp-cl">Dia</span>'+dsel;}
   var h='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+dayCtrl+toggle+'</div><div class="an-camp-ctrl-r"><button class="an-btn" onclick="rpBrandEditOpen()"><i class="ti ti-tag"></i> Editar marcas</button></div></div>';
@@ -3044,7 +3330,7 @@ function rpCityBlock(){
 function hRAIOX(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
-  var h=pageHeader('Raio-X','Quem está do outro lado da busca — minerado das próprias consultas do Search Console')+'<div class="an-root">'+anPropChips();
+  var h=pageHeader('Raio-X','Quem está do outro lado da busca — minerado das próprias consultas do Search Console')+'<div class="an-root">'+anPropDropdown(AN_SEO_PROPS);
   if(anProp==='all')return h+'<div class="an-card"><div class="an-empty"><i class="ti ti-scan"></i><p>Selecione uma propriedade</p></div></div></div>';
   h+='<div class="an-card an-camp-ctrl" style="margin-bottom:14px"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div></div>';
   var rows=rpAllQueryRows();
@@ -3082,10 +3368,10 @@ function hSEO(){
   if(seoTab==='vel')seoTab='busca'; // aba Velocidade foi removida — evita ficar preso numa aba inexistente
   var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['topq','Top Consultas','ti-list-numbers'],['marca','Marca','ti-tag'],['seg','Segmentos','ti-chart-donut'],['pgdev','Páginas/Disp.','ti-devices'],['qdev','Consultas/Disp.','ti-search']];
   var bar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(seoTab===t[0]?' active':'')+'" onclick="seoSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
-  var clearBtn='<button class="an-btn" style="color:var(--danger)" onclick="anDevDataClearConfirm()"><i class="ti ti-trash"></i> Limpar dados</button>';
+  var propSel=anPropDropdown(AN_SEO_PROPS); // propriedades primeiro — hierarquia propriedade > métrica
   if(seoTab==='busca'){
     anSection='gsc';
-    var h=pageHeader('SEO','Busca · Search Console (cliques, impressões, CTR, posição) — por site/app')+'<div class="an-root">'+bar+'<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'+clearBtn+'</div>'+anPropChips();
+    var h=pageHeader('SEO','Busca · Search Console (cliques, impressões, CTR, posição) — por site/app')+'<div class="an-root">'+propSel+bar;
     h+=anMetricCards();
     h+=anGoalProgress();
     h+=anIdxBlock();
@@ -3095,24 +3381,24 @@ function hSEO(){
     return h+'</div>';
   }
   if(seoTab==='opp'){
-    return pageHeader('SEO','Oportunidades e decaimento · Search Console')+'<div class="an-root">'+bar+'<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'+clearBtn+'</div>'+anPropChips()+anSeoView()+'</div>';
+    return pageHeader('SEO','Oportunidades e decaimento · Search Console')+'<div class="an-root">'+propSel+bar+anSeoView()+'</div>';
   }
   if(seoTab==='topq'){
-    return pageHeader('SEO','Top Consultas · ordenadas pela melhor posição')+'<div class="an-root">'+bar+anPropChips()+rpTopQView()+'</div>';
+    return pageHeader('SEO','Top Consultas · ordenadas pela melhor posição')+'<div class="an-root">'+propSel+bar+rpTopQView()+'</div>';
   }
   if(seoTab==='marca'){
-    return pageHeader('SEO','Marca · desempenho das consultas de marca monitoradas')+'<div class="an-root">'+bar+anPropChips()+rpBrandView()+'</div>';
+    return pageHeader('SEO','Marca · desempenho das consultas de marca monitoradas')+'<div class="an-root">'+propSel+bar+rpBrandView()+'</div>';
   }
   if(seoTab==='seg'){
-    return pageHeader('SEO','Segmentos · dispositivo, país e aspecto da pesquisa')+'<div class="an-root">'+bar+'<div style="display:flex;justify-content:flex-end;margin-bottom:10px">'+clearBtn+'</div>'+anPropChips()+anSegView()+'</div>';
+    return pageHeader('SEO','Segmentos · dispositivo, país e aspecto da pesquisa')+'<div class="an-root">'+propSel+bar+anSegView()+'</div>';
   }
   if(seoTab==='pgdev'){
-    var pgSub='<div class="an-seg" style="margin-bottom:14px"><button class="an-seg-btn'+(pgDevSubTab==='mensal'?' active':'')+'" onclick="pgDevSetSubTab(\'mensal\')"><i class="ti ti-calendar"></i>Visão mensal</button><button class="an-seg-btn'+(pgDevSubTab==='diario'?' active':'')+'" onclick="pgDevSetSubTab(\'diario\')"><i class="ti ti-chart-line"></i>Acompanhamento diário</button><button class="an-seg-btn" style="margin-left:auto;color:var(--danger)" onclick="anDevDataClearConfirm()"><i class="ti ti-trash"></i>Limpar dados</button></div>';
-    return pageHeader('SEO','Páginas por Dispositivo · posição Celular vs Computador vs Tablet')+'<div class="an-root">'+bar+anPropChips()+pgSub+(pgDevSubTab==='diario'?pgDevDView():pgDevView())+'</div>';
+    var pgSub='<div class="an-seg" style="margin-bottom:14px"><button class="an-seg-btn'+(pgDevSubTab==='mensal'?' active':'')+'" onclick="pgDevSetSubTab(\'mensal\')"><i class="ti ti-calendar"></i>Visão mensal</button><button class="an-seg-btn'+(pgDevSubTab==='diario'?' active':'')+'" onclick="pgDevSetSubTab(\'diario\')"><i class="ti ti-chart-line"></i>Acompanhamento diário</button></div>';
+    return pageHeader('SEO','Páginas por Dispositivo · posição Celular vs Computador vs Tablet')+'<div class="an-root">'+propSel+bar+pgSub+(pgDevSubTab==='diario'?pgDevDView():pgDevView())+'</div>';
   }
   if(seoTab==='qdev'){
-    var qSub='<div class="an-seg" style="margin-bottom:14px"><button class="an-seg-btn'+(qDevSubTab==='mensal'?' active':'')+'" onclick="qDevSetSubTab(\'mensal\')"><i class="ti ti-calendar"></i>Visão mensal</button><button class="an-seg-btn'+(qDevSubTab==='diario'?' active':'')+'" onclick="qDevSetSubTab(\'diario\')"><i class="ti ti-chart-line"></i>Acompanhamento diário</button><button class="an-seg-btn" style="margin-left:auto;color:var(--danger)" onclick="anDevDataClearConfirm()"><i class="ti ti-trash"></i>Limpar dados</button></div>';
-    return pageHeader('SEO','Consultas por Dispositivo · posição Celular vs Computador vs Tablet por palavra-chave')+'<div class="an-root">'+bar+anPropChips()+qSub+(qDevSubTab==='diario'?qDevDView():qDevView())+'</div>';
+    var qSub='<div class="an-seg" style="margin-bottom:14px"><button class="an-seg-btn'+(qDevSubTab==='mensal'?' active':'')+'" onclick="qDevSetSubTab(\'mensal\')"><i class="ti ti-calendar"></i>Visão mensal</button><button class="an-seg-btn'+(qDevSubTab==='diario'?' active':'')+'" onclick="qDevSetSubTab(\'diario\')"><i class="ti ti-chart-line"></i>Acompanhamento diário</button></div>';
+    return pageHeader('SEO','Consultas por Dispositivo · posição Celular vs Computador vs Tablet por palavra-chave')+'<div class="an-root">'+propSel+bar+qSub+(qDevSubTab==='diario'?qDevDView():qDevView())+'</div>';
   }
   return pageHeader('SEO','Busca · Search Console (cliques, impressões, CTR, posição) — por site/app')+'<div class="an-root"><div class="an-empty"><i class="ti ti-alert-circle"></i><p>Aba desconhecida</p></div></div>';
 }
@@ -3130,7 +3416,7 @@ function hMON(){
     anAdsSrc='ads';anAdsLbl='Ad Manager';
     return pageHeader('Receitas','Ad Manager · monetização diária')+'<div class="an-root">'+bar+anAdsBody()+'</div>';
   }
-  return pageHeader('Receitas','Receita por rede e RPM unificado · por propriedade')+'<div class="an-root">'+bar+anPropChips()+anRevView()+'</div>';
+  return pageHeader('Receitas','Receita por rede e RPM unificado · por propriedade')+'<div class="an-root">'+anPropDropdown()+bar+anRevView()+'</div>';
 }
 function hGeral(){
   return pageHeader('Métricas Gerais','Impressões, visualizações e cliques')
@@ -3169,7 +3455,7 @@ function hAPP(){
   anSection='app';
   if(anProp!=='all'&&AN_APPS.indexOf(anProp)<0)anProp='app';
   var h=pageHeader('Apps','Instalações, usuários ativos, retenção, sessões, avaliação e estabilidade — iOS e Android');
-  h+=anPropChips(['all'].concat(AN_APPS));
+  h+=anPropDropdown(['all'].concat(AN_APPS));
   h+=anSectionBody();
   return '<div class="an-root">'+h+'</div>';
 }
@@ -3593,6 +3879,7 @@ var AN_PROPS=[
 ];
 var AN_REAL=['gd','blog','app','cora','rec','save','cia','gracy','tsg'];
 var AN_APPS=['app','cia'];
+var AN_SEO_PROPS=['all','gd','blog','cora','rec','save']; // só sites com Search Console — apps e perfis sociais (gracy/tsg/cia/app) ficam de fora, aparecem só em Social
 var AN_COLORS={gd:'#16C79A',blog:'#3B82F6',app:'#8B5CF6',cora:'#F59E0B',rec:'#EC4899',save:'#0EA5E9',cia:'#F43F5E',gracy:'#A855F7',tsg:'#F97316'};
 var AN_MES_LONG=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
@@ -3797,7 +4084,7 @@ function anExec(year,section,prop,mk){
 }
 
 /* ── Ações de UI ── */
-function anR(){rHub(document.getElementById('app'));}
+function anR(){R();}
 function anPersistUI(){var s=anStore();s.ui.prop=anProp;s.ui.section=anSection;sv();}
 function anInit(){if(_anInit)return;_anInit=true;var s=anStore();if(s.ui){if(s.ui.prop&&AN_PROPS.some(function(p){return p.k===s.ui.prop;}))anProp=s.ui.prop;if(s.ui.section&&(AN_SECTIONS[s.ui.section]||s.ui.section==='pages'||s.ui.section==='pgview'||s.ui.section==='seo'||s.ui.section==='ret'))anSection=s.ui.section;if(s.ui.goalSel&&typeof s.ui.goalSel==='object')anGoalSel=s.ui.goalSel;if(s.ui.dashThresh)anDashThresh=Number(s.ui.dashThresh)||15;}
   if(!s.ui.pgRevPurged){anPgPurgeRevenue();s.ui.pgRevPurged=true;sv();} // migração única: remove receita de Top Páginas já lançada (não era a receita real do site)
@@ -3812,6 +4099,37 @@ function anCmpAll(){anCmpSel[anSection]=AN_REAL.slice();anR();}
 function anNeedsProp(){toast('Selecione uma propriedade específica para inserir ou importar dados.','ti-info-circle');}
 
 /* ── Componente: chips de propriedade ── */
+var _anPropSearchList=[];
+function anPropDropdown(only){
+  var list=(only&&only.length)?AN_PROPS.filter(function(p){return only.indexOf(p.k)>=0;}):AN_PROPS;
+  _anPropSearchList=list;
+  var current=list.find(function(p){return p.k===anProp;});
+  return '<div style="position:relative;margin-bottom:16px;max-width:300px">'
+    +'<div style="position:relative">'
+    +'<i class="ti ti-search" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text-secondary);pointer-events:none"></i>'
+    +'<input type="text" id="an-propsearch-input" style="width:100%;font-size:13.5px;font-weight:700;color:var(--navy);padding:10px 14px 10px 36px;border:1.5px solid rgba(0,0,0,.08);border-radius:11px;background:var(--card);font-family:inherit" placeholder="Pesquisar propriedade…" value="'+(current?current.l:'')+'" onfocus="anPropSearchOpen()" oninput="anPropSearchFilter(this.value)" autocomplete="off">'
+    +'</div>'
+    +'<div id="an-propsearch-list" style="display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--card);border:1px solid rgba(0,0,0,.08);border-radius:12px;box-shadow:0 10px 28px rgba(11,34,57,.14);max-height:280px;overflow-y:auto;z-index:80"></div>'
+    +'</div>';
+}
+function anPropSearchRenderList(filter){
+  var box=document.getElementById('an-propsearch-list');if(!box)return;
+  var f=(filter||'').toLowerCase();
+  var items=_anPropSearchList.filter(function(p){return !f||p.l.toLowerCase().indexOf(f)>=0;});
+  box.innerHTML=items.length?items.map(function(p){
+    return '<div onclick="anPropSearchPick(\''+p.k+'\')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;font-size:13px;color:var(--navy);font-weight:'+(p.k===anProp?'800':'600')+'"><i class="ti '+p.ic+'" style="color:var(--primary);font-size:15px;flex-shrink:0"></i>'+p.l+'</div>';
+  }).join(''):'<div style="padding:14px;font-size:12px;color:var(--text-secondary)">Nenhuma propriedade encontrada</div>';
+}
+function anPropSearchOpen(){anPropSearchRenderList('');var box=document.getElementById('an-propsearch-list');if(box)box.style.display='block';}
+function anPropSearchFilter(v){anPropSearchRenderList(v);var box=document.getElementById('an-propsearch-list');if(box)box.style.display='block';}
+function anPropSearchPick(k){
+  var box=document.getElementById('an-propsearch-list');if(box)box.style.display='none';
+  anSetProp(k);
+}
+document.addEventListener('click',function(e){
+  var inp=document.getElementById('an-propsearch-input'),box=document.getElementById('an-propsearch-list');
+  if(inp&&box&&!inp.contains(e.target)&&!box.contains(e.target))box.style.display='none';
+});
 function anPropChips(only){
   var list=(only&&only.length)?AN_PROPS.filter(function(p){return only.indexOf(p.k)>=0;}):AN_PROPS;
   return '<div class="an-chips">'+list.map(function(p){
@@ -3980,7 +4298,6 @@ function anEntryBar(){
     +yrSel
     +'<button class="an-btn prim" '+(isAll?'onclick="anNeedsProp()"':'onclick="anManualOpen()"')+'>Inserir Manualmente</button>'
     +'<button class="an-btn prim" '+(isAll?'onclick="anNeedsProp()"':'onclick="anImportOpen()"')+'><i class="ti ti-upload"></i> Importar CSV</button>'
-    +'<button class="an-btn" onclick="anModelDownload()"><i class="ti ti-download"></i> Modelo</button>'
     +'</div>';
 }
 function anNewYear(){sM('Novo ano (ex.: 2027)','',function(v){var y=String(parseInt(v)||'').trim();if(!y||y==='0'){anR();return;}anYear=y;anRaw(y,anSection,anProp==='all'?'gd':anProp);sv();anR();toast('Ano '+y+' criado.','ti-calendar-plus');},'number');}
@@ -4382,7 +4699,6 @@ function anCampControls(disabled){
   return '<div class="an-card an-camp-ctrl">'
     +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Métrica</span>'+mkSel+'<span class="an-camp-cl">Mês (detalhe)</span>'+moSel+'</div>'
     +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anCampManualOpen()">Inserir Manualmente</button>'
-    +'<button class="an-btn" onclick="anCampModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
     +'<button class="an-btn prim" onclick="anCampImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
 }
 
@@ -4627,7 +4943,6 @@ function anTchControls(disabled){
   return '<div class="an-card an-camp-ctrl">'
     +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Métrica</span>'+mkSel+'<span class="an-camp-cl">Mês (detalhe)</span>'+moSel+'</div>'
     +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anTchManualOpen()">Inserir Manualmente</button>'
-    +'<button class="an-btn" onclick="anTchModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
     +'<button class="an-btn prim" onclick="anTchImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
 }
 function anTchTable(mi,mk){
@@ -4873,7 +5188,6 @@ function anRevView(){
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div>'
     +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anRevManualOpen()">Inserir Manualmente</button>'
-    +'<button class="an-btn" onclick="anRevModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
     +'<button class="an-btn prim" onclick="anRevImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
   h+='<div class="an-card">'+anRevPivot()+'</div>';
   return h;
@@ -5028,8 +5342,8 @@ function anSeoView(){
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="anSeoSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel
-    +'<span class="an-seg" style="margin-left:6px"><button class="an-seg-btn'+(anSeoTab==='opp'?' active':'')+'" onclick="anSeoSetTab(\'opp\')"><i class="ti ti-target-arrow"></i>Oportunidade</button><button class="an-seg-btn'+(anSeoTab==='imp'?' active':'')+'" onclick="anSeoSetTab(\'imp\')"><i class="ti ti-eye"></i>Impressão</button><button class="an-seg-btn'+(anSeoTab==='decay'?' active':'')+'" onclick="anSeoSetTab(\'decay\')"><i class="ti ti-trending-down"></i>Decaimento</button></span></div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anSeoImportOpen()"><i class="ti ti-upload"></i> Importar Search Console</button></div></div>';
+    +'<span class="an-seg" style="margin-left:6px;margin-bottom:0"><button class="an-seg-btn'+(anSeoTab==='opp'?' active':'')+'" onclick="anSeoSetTab(\'opp\')"><i class="ti ti-target-arrow"></i>Oportunidade</button><button class="an-seg-btn'+(anSeoTab==='imp'?' active':'')+'" onclick="anSeoSetTab(\'imp\')"><i class="ti ti-eye"></i>Impressão</button><button class="an-seg-btn'+(anSeoTab==='decay'?' active':'')+'" onclick="anSeoSetTab(\'decay\')"><i class="ti ti-trending-down"></i>Decaimento</button></span></div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anSeoImportOpen()">Inserir Manualmente</button></div></div>';
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Selecione uma propriedade</p><span>O SEO é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   if(!anSeoHasAny(anYear,anProp)){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Sem dados de Search Console</p><span>Exporte o relatório "Desempenho" (Consultas ou Páginas) do Google Search Console e importe — um arquivo por mês</span></div></div>';return h;}
   if(anSeoTab==='opp')h+=anSeoOpp(mi);else if(anSeoTab==='imp')h+=anImpOppCard(mi);else h+=anSeoDecay(mi);
@@ -5626,7 +5940,6 @@ function anRetView(){
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div>'
     +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anRetManualOpen()">Inserir Manualmente</button>'
-    +'<button class="an-btn" onclick="anRetModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
     +'<button class="an-btn prim" onclick="anRetImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-repeat"></i><p>Selecione uma propriedade</p><span>A retenção é exibida por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   if(!anRetHasAny(anYear,anProp)){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-repeat"></i><p>Sem dados de retenção</p><span>Use o relatório de Coorte do GA4 (Explorar → Coorte) e importe, ou preencha manualmente o % de usuários que voltaram</span></div></div>';return h;}
@@ -5830,7 +6143,6 @@ function anAdsControls(mi){
   return '<div class="an-card an-camp-ctrl">'
     +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
     +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anAdsManualOpen()">Inserir Manualmente</button>'
-    +'<button class="an-btn" onclick="anAdsModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
     +'<button class="an-btn prim" onclick="anAdsImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
 }
 
@@ -5918,12 +6230,12 @@ function anAdsManBody(){
   h+='</select></h4><p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px">Preencha os dias de '+AN_MES_LONG[mi]+'. O total do mês (linha destacada no fim) atualiza a cada edição — use para confirmar se o resultado do mês está correto. Salva automaticamente no Supabase.</p>';
   h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl" id="an-adsman-table"><thead><tr><th>Dia</th>'+anAdsCurMetrics().map(function(m){return '<th>'+m.l+'</th>';}).join('')+'</tr></thead><tbody>';
   for(var d=0;d<tD;d++){h+='<tr><td style="font-weight:600">'+(d+1)+'</td>'+anAdsCurMetrics().map(function(m){var v=anAdsValD(anAdsYear,mi,m.k,d);return '<td><input class="hin" type="number" step="any" inputmode="decimal" value="'+(v==null?'':v)+'" placeholder="—" onchange="anAdsSet(anAdsYear,'+mi+',\''+m.k+'\','+d+',this.value);sv();anAdsManUpdateTotal()"></td>';}).join('')+'</tr>';}
-  h+='</tbody><tfoot><tr id="an-adsman-totrow" class="an-camp-tot"><td style="font-weight:700">Total / Mês</td>'+anAdsCurMetrics().map(function(m){return '<td data-mk="'+m.k+'" style="font-weight:700">'+anShort(anAdsMonthTotal(anAdsYear,mi,m.k),m.fmt)+'</td>';}).join('')+'</tr></tfoot></table></div><div class="mbb"><button onclick="anAdsImportOpen()"><i class="ti ti-upload" style="font-size:11px"></i> Importar CSV</button><button class="pr" onclick="document.getElementById(\'an-adsman-ov\').remove();_anAdsMan=null;R()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
+  h+='</tbody><tfoot><tr id="an-adsman-totrow" class="an-camp-tot"><td style="font-weight:700">Total / Mês</td>'+anAdsCurMetrics().map(function(m){return '<td data-mk="'+m.k+'" style="font-weight:700">'+anFmt(anAdsMonthTotal(anAdsYear,mi,m.k),m.fmt)+'</td>';}).join('')+'</tr></tfoot></table></div><div class="mbb"><button onclick="anAdsImportOpen()"><i class="ti ti-upload" style="font-size:11px"></i> Importar CSV</button><button class="pr" onclick="document.getElementById(\'an-adsman-ov\').remove();_anAdsMan=null;R()"><i class="ti ti-check" style="font-size:11px"></i> Concluir</button></div>';
   document.getElementById('an-adsman-body').innerHTML=h;
 }
 function anAdsManUpdateTotal(){
   if(!_anAdsMan)return;var mi=_anAdsMan.mi,row=document.getElementById('an-adsman-totrow');if(!row)return;
-  anAdsCurMetrics().forEach(function(m){var cell=row.querySelector('td[data-mk="'+m.k+'"]');if(cell)cell.textContent=anShort(anAdsMonthTotal(anAdsYear,mi,m.k),m.fmt);});
+  anAdsCurMetrics().forEach(function(m){var cell=row.querySelector('td[data-mk="'+m.k+'"]');if(cell)cell.textContent=anFmt(anAdsMonthTotal(anAdsYear,mi,m.k),m.fmt);});
 }
 
 /* ── Página AdSense ── */
@@ -5987,7 +6299,7 @@ function rpComboChart(mkA,mkB){
   return svg+legend;
 }
 function rpComboCard(icon,title,mkA,mkB){
-  var toggle='<div class="an-seg" style="margin-left:auto"><button class="an-seg-btn'+(anAdsComboMode==='mensal'?' active':'')+'" onclick="anAdsComboSetMode(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(anAdsComboMode==='diario'?' active':'')+'" onclick="anAdsComboSetMode(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></div>';
+  var toggle='<div class="an-seg" style="margin-left:auto;margin-bottom:0"><button class="an-seg-btn'+(anAdsComboMode==='mensal'?' active':'')+'" onclick="anAdsComboSetMode(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(anAdsComboMode==='diario'?' active':'')+'" onclick="anAdsComboSetMode(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></div>';
   return '<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti '+icon+'"></i> '+title+'</div>'+toggle+'</div>'
     +rpComboChart(mkA,mkB)+'</div>';
 }
@@ -6115,7 +6427,6 @@ function anPgControls(){
   return '<div class="an-card an-camp-ctrl">'
     +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Métrica</span>'+mSel+'</div>'
     +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anPgManualOpen()">Inserir Manualmente</button>'
-    +'<button class="an-btn" onclick="anPgModelDownload()"><i class="ti ti-file-download"></i> Modelo</button>'
     +'<button class="an-btn prim" onclick="anPgImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
 }
 function anPgView(){
@@ -6605,8 +6916,7 @@ var DASH_METASTAT={risco:{l:'Em risco',c:'var(--danger)'},atencao:{l:'Atenção'
 
 function anSectionBody(){
   var h='';
-  h+=anFocusBar();
-  if(anSection!=='user')h+=anExecRow(); // Aquisição de Usuários: sem melhor/pior mês/crescimento, a pedido
+  if(anSection!=='user'&&anSection!=='traf'&&anSection!=='app')h+=anExecRow(); // Tráfego, Usuários e Apps: sem melhor/pior mês/crescimento, a pedido
   h+=anGoalProgress();
   h+=anMetricCards();
   h+=anEntryBar();
@@ -6620,23 +6930,23 @@ function hGA(){
   var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
   if(anSection==='pages'){
     var hp=pageHeader('Analytics','Top Páginas · '+propLabel(anProp));
-    hp+=anPropChips();
+    hp+=anPropDropdown();
     hp+=anSubNav();
     hp+=anPgView();
     return '<div class="an-root">'+hp+'</div>';
   }
   if(anSection==='pgview'){
     var hv=pageHeader('Analytics','Páginas e Telas · visualizações, usuários e rejeição · '+propLabel(anProp));
-    hv+=anPropChips();hv+=anSubNav();hv+=pvView();
+    hv+=anPropDropdown();hv+=anSubNav();hv+=pvView();
     return '<div class="an-root">'+hv+'</div>';
   }
   if(anSection==='ret'){
     var hr=pageHeader('Analytics','Retenção (coortes) · '+propLabel(anProp));
-    hr+=anPropChips();hr+=anSubNav();hr+=anRetView();
+    hr+=anPropDropdown();hr+=anSubNav();hr+=anRetView();
     return '<div class="an-root">'+hr+'</div>';
   }
   var h=pageHeader('Analytics', AN_SECTIONS[anSection].l+' · '+propLabel(anProp));
-  h+=anPropChips();
+  h+=anPropDropdown();
   h+=anSubNav();
   if(anSection==='camp'){
     h+=anCampView();
