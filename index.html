@@ -306,7 +306,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .mx .mbb{display:flex;gap:6px;justify-content:flex-end}
 .an-impmode{margin:14px 0}
 .an-impmode-ttl{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:8px}
-.an-impmode-opt{display:block;position:relative;padding:10px 14px 10px 34px;border-radius:10px;margin-bottom:7px;cursor:pointer;border:1px solid rgba(0,0,0,.07);background:var(--bg);line-height:1.5;font-size:12px}
+.an-impmode-opt{display:block;position:relative;padding:10px 14px 10px 34px;border-radius:10px;margin-bottom:7px;cursor:pointer;border:1px solid rgba(0,0,0,.07);background:var(--bg);line-height:1.5;font-size:12px;text-align:left}
 .an-impmode-opt input{position:absolute;left:12px;top:12px;margin:0}
 .an-impmode-opt b{color:var(--navy)}
 .an-mbb-sep{margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,0,0,.07)}
@@ -778,6 +778,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 
   <div class="sb-footer">
+    <div class="sb sb-savebadge" style="display:none"></div>
     <div class="sb-user">
       <div class="sb-avatar">G</div>
       <div>
@@ -951,7 +952,24 @@ async function ld(){try{const d=await sbGet('gd_v4');if(d){cT=d.t||{};ac=d.a||{}
 const s=localStorage.getItem('gd_v4');if(s){try{const lsd=JSON.parse(s);cT=lsd.t||{};ac=lsd.a||{};tE=lsd.e||{};await sbSet('gd_v4',{t:cT,a:ac,e:tE});localStorage.removeItem('gd_v4')}catch(e2){}}}}catch(e){console.error('ld error',e)}}
 var _svPending=false; // true enquanto o salvamento no Supabase ainda está em andamento — usado para avisar antes de recarregar/fechar a página
 window.addEventListener('beforeunload',function(e){if(_svPending){e.preventDefault();e.returnValue='';return '';}});
-function sv(){const el=document.querySelector('.sb');if(el)el.innerHTML='<i class="ti ti-loader-2" style="font-size:10px;display:inline-block;animation:spin .8s linear infinite"></i> Salvando...';_svPending=true;sbSet('gd_v4',{t:cT,a:ac,e:tE}).then(()=>{_svPending=false;const el2=document.querySelector('.sb');if(el2)el2.innerHTML='<i class="ti ti-device-floppy" style="font-size:10px"></i> Salvo'}).catch(()=>{_svPending=false;const el2=document.querySelector('.sb');if(el2)el2.innerHTML='<i class="ti ti-alert-circle" style="font-size:10px;color:var(--red)"></i> Erro ao salvar'})}
+var _svInFlight=false,_svQueued=false;
+function sv(){
+  _svPending=true;
+  if(_svInFlight){_svQueued=true;return;} // já existe um salvamento em andamento — a versão mais atual do estado será enviada assim que ele terminar (evita duas requisições em paralelo que poderiam voltar fora de ordem e uma antiga sobrescrever uma nova)
+  _svRun();
+}
+function _svRun(){
+  _svInFlight=true;
+  sbSet('gd_v4',{t:cT,a:ac,e:tE}).then(function(){
+    _svInFlight=false;
+    if(_svQueued){_svQueued=false;_svRun();return;}
+    _svPending=false;var el2=document.querySelector('.sb');if(el2)el2.style.display='none';
+  }).catch(function(){
+    _svInFlight=false;_svQueued=false;_svPending=false;
+    var el2=document.querySelector('.sb');
+    if(el2){el2.style.display='flex';el2.style.cssText+=';color:var(--red);align-items:center;gap:5px;font-size:10.5px;padding:6px 12px';el2.innerHTML='<i class="ti ti-alert-circle" style="font-size:11px"></i> Erro ao salvar — verifique sua conexão/Supabase e tente de novo';}
+  });
+}
 // Helpers
 function K(m,d,i){return m+'-'+d+'-'+i}
 function EK(m,d){return m+'-'+d}
@@ -4691,7 +4709,7 @@ function anCampTotal(year,prop,mk,mi){var meta=anMeta('camp',mk),o=anCampObj(yea
 function anCampSeriesByMonth(year,prop,name,mk){var arr=[];for(var i=0;i<12;i++)arr.push(anCampVal(year,prop,name,mk,i));return arr;}
 
 /* helpers de seleção */
-function anCampCurMi(){if(anCampMi!=null&&anCampMi>=0&&anCampMi<=11)return anCampMi;var ms=anCampMonths(anYear,anProp);if(ms.length)return ms[ms.length-1];var now=new Date();return String(now.getFullYear())===String(anYear)?now.getMonth():11;}
+function anCampCurMi(){if(anCampMi!=null&&anCampMi>=0&&anCampMi<=11)return anCampMi;var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();var ms=anCampMonths(anYear,anProp);if(ms.length)return ms[ms.length-1];return 11;}
 function anCampCurMetric(){var ms=AN_SECTIONS.camp.metrics;if(!anCampMetric||!ms.some(function(m){return m.k===anCampMetric;}))anCampMetric='sessoes';return anCampMetric;}
 function anCampSetMi(v){anCampMi=parseInt(v,10);anR();}
 function anCampSetMetric(v){anCampMetric=v;anR();}
@@ -4943,7 +4961,7 @@ function anTchTotal(year,prop,mk,mi){var meta=anMeta('trafch',mk),o=anTchObj(yea
   return nums.length?nums.reduce(function(a,b){return Number(a)+Number(b);},0)/nums.length:null;}
 function anTchSeriesByMonth(year,prop,name,mk){var arr=[];for(var i=0;i<12;i++)arr.push(anTchVal(year,prop,name,mk,i));return arr;}
 
-function anTchCurMi(){if(anTchMi!=null&&anTchMi>=0&&anTchMi<=11)return anTchMi;var ms=anTchMonths(anYear,anProp);if(ms.length)return ms[ms.length-1];var now=new Date();return String(now.getFullYear())===String(anYear)?now.getMonth():11;}
+function anTchCurMi(){if(anTchMi!=null&&anTchMi>=0&&anTchMi<=11)return anTchMi;var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();var ms=anTchMonths(anYear,anProp);if(ms.length)return ms[ms.length-1];return 11;}
 function anTchCurMetric(){var ms=AN_SECTIONS.trafch.metrics;if(!anTchMetric||!ms.some(function(m){return m.k===anTchMetric;}))anTchMetric='sessoes';return anTchMetric;}
 function anTchSetMi(v){anTchMi=parseInt(v,10);anR();}
 function anTchSetMetric(v){anTchMetric=v;anR();}
@@ -5310,7 +5328,7 @@ function anSeoDecaySortSet(by){if(anSeoDecaySort.by===by)anSeoDecaySort.dir=anSe
 function anSeoOppSortSet(by){if(anSeoOppSort.by===by)anSeoOppSort.dir=anSeoOppSort.dir==='asc'?'desc':'asc';else{anSeoOppSort.by=by;anSeoOppSort.dir=(by==='pp'||by==='p')?'asc':'desc';}anR();}
 function anSeoObj(year,prop){var s=anStore();s.seo[year]=s.seo[year]||{};s.seo[year][prop]=s.seo[year][prop]||{};return s.seo[year][prop];}
 function anSeoMonths(year,prop){var o=anSeoObj(year,prop);return Object.keys(o).map(Number).sort(function(a,b){return a-b;});}
-function anSeoCurMi(){if(anSeoMi!=null&&anSeoMi>=0&&anSeoMi<=11)return anSeoMi;var ms=anSeoMonths(anYear,anProp);if(ms.length)return ms[ms.length-1];var now=new Date();return String(now.getFullYear())===String(anYear)?now.getMonth():0;}
+function anSeoCurMi(){if(anSeoMi!=null&&anSeoMi>=0&&anSeoMi<=11)return anSeoMi;var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();var ms=anSeoMonths(anYear,anProp);if(ms.length)return ms[ms.length-1];return 0;}
 function anSeoRows(year,prop,mi){var o=anSeoObj(year,prop);return o[mi]||[];}
 function anSeoDimObj(year,prop){var s=anStore();s.seodim[year]=s.seodim[year]||{};s.seodim[year][prop]=s.seodim[year][prop]||{};return s.seodim[year][prop];}
 function anSeoDimGet(year,prop,mi){return anSeoDimObj(year,prop)[mi]||null;} // 'Página' | 'Consulta' | null (meses antigos, antes desta identificação existir)
@@ -5964,7 +5982,7 @@ function anRetView(){
     +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anRetManualOpen()">Inserir Manualmente</button>'
     +'<button class="an-btn prim" onclick="anRetImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-repeat"></i><p>Selecione uma propriedade</p><span>A retenção é exibida por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
-  if(!anRetHasAny(anYear,anProp)){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-repeat"></i><p>Sem dados de retenção</p><span>Use o relatório de Coorte do GA4 (Explorar → Coorte) e importe, ou preencha manualmente o % de usuários que voltaram</span></div></div>';return h;}
+  if(!anRetHasAny(anYear,anProp)){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-repeat"></i><p>Sem dados de retenção</p><span>Use o relatório de Coorte do GA4 (Explorar → Coorte) — pode importar com o número de usuários bruto de cada mês, a conversão para % é automática (base = Mês 0 de cada linha)</span></div></div>';return h;}
   h+='<div class="an-card">'+anRetMatrix()+'</div>';
   return h;
 }
@@ -6006,9 +6024,21 @@ function anRetImportOpen(){
 function anRetMonthIdx(label){label=(label==null?'':label).toString().toLowerCase().trim();for(var i=0;i<AN_MES_LONG.length;i++){if(label.indexOf(AN_MES_LONG[i].toLowerCase())>=0||label.indexOf(HMESES[i].toLowerCase())>=0)return i;}var m=label.match(/(\d{1,2})/);if(m){var n=parseInt(m[1],10);if(n>=1&&n<=12)return n-1;}return -1;}
 function anRetApply(rows){
   var clean=rows.filter(function(c){return c&&c.some(function(x){return String(x==null?'':x).trim()!=='';});});
-  var n=0;clean.forEach(function(c,idx){var ci=anRetMonthIdx(c[0]);if(ci<0)return;if(idx===0&&!/\d/.test(String(c[1]||'')))return;for(var off=0;off<12;off++){var v=hNumParse(c[off+1]);if(v!=null){anRetSet(anYear,anProp,ci,off,v);n++;}}});
-  if(!n){toast('Não reconheci o arquivo. Use o modelo (Coorte, M0, M1, …).','ti-alert-circle');return;}
-  sv();anR();toast('Retenção importada.','ti-file-import');
+  var n=0;
+  clean.forEach(function(c,idx){
+    var ci=anRetMonthIdx(c[0]);if(ci<0)return;
+    if(idx===0&&!/\d/.test(String(c[1]||'')))return;
+    var raw=[];for(var off=0;off<12;off++)raw.push(hNumParse(c[off+1]));
+    var base=raw[0]; // Mês 0 vira sempre a base (100%) — converte automaticamente contagem bruta do GA4 (ex.: 8.838 usuários) ou mantém igual se já vier em percentual
+    if(base==null||base===0)return;
+    for(var off2=0;off2<12;off2++){
+      if(raw[off2]==null)continue;
+      var pct=raw[off2]/base*100;
+      anRetSet(anYear,anProp,ci,off2,pct);n++;
+    }
+  });
+  if(!n){toast('Não reconheci o arquivo. Use o modelo (Coorte, M0, M1, …) ou o relatório de Coorte do GA4 com Usuários ativos por mês.','ti-alert-circle');return;}
+  sv();anR();toast('Retenção importada e convertida em % (base = Mês 0 de cada linha).','ti-file-import');
 }
 function anRetManualOpen(){if(anProp==='all'){toast('Selecione uma propriedade específica.','ti-info-circle');return;}_anRetMan={};
   var o=document.createElement('div');o.className='ov';o.id='an-retman-ov';
