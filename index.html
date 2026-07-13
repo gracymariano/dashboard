@@ -304,6 +304,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .mx h4{font-size:15px;font-weight:700;margin-bottom:10px}
 .mx input,.mx select{width:100%;padding:8px 12px;border:1.5px solid rgba(0,0,0,.1);border-radius:var(--radius-xs);font-size:13px;font-family:inherit;background:var(--bg);color:var(--text-primary);margin-bottom:8px}
 .mx .mbb{display:flex;gap:6px;justify-content:flex-end}
+.an-impmode{margin:14px 0}
+.an-impmode-ttl{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.an-impmode-opt{display:block;position:relative;padding:10px 14px 10px 34px;border-radius:10px;margin-bottom:7px;cursor:pointer;border:1px solid rgba(0,0,0,.07);background:var(--bg);line-height:1.5;font-size:12px}
+.an-impmode-opt input{position:absolute;left:12px;top:12px;margin:0}
+.an-impmode-opt b{color:var(--navy)}
+.an-mbb-sep{margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,0,0,.07)}
 .mx button{padding:7px 16px;border-radius:var(--radius-xs);font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid rgba(0,0,0,.08);background:var(--bg);color:var(--text-primary);font-family:inherit;transition:all .2s}
 .mx button.pr{background:var(--grad);color:#fff;border-color:transparent}
 .mx button.dgr{background:#ef4444;color:#fff;border-color:#ef4444}
@@ -1835,7 +1841,7 @@ function rCC(a){
 // ===== FEATURE 01 + ENTRADA DE DADOS — HISTÓRICO ANUAL (multi-dataset) =====
 function hFmt(v,fmt){if(v==null||v==='')return'—';v=Number(v);
   if(fmt==='pct')return v.toLocaleString('pt-BR',{maximumFractionDigits:2})+'%';
-  if(fmt==='dec')return v.toLocaleString('pt-BR',{maximumFractionDigits:2});
+  if(fmt==='dec')return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   if(fmt==='money')return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   if(fmt==='int')return Math.round(v).toLocaleString('pt-BR',{maximumFractionDigits:0});
   return v.toLocaleString('pt-BR',{maximumFractionDigits:0});}
@@ -4036,6 +4042,7 @@ function anFmt(v,fmt){if(v==null||v==='')return'—';v=Number(v);
 function anShort(v,fmt){if(v==null||v==='')return'—';v=Number(v);
   if(fmt==='int')return fN(v);
   if(fmt==='pct')return v.toFixed(1)+'%';
+  if(fmt==='dec')return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
   if(fmt==='dur'){var s=Math.round(v);return Math.floor(s/60)+'m'+String(s%60).padStart(2,'0');}
   if(fmt==='money')return 'R$'+(Math.abs(v)>=1000?fN(v):v.toLocaleString('pt-BR',{maximumFractionDigits:2}));
   if(fmt==='usd')return 'US$'+(Math.abs(v)>=1000?fN(v):v.toLocaleString('pt-BR',{maximumFractionDigits:2}));
@@ -4245,7 +4252,7 @@ function anMGoalEdit(mi){
 /* ── Componente: histórico por métrica (um gráfico grande por métrica) ── */
 function anHistoryCharts(){
   if(!anHasAny(anYear,anSection,anProp)){
-    return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-timeline"></i> Histórico por métrica · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+'</div></div>'
+    return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-timeline"></i> Histórico por métrica · '+anYear+'</div></div>'
       +'<div class="an-empty"><i class="ti ti-chart-bar"></i><p>Sem dados para '+anYear+'</p><span>Use os botões acima para inserir manualmente ou importar um CSV do GA4</span></div></div>';
   }
   var blocks=AN_SECTIONS[anSection].metrics.map(function(m){
@@ -4259,9 +4266,8 @@ function anHistoryCharts(){
       +body+'</div>';
   }).join('');
   return '<div class="an-card">'
-    +'<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-timeline"></i> Histórico por métrica · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+'</div></div>'
+    +'<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-timeline"></i> Histórico por métrica · '+anYear+'</div></div>'
     +'<div class="an-hcharts">'+blocks+'</div>'
-    +'<div class="an-card-sub" style="margin-top:10px;text-align:center"><i class="ti ti-click" style="font-size:13px"></i> Clique em uma barra para ver valor, anotações e histórico do mês</div>'
     +'</div>';
 }
 
@@ -4835,10 +4841,10 @@ function anCampPreview(rows,fname){
     +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br>Mês detectado: <strong style="color:var(--navy)">'+AN_MES_LONG[parsed.mi]+'/'+parsed.year+'</strong> · <strong>'+names.length+'</strong> origens · Métricas: '+anEsc(metsLbl)+'</p>'
     +'<div class="hwrap"><table class="htbl imp-prev"><thead><tr><th style="text-align:left">Origem</th>'+thead+'</tr></thead><tbody>'+prev+'</tbody></table></div>'
     +(names.length>8?'<p style="font-size:11px;color:var(--text-secondary);margin-top:6px">+ '+(names.length-8)+' outras origens</p>':'')
-    +'<div style="margin:12px 0 4px;font-size:12px;font-weight:600;color:var(--navy)">Modo de importação</div>'
-    +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;margin-bottom:6px;cursor:pointer"><input type="radio" name="cimode" value="update" checked> <span>Atualizar o mês — substitui os valores das origens enviadas neste mês (recomendado)</span></label>'
-    +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;cursor:pointer"><input type="radio" name="cimode" value="replace"> <span>Substituir o mês — apaga as origens deste mês não presentes no arquivo</span></label>'
-    +'<div class="mbb"><button onclick="document.getElementById(\'an-cimp-ov\').remove();_anCampImp=null">Cancelar</button><button class="pr" onclick="anCampApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
+    +'<div class="an-impmode"><div class="an-impmode-ttl">Modo de importação</div>'
+    +'<label class="an-impmode-opt"><input type="radio" name="cimode" value="update" checked><span><b>Atualizar o mês</b> — substitui os valores das origens enviadas neste mês (recomendado)</span></label>'
+    +'<label class="an-impmode-opt"><input type="radio" name="cimode" value="replace"><span><b>Substituir o mês</b> — apaga as origens deste mês não presentes no arquivo</span></label></div>'
+    +'<div class="mbb an-mbb-sep"><button onclick="document.getElementById(\'an-cimp-ov\').remove();_anCampImp=null">Cancelar</button><button class="pr" onclick="anCampApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
   document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anCampImp=null;}});
 }
 function anCampApply(){
@@ -5049,10 +5055,10 @@ function anTchPreview(rows,fname){
     +'<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 10px">Arquivo: <strong style="color:var(--navy)">'+anEsc(fname||'csv')+'</strong><br>Mês detectado: <strong style="color:var(--navy)">'+AN_MES_LONG[parsed.mi]+'/'+parsed.year+'</strong> · <strong>'+names.length+'</strong> canais · Métricas: '+anEsc(metsLbl)+'</p>'
     +'<div class="hwrap"><table class="htbl imp-prev"><thead><tr><th style="text-align:left">Canal</th>'+thead+'</tr></thead><tbody>'+prev+'</tbody></table></div>'
     +(names.length>8?'<p style="font-size:11px;color:var(--text-secondary);margin-top:6px">+ '+(names.length-8)+' outros canais</p>':'')
-    +'<div style="margin:12px 0 4px;font-size:12px;font-weight:600;color:var(--navy)">Modo de importação</div>'
-    +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;margin-bottom:6px;cursor:pointer"><input type="radio" name="timode" value="update" checked> <span>Atualizar o mês — substitui os valores dos canais enviados neste mês (recomendado)</span></label>'
-    +'<label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;cursor:pointer"><input type="radio" name="timode" value="replace"> <span>Substituir o mês — apaga os canais deste mês não presentes no arquivo</span></label>'
-    +'<div class="mbb"><button onclick="document.getElementById(\'an-timp-ov\').remove();_anTchImp=null">Cancelar</button><button class="pr" onclick="anTchApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
+    +'<div class="an-impmode"><div class="an-impmode-ttl">Modo de importação</div>'
+    +'<label class="an-impmode-opt"><input type="radio" name="timode" value="update" checked><span><b>Atualizar o mês</b> — substitui os valores dos canais enviados neste mês (recomendado)</span></label>'
+    +'<label class="an-impmode-opt"><input type="radio" name="timode" value="replace"><span><b>Substituir o mês</b> — apaga os canais deste mês não presentes no arquivo</span></label></div>'
+    +'<div class="mbb an-mbb-sep"><button onclick="document.getElementById(\'an-timp-ov\').remove();_anTchImp=null">Cancelar</button><button class="pr" onclick="anTchApply()"><i class="ti ti-check" style="font-size:11px"></i> Importar</button></div></div>';
   document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o){o.remove();_anTchImp=null;}});
 }
 function anTchApply(){
@@ -6297,8 +6303,8 @@ function rpComboChart(mkA,mkB){
   }
   var lineA=ptsA.length>1?('<polyline points="'+ptsA.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'" fill="none" stroke="var(--primary-dark)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>'):'';
   var lineB=ptsB.length>1?('<polyline points="'+ptsB.map(function(p){return p[0].toFixed(1)+','+p[1].toFixed(1);}).join(' ')+'" fill="none" stroke="var(--warning)" stroke-width="2" stroke-dasharray="4 3" stroke-linejoin="round" stroke-linecap="round"/>'):'';
-  var dotsA=ptsA.map(function(p){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="2.6" fill="var(--primary-dark)"><title>'+labels[p[2]]+' · '+metaA.l+': '+anFmt(p[3],metaA.fmt)+'</title></circle>';}).join('');
-  var dotsB=ptsB.map(function(p){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="2.4" fill="var(--warning)"><title>'+labels[p[2]]+' · '+metaB.l+': '+anFmt(p[3],metaB.fmt)+'</title></circle>';}).join('');
+  var dotsA=ptsA.map(function(p){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="9" fill="transparent" style="cursor:pointer"><title>'+labels[p[2]]+' · '+metaA.l+': '+anFmt(p[3],metaA.fmt)+'</title></circle><circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="2.8" fill="var(--primary-dark)" style="pointer-events:none"/>';}).join('');
+  var dotsB=ptsB.map(function(p){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="9" fill="transparent" style="cursor:pointer"><title>'+labels[p[2]]+' · '+metaB.l+': '+anFmt(p[3],metaB.fmt)+'</title></circle><circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="2.6" fill="var(--warning)" style="pointer-events:none"/>';}).join('');
   var xl='',xStep=n>20?Math.ceil(n/12):1;
   for(var i=0;i<n;i++){if(i%xStep===0||i===n-1)xl+='<text class="an-axis" x="'+xAt(i).toFixed(1)+'" y="'+(baseY+15)+'" text-anchor="middle" style="font-size:8px">'+labels[i]+'</text>';}
   var lastA=null,lastB=null;
