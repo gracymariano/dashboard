@@ -2741,7 +2741,7 @@ function anSegView(){
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="segSetMi(this.value)">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select>';
   var ctrl='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" '+(isAll?'onclick="anNeedsProp()"':'onclick="anSegImportOpen()"')+'>Inserir Manualmente</button></div></div>';
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" '+(isAll?'onclick="anNeedsProp()"':'onclick="anSegImportOpen()"')+'><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
   var rows=anSegRows(anYear,anProp,dim,mi),body;
   if(!rows.length){
     body='<div class="an-card" style="text-align:center;padding:30px 16px;color:var(--text-secondary)"><i class="ti '+segDimObj(dim).ic+'" style="font-size:30px;color:var(--primary);opacity:.5"></i><p style="margin:10px 0 4px;font-weight:600;color:var(--navy)">Sem dados de '+segDimObj(dim).l+' em '+AN_MES_LONG[mi]+'/'+anYear+'</p><p style="font-size:11.5px;margin:0">Exporte do Search Console (aba '+segDimObj(dim).l+') e clique em <strong>Importar Search Console</strong>.</p></div>';
@@ -2903,8 +2903,8 @@ function rpDevPosChart(){
 }
 function rpDevPosCard(){
   var importBtn=rpDevPosMode==='mensal'
-    ?'<button class="an-btn" onclick="pgDevImportOpen()"><i class="ti ti-upload"></i> Importar mês</button>'
-    :'<button class="an-btn" onclick="pgDevDImportOpen()"><i class="ti ti-upload"></i> Importar dia</button>';
+    ?'<button class="an-btn" onclick="pgDevImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button>'
+    :'<button class="an-btn" onclick="pgDevDImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button>';
   return rpToggleCard('ti-devices','Posição média por dispositivo',rpDevPosMode,'rpDevPosSetMode',rpDevPosChart(),importBtn);
 }
 
@@ -3012,7 +3012,8 @@ function rpTopQView(){
     var dsel='<select class="fsel" onchange="rpTopQSetDay(this.value)">';for(var d=1;d<=tD;d++)dsel+='<option value="'+d+'"'+(d===curDay?' selected':'')+'>'+d+'</option>';dsel+='</select>';
     dayCtrl='<span class="an-camp-cl">Dia</span>'+dsel;
   }
-  var h='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+dayCtrl+toggle+'</div></div>';
+  var h='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+dayCtrl+toggle+'</div>'
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anSeoImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
   var rows=rpTopQRows(mi);
   if(!rows.length){
     h+='<div class="an-card"><div class="an-empty"><i class="ti ti-list-numbers"></i><p>Sem dados</p>'+(rpTopQMode==='mensal'?'<span>Importe Consultas em SEO → Busca ou Consultas por Dispositivo (mensal) para esse mês</span>':'<span>Precisa ter Consultas por Dispositivo importadas nesse dia (aba Consultas/Disp. → Acompanhamento diário)</span>')+'</div></div>';
@@ -3099,7 +3100,7 @@ function rpBrandView(){
   var toggle='<span class="an-seg" style="margin-left:6px;margin-bottom:0"><button class="an-seg-btn'+(rpBrandMode==='mensal'?' active':'')+'" onclick="rpBrandSetMode(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(rpBrandMode==='diario'?' active':'')+'" onclick="rpBrandSetMode(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></span>';
   var dayCtrl='';
   if(rpBrandMode==='diario'){var tD=dIM(Number(anYear),mi),curDay=rpBrandDay||Math.min(new Date().getDate(),tD),dsel='<select class="fsel" onchange="rpBrandSetDay(this.value)">';for(var d=1;d<=tD;d++)dsel+='<option value="'+d+'"'+(d===curDay?' selected':'')+'>'+d+'</option>';dsel+='</select>';dayCtrl='<span class="an-camp-cl">Dia</span>'+dsel;}
-  var h='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+dayCtrl+toggle+'</div><div class="an-camp-ctrl-r"><button class="an-btn" onclick="rpBrandEditOpen()"><i class="ti ti-tag"></i> Editar marcas</button></div></div>';
+  var h='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+dayCtrl+toggle+'</div><div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anSeoImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button><button class="an-btn" onclick="rpBrandEditOpen()"><i class="ti ti-tag"></i> Editar marcas</button></div></div>';
   var brandRows=rpBrandRows(mi),withData=brandRows.filter(function(b){return b.i>0;});
   if(!withData.length){
     h+='<div class="an-card"><div class="an-empty"><i class="ti ti-tag"></i><p>Sem dados para as marcas monitoradas</p>'+(rpBrandMode==='mensal'?'<span>Importe Consultas em SEO → Busca ou Consultas por Dispositivo (mensal) para esse mês</span>':'<span>Precisa ter Consultas por Dispositivo importadas nesse dia</span>')+'</div></div>';
@@ -3396,11 +3397,11 @@ function hSEO(){
   if(seoTab==='busca'){
     anSection='gsc';
     var h=pageHeader('SEO','Busca · Search Console (cliques, impressões, CTR, posição) — por site/app')+'<div class="an-root">'+propSel+bar;
+    h+=anEntryBar();
     h+=anMetricCards();
     h+=anGoalProgress();
     h+=anIdxBlock();
     h+=rpDevPosCard();
-    h+=anEntryBar();
     h+=anAnnotationsCard();
     return h+'</div>';
   }
@@ -4712,6 +4713,7 @@ function anCampSeriesByMonth(year,prop,name,mk){var arr=[];for(var i=0;i<12;i++)
 function anCampCurMi(){if(anCampMi!=null&&anCampMi>=0&&anCampMi<=11)return anCampMi;var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();var ms=anCampMonths(anYear,anProp);if(ms.length)return ms[ms.length-1];return 11;}
 function anCampCurMetric(){var ms=AN_SECTIONS.camp.metrics;if(!anCampMetric||!ms.some(function(m){return m.k===anCampMetric;}))anCampMetric='sessoes';return anCampMetric;}
 function anCampSetMi(v){anCampMi=parseInt(v,10);anR();}
+function anCampResetMi(){anCampMi=null;anR();}
 function anCampSetMetric(v){anCampMetric=v;anR();}
 
 /* ── Render: controles ── */
@@ -4885,9 +4887,10 @@ function anCampAggOrigin(name,mk,months){var meta=anMeta('camp',mk);
 function anCampAggAll(mk,months){var meta=anMeta('camp',mk);
   if(meta.fmt==='int')return months.reduce(function(s,mi){var v=anCampTotal(anYear,anProp,mk,mi);return s+(v||0);},0);
   var wk=meta.w||AN_SECTIONS.camp.head,num=0,den=0;months.forEach(function(mi){var v=anCampTotal(anYear,anProp,mk,mi),w=anCampTotal(anYear,anProp,wk,mi);if(v!=null&&w!=null){num+=Number(v)*Number(w);den+=Number(w);}});return den>0?num/den:null;}
+function anCampLastCol(){var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();var ms=anCampMonths(anYear,anProp);return ms.length?ms[ms.length-1]:11;}
 function anCampPivot(mk){
   var meta=anMeta('camp',mk),o=anCampObj(anYear,anProp);
-  var months=[0,1,2,3,4,5,6,7,8,9,10,11];
+  var lastCol=anCampLastCol(),months=[];for(var mi0=0;mi0<=lastCol;mi0++)months.push(mi0);
   var hasMonths=anCampMonths(anYear,anProp);
   if(!hasMonths.length)return '';
   var names=Object.keys(o).filter(function(n){return months.some(function(mi){return anCampVal(anYear,anProp,n,mk,mi)!=null;});});
@@ -4911,7 +4914,7 @@ function anCampPivot(mk){
     +months.map(function(mi){var v=anCampTotal(anYear,anProp,mk,mi);return '<td'+(String(mi)===anCampSort.by?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
     +'<td class="on">'+anShort(anCampAggAll(mk,months),meta.fmt)+'</td></tr>';
   var topNote=totalNames>20?(' · mostrando as top 20 de '+totalNames+' origens (por '+aggLbl.toLowerCase()+' de '+meta.l+')'):'';
-  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por origem e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' origens'+topNote+'</div></div>'
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por origem e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' origens · variação = '+HMESES[lastCol]+' vs '+(lastCol>0?HMESES[lastCol-1]:'—')+topNote+'</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Clique no cabeçalho para ordenar · troque a métrica no seletor acima · '+(meta.fmt==='int'?'coluna Total soma os meses':'coluna Média pondera pelos volumes')+'</div></div>';
 }
@@ -5099,9 +5102,10 @@ function anTchAggChannel(name,mk,months){var meta=anMeta('trafch',mk);
 function anTchAggAll(mk,months){var meta=anMeta('trafch',mk);
   if(meta.fmt==='int')return months.reduce(function(s,mi){var v=anTchTotal(anYear,anProp,mk,mi);return s+(v||0);},0);
   var wk=meta.w||AN_SECTIONS.trafch.head,num=0,den=0;months.forEach(function(mi){var v=anTchTotal(anYear,anProp,mk,mi),w=anTchTotal(anYear,anProp,wk,mi);if(v!=null&&w!=null){num+=Number(v)*Number(w);den+=Number(w);}});return den>0?num/den:null;}
+function anTchLastCol(){var now=new Date();if(String(now.getFullYear())===String(anYear))return now.getMonth();var ms=anTchMonths(anYear,anProp);return ms.length?ms[ms.length-1]:11;}
 function anTchPivot(mk){
   var meta=anMeta('trafch',mk),o=anTchObj(anYear,anProp);
-  var months=[0,1,2,3,4,5,6,7,8,9,10,11];
+  var lastCol=anTchLastCol(),months=[];for(var mi0=0;mi0<=lastCol;mi0++)months.push(mi0);
   var hasMonths=anTchMonths(anYear,anProp);
   if(!hasMonths.length)return '';
   var names=Object.keys(o).filter(function(n){return months.some(function(mi){return anTchVal(anYear,anProp,n,mk,mi)!=null;});});
@@ -5121,7 +5125,7 @@ function anTchPivot(mk){
   var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">Total</td>'
     +months.map(function(mi){var v=anTchTotal(anYear,anProp,mk,mi);return '<td'+(String(mi)===anTchSort.by?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,meta.fmt))+'</td>';}).join('')
     +'<td class="on">'+anShort(anTchAggAll(mk,months),meta.fmt)+'</td></tr>';
-  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-route"></i> '+meta.l+' por canal e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' canais</div></div>'
+  return '<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-route"></i> '+meta.l+' por canal e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+names.length+' canais · variação = '+HMESES[lastCol]+' vs '+(lastCol>0?HMESES[lastCol-1]:'—')+'</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-arrows-sort" style="font-size:12px"></i> Clique no cabeçalho para ordenar · troque a métrica no seletor acima · '+(meta.fmt==='int'?'coluna Total soma os meses':'coluna Média pondera pelos volumes')+'</div></div>';
 }
@@ -5383,7 +5387,7 @@ function anSeoView(){
   var moSel='<select class="fsel" onchange="anSeoSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel
     +'<span class="an-seg" style="margin-left:6px;margin-bottom:0"><button class="an-seg-btn'+(anSeoTab==='opp'?' active':'')+'" onclick="anSeoSetTab(\'opp\')"><i class="ti ti-target-arrow"></i>Oportunidade</button><button class="an-seg-btn'+(anSeoTab==='imp'?' active':'')+'" onclick="anSeoSetTab(\'imp\')"><i class="ti ti-eye"></i>Impressão</button><button class="an-seg-btn'+(anSeoTab==='decay'?' active':'')+'" onclick="anSeoSetTab(\'decay\')"><i class="ti ti-trending-down"></i>Decaimento</button></span></div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anSeoImportOpen()">Inserir Manualmente</button></div></div>';
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anSeoImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Selecione uma propriedade</p><span>O SEO é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   if(!anSeoHasAny(anYear,anProp)){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Sem dados de Search Console</p><span>Exporte o relatório "Desempenho" (Consultas ou Páginas) do Google Search Console e importe — um arquivo por mês</span></div></div>';return h;}
   if(anSeoTab==='opp')h+=anSeoOpp(mi);else if(anSeoTab==='imp')h+=anImpOppCard(mi);else h+=anSeoDecay(mi);
@@ -5526,7 +5530,7 @@ function pgDevView(){
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="pgDevSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="pgDevImportOpen()"><i class="ti ti-upload"></i> Importar Páginas (por dispositivo)</button></div></div>';
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="pgDevImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
   h+=anDevFilterBox(pgDevFilter,'pgDevSetFilter','Buscar por URL ou trecho da URL… (ex: picpay)');
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-devices"></i><p>Selecione uma propriedade</p><span>Páginas por Dispositivo é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   // mapa device -> {url -> row}, para qualquer subconjunto de dispositivos já importados (Celular/Computador/Tablet)
@@ -5650,7 +5654,7 @@ function pgDevDView(){
   var daySel=allDays.length?('<select class="fsel" onchange="pgDevDSetDay(this.value)">'+allDays.map(function(d){return '<option value="'+d+'"'+(d===curDay?' selected':'')+'>'+String(d).padStart(2,'0')+'/'+String(mi+1).padStart(2,'0')+'</option>';}).join('')+'</select>'):'<span style="font-size:12px;color:var(--text-secondary)">Nenhum dia importado ainda</span>';
   var topSel='<select class="fsel" onchange="pgDevDSetTop(this.value)">'+[10,20,30,50].map(function(n){return '<option value="'+n+'"'+(n===pgDevDTop?' selected':'')+'>Top '+n+'</option>';}).join('')+'</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Mês</span>'+moSel+'<span class="an-camp-cl">Dia</span>'+daySel+'<span class="an-camp-cl">Mostrar</span>'+topSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="pgDevDImportOpen()"><i class="ti ti-upload"></i> Importar dia</button></div></div>';
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="pgDevDImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
   h+=anDevFilterBox(pgDevDFilter,'pgDevDSetFilter','Buscar por URL ou trecho da URL… (ex: picpay)');
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-calendar-stats"></i><p>Selecione uma propriedade</p><span>O acompanhamento diário é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   if(curDay==null){
@@ -5739,7 +5743,7 @@ function qDevView(){
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="qDevSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="qDevImportOpen()"><i class="ti ti-upload"></i> Importar Consultas (por dispositivo)</button></div></div>';
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="qDevImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
   h+=anDevFilterBox(qDevFilter,'qDevSetFilter','Buscar por palavra-chave… (ex: picpay)');
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Selecione uma propriedade</p><span>Consultas por Dispositivo é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   var devMaps={},devsWithData=PGDEV_LIST.filter(function(d){var rows=qDevRows(anYear,anProp,d.k,mi);devMaps[d.k]={};rows.forEach(function(r){devMaps[d.k][r.q]=r;});return rows.length>0;});
@@ -5849,7 +5853,7 @@ function qDevDView(){
   var daySel=allDays.length?('<select class="fsel" onchange="qDevDSetDay(this.value)">'+allDays.map(function(d){return '<option value="'+d+'"'+(d===curDay?' selected':'')+'>'+String(d).padStart(2,'0')+'/'+String(mi+1).padStart(2,'0')+'</option>';}).join('')+'</select>'):'<span style="font-size:12px;color:var(--text-secondary)">Nenhum dia importado ainda</span>';
   var topSel='<select class="fsel" onchange="qDevDSetTop(this.value)">'+[10,20,30,50].map(function(n){return '<option value="'+n+'"'+(n===qDevDTop?' selected':'')+'>Top '+n+'</option>';}).join('')+'</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Mês</span>'+moSel+'<span class="an-camp-cl">Dia</span>'+daySel+'<span class="an-camp-cl">Mostrar</span>'+topSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="qDevDImportOpen()"><i class="ti ti-upload"></i> Importar dia</button></div></div>';
+    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="qDevDImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
   h+=anDevFilterBox(qDevFilter,'qDevSetFilter','Buscar por palavra-chave… (ex: picpay)');
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-calendar-stats"></i><p>Selecione uma propriedade</p><span>O acompanhamento diário é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   if(curDay==null){
