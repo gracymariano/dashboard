@@ -31,6 +31,28 @@
 .rp-grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .rp-num-accent{font-family:'Inter Tight','Inter',sans-serif;font-size:clamp(1.6rem,2.4vw,2.15rem);font-weight:750;letter-spacing:-.03em;font-variant-numeric:tabular-nums;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
 .rp-callout{border-radius:16px;padding:16px 20px;display:flex;gap:12px;align-items:flex-start;border:1px solid}
+/* ===== RAIO-X · tema escuro (mesma paleta do relatório semestral original) ===== */
+.rx-wrap{background:#0E1411;border-radius:24px;padding:36px 30px;margin-bottom:16px}
+.rx-eyebrow{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:#7CC242;font-weight:700;margin-bottom:8px}
+.rx-lead{color:#C2CDC6;font-size:13px;line-height:1.7;max-width:680px;margin-bottom:22px}
+.rx-lead b{color:#fff}
+.rx-grid{display:grid;gap:14px;margin-bottom:14px}
+.rx-g2{grid-template-columns:repeat(auto-fit,minmax(270px,1fr))}
+.rx-g3{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.rx-card{background:#161E19;border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:22px}
+.rx-card-ttl{font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;letter-spacing:-.01em}
+.rx-card-sub{font-size:11px;color:#93A39A;line-height:1.5;margin-bottom:10px}
+.rx-card-desc{font-size:12.5px;line-height:1.65;color:#D7DFDA;margin-bottom:12px}
+.rx-card-desc b{color:#fff}
+.rx-chips{display:flex;gap:7px;flex-wrap:wrap}
+.rx-chip{font-size:11px;font-weight:500;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:99px;padding:5px 12px;display:inline-flex;gap:6px;align-items:center;color:#D7DFDA}
+.rx-chip::before{content:'✓';color:#7CC242;font-weight:700;font-size:.7rem}
+.rx-kpi-label{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#93A39A;margin-bottom:6px}
+.rx-kpi-num{font-size:1.7rem;font-weight:750;letter-spacing:-.03em;color:#fff;line-height:1;margin-bottom:5px}
+.rx-kpi-cap{font-size:11px;color:#93A39A;line-height:1.5}
+.rx-callout{background:rgba(124,194,66,.1);border-radius:16px;padding:20px 24px;margin-top:2px}
+.rx-callout b{color:#fff}
+.rx-callout p{font-size:12.5px;line-height:1.7;color:#D7DFDA}
 .rp-callout.co-green{background:rgba(22,199,154,.07);border-color:rgba(22,199,154,.25)}
 .rp-callout.co-amber{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.28)}
 .rp-callout.co-red{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.25)}
@@ -3248,8 +3270,8 @@ function rpValueBarChart(buckets){
   var bars='',labels='';
   buckets.forEach(function(b,i){
     var h=mx>0?(b.c/mx)*plotH:0,x=padL+i*gap+(gap-bw)/2,y=baseY-h;
-    bars+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(h,1).toFixed(1)+'" rx="3" fill="var(--primary)"><title>'+b.l+': '+anFmt(b.c,'int')+' cliques</title></rect>';
-    labels+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(baseY+13)+'" text-anchor="middle" style="font-size:7.6px" class="an-axis">'+b.l+'</text>';
+    bars+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(h,1).toFixed(1)+'" rx="3" fill="#7CC242"><title>'+b.l+': '+anFmt(b.c,'int')+' cliques</title></rect>';
+    labels+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(baseY+13)+'" text-anchor="middle" style="font-size:7.6px;fill:#93A39A">'+b.l+'</text>';
   });
   return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">'+bars+labels+'</svg>';
 }
@@ -3269,15 +3291,15 @@ function rpDonutChart(items){
   items.forEach(function(it,i){var frac=it.c/total,len=frac*C,color=colors[i%colors.length];
     segs+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="none" stroke="'+color+'" stroke-width="26" stroke-dasharray="'+len.toFixed(1)+' '+(C-len).toFixed(1)+'" stroke-dashoffset="'+(-offset).toFixed(1)+'" transform="rotate(-90 '+cx+' '+cy+')"><title>'+it.l+': '+(frac*100).toFixed(1).replace('.',',')+'% ('+anFmt(it.c,'int')+' cliques)</title></circle>';
     offset+=len;});
-  var legend=items.map(function(it,i){var pct=(it.c/total*100).toFixed(1).replace('.',',');return '<span style="font-size:11px;display:inline-flex;align-items:center;gap:5px;color:var(--text-secondary)"><i style="width:9px;height:9px;border-radius:50%;background:'+colors[i%colors.length]+';display:inline-block;flex-shrink:0"></i>'+it.l+' · <b style="color:var(--text-primary)">'+pct+'%</b></span>';}).join('');
+  var legend=items.map(function(it,i){var pct=(it.c/total*100).toFixed(1).replace('.',',');return '<span style="font-size:11px;display:inline-flex;align-items:center;gap:5px;color:#93A39A"><i style="width:9px;height:9px;border-radius:50%;background:'+colors[i%colors.length]+';display:inline-block;flex-shrink:0"></i>'+it.l+' · <b style="color:#fff">'+pct+'%</b></span>';}).join('');
   return '<div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap"><svg viewBox="0 0 168 168" style="width:150px;height:150px;flex-shrink:0">'+segs+'</svg><div style="display:flex;flex-direction:column;gap:6px">'+legend+'</div></div>';
 }
-function rpPersonaCard(title,subtitle,descHtml,chips,bg,border){
-  return '<div class="an-card" style="background:'+bg+';border:1px solid '+border+'">'
-    +'<div style="font-weight:800;font-size:15px;margin-bottom:4px;color:var(--navy)">'+title+'</div>'
-    +'<div style="font-size:11.5px;color:var(--text-secondary);margin-bottom:10px">'+subtitle+'</div>'
-    +'<div style="font-size:12.5px;line-height:1.65;color:var(--text-primary);margin-bottom:12px">'+descHtml+'</div>'
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'+(chips.length?chips.map(function(c){return '<span style="font-size:11px;padding:5px 10px;border-radius:20px;background:rgba(0,0,0,.05);color:var(--text-secondary)">✓ '+anEsc(c)+'</span>';}).join(''):'<span style="font-size:11px;color:var(--text-secondary)">Ainda sem consultas suficientes nessa faixa</span>')+'</div></div>';
+function rpPersonaCard(title,subtitle,descHtml,chips,topColor){
+  return '<div class="rx-card" style="border-top:3px solid '+topColor+'">'
+    +'<div class="rx-card-ttl">'+title+'</div>'
+    +'<div class="rx-card-sub">'+subtitle+'</div>'
+    +'<div class="rx-card-desc">'+descHtml+'</div>'
+    +'<div class="rx-chips">'+(chips.length?chips.map(function(c){return '<span class="rx-chip">'+anEsc(c)+'</span>';}).join(''):'<span style="font-size:11px;color:#93A39A">Ainda sem consultas suficientes nessa faixa</span>')+'</div></div>';
 }
 function rpPersonasData(){
   var rows=rpAggByQuery(rpAllQueryRows()).map(function(r){return{q:r.q,c:r.c,v:rpExtractValue(r.q)};});
@@ -3352,35 +3374,62 @@ function rpCityBlock(){
   return '<div class="an-card" style="margin-bottom:14px">'+head+'<div style="margin-top:6px">'+listHtml+'</div><div class="an-card-sub" style="margin-top:8px">'+rows.length+' cidade(s) no arquivo importado · total '+anFmt(total,'int')+' usuários ativos</div></div>';
 }
 
+function rpJulySummaryBlock(){
+  return '<div class="rp-callout co-green" style="margin-bottom:14px">'
+    +'<i class="ti ti-bulb" style="font-size:20px;color:var(--success);flex-shrink:0"></i>'
+    +'<div style="flex:1"><div style="font-weight:800;font-size:14px;margin-bottom:8px;color:var(--navy)">Panorama de julho (1–13/jul) — Guardar Dinheiro</div>'
+    +'<div style="font-size:12.5px;line-height:1.75;color:var(--text-primary)">'
+    +'<b>Organic Search domina a aquisição</b>: 3.526 sessões, 65% do total, com a melhor taxa de engajamento entre os canais grandes (94%, contra 89% do Direct). Direct vem em segundo (1.731 sessões).<br>'
+    +'<b>AI Assistant já aparece como canal próprio</b> — 51 sessões, 42 usuários (a maioria novos). Ainda pequeno perto de Organic Search, mas maior que Organic Social e Referral juntos. Vale acompanhar esse crescimento mês a mês.<br>'
+    +'<b>A página mais vista do site é a Calculadora de Renda Fixa</b> (1.953 visualizações, 412 usuários) — mesmo com a posição de busca dela ainda fraca no Search Console. Isso sugere que boa parte desse tráfego vem de navegação interna/Direct, não de busca — recuperar a posição orgânica dessa página tem potencial de multiplicar esse resultado.<br>'
+    +'<b>Receita concentrada nas páginas "quanto rende"</b>: Nubank, PicPay, Mercado Pago, PagBank e Cofrinho Itaú somam a maior parte da receita do período. A página inicial tem bom volume (1.370 visualizações combinadas) mas receita quase nula — pode valer testar mais chamadas pros simuladores a partir dela.'
+    +'</div>'
+    +'<div style="font-weight:800;font-size:14px;margin:14px 0 8px;color:var(--navy)">Search Console (1–13/jul) — 1.376 cliques · 187 mil impressões · 98% do Brasil</div>'
+    +'<div style="font-size:12.5px;line-height:1.75;color:var(--text-primary)">'
+    +'<b>Desktop tem posição muito pior que Celular</b> — 19,2 em Desktop contra 8,0 no Celular (Tablet fica em 7,3). Isso bate com o diagnóstico antigo de problema de rastreamento em desktop — ainda não resolvido, e agora com número: quase o dobro de posição perdida especificamente nesse dispositivo.<br>'
+    +'<b>A Calculadora de Renda Fixa confirma o problema</b>: é a página mais vista do site (visto no Analytics), mas está na posição <b>63,8</b> no Search Console — uma das piores do site. Esse descompasso (muito acesso, busca muito fraca) é o maior ponto de atenção do mês.<br>'
+    +'<b>Cofrinho Itaú é um caso de sucesso silencioso</b>: "calculadora cofrinho itau" está na posição 1,43 com 60,7% de CTR — uma das melhores combinações do site. Vale estudar o que essa página faz certo e replicar.<br>'
+    +'<b>PicPay lidera as buscas de marca</b> ("calculadora picpay", 52 cliques, posição 5,5), com Nubank logo atrás — confirma o padrão já visto na aba Marca.'
+    +'</div>'
+    +'</div></div>';
+}
 function hRAIOX(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var h=pageHeader('Raio-X','Quem está do outro lado da busca — minerado das próprias consultas do Search Console')+'<div class="an-root">'+anPropDropdown(AN_SEO_PROPS);
   if(anProp==='all')return h+'<div class="an-card"><div class="an-empty"><i class="ti ti-scan"></i><p>Selecione uma propriedade</p></div></div></div>';
   h+='<div class="an-card an-camp-ctrl" style="margin-bottom:14px"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div></div>';
+  if(anProp==='gd'||anProp==='all')h+=rpJulySummaryBlock();
   var rows=rpAllQueryRows();
   if(!rows.length){
     h+='<div class="an-card" style="margin-bottom:14px"><div class="an-empty"><i class="ti ti-scan"></i><p>Sem consultas suficientes em '+anYear+'</p><span>Importe Consultas em SEO → Busca ou Consultas por Dispositivo (Celular/Computador/Tablet) — essa análise soma as duas fontes automaticamente. As seções abaixo (Demografia, Cidade, Insights) não dependem disso e já podem ser preenchidas.</span></div></div>';
   }else{
     var personas=rpPersonasData();
-    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">'
+    var totalRxC=rows.reduce(function(s,r){return s+(r.c||0);},0);
+    var uniqQ=rpAggByQuery(rows).length;
+    var rxH='<div class="rx-eyebrow">Raio-X do usuário</div>'
+      +'<div class="rx-lead">Minerado das <b>'+anFmt(uniqQ,'int')+' consultas únicas</b> de '+anYear+' ('+anFmt(totalRxC,'int')+' cliques) para responder: quem é a pessoa do outro lado da busca — e como falar com ela.</div>';
+    rxH+='<div class="rx-grid rx-g2">'
       +rpPersonaCard('Persona 1 · O Poupador Digital','R$ 1–10 mil · '+anFmt(personas.poup.clicks,'int')+' cliques nessa faixa',
         'Está guardando as <b>primeiras reservas</b>: busca valores pequenos e concretos. Quer ver o dinheiro render <b>sem risco e sem jargão</b>.',
-        personas.poup.chips,'rgba(22,199,154,.06)','rgba(22,199,154,.22)')
+        personas.poup.chips,'#128A63')
       +rpPersonaCard('Persona 2 · O Acumulador','R$ 100 mil+ · '+anFmt(personas.acum.clicks,'int')+' cliques nessa faixa',
         'Já construiu <b>patrimônio maior</b> e decide onde estacioná-lo. Compara opções para valores altos — decisões grandes, perguntas diretas.',
-        personas.acum.chips,'rgba(124,58,237,.06)','rgba(124,58,237,.22)')
+        personas.acum.chips,'#3D6B94')
       +'</div>';
-    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">'
-      +'<div class="an-card"><div class="an-card-ttl rp-title-sm">Valores mais buscados</div><div class="an-card-sub" style="margin-bottom:8px">Cliques por faixa de valor mencionada na consulta · '+anYear+'</div>'+rpValueBarChart(rpValueDistribution(rows))+'</div>'
-      +'<div class="an-card"><div class="an-card-ttl rp-title-sm">Marca pesquisada</div><div class="an-card-sub" style="margin-bottom:8px">Cliques por marca · '+anYear+' (mesma classificação de SEO → Marca)</div>'+rpDonutChart(rpBrandYearAgg())+'</div>'
+    rxH+='<div class="rx-grid rx-g2">'
+      +'<div class="rx-card"><div class="rx-card-ttl" style="font-size:13px">Valores mais buscados</div><div class="rx-card-sub">Cliques por faixa de valor mencionada na consulta · '+anYear+'</div>'+rpValueBarChart(rpValueDistribution(rows))+'</div>'
+      +'<div class="rx-card"><div class="rx-card-ttl" style="font-size:13px">Marca pesquisada</div><div class="rx-card-sub">Cliques por marca · '+anYear+' (mesma classificação de SEO → Marca)</div>'+rpDonutChart(rpBrandYearAgg())+'</div>'
       +'</div>';
     var kpis=rpInsightKpis(rows);
-    h+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px">'
-      +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Quer número, não aula</div><div class="rp-num-accent" style="font-size:1.9rem">'+kpis.pctRende.toFixed(0)+'%</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">dos cliques contêm "quanto rende"</div></div>'
-      +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Perfil conservador</div><div style="font-size:1.3rem;font-weight:800;color:var(--navy)">CDI &amp; caixinha</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">'+anFmt(kpis.riskC,'int')+' clique(s) em ações/cripto — quase nada</div></div>'
-      +'<div class="an-card"><div style="font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px">Fala língua de gente</div><div style="font-size:1.05rem;font-weight:800;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(kpis.topQ?anEsc(kpis.topQ):'')+'">"'+(kpis.topQ?anEsc(kpis.topQ):'—')+'"</div><div style="font-size:11.5px;color:var(--text-secondary);margin-top:4px">consulta com mais cliques no período</div></div>'
+    rxH+='<div class="rx-grid rx-g3">'
+      +'<div class="rx-card"><div class="rx-kpi-label">Quer número, não aula</div><div class="rx-kpi-num">'+kpis.pctRende.toFixed(0)+'%</div><div class="rx-kpi-cap">dos cliques contêm "quanto rende"</div></div>'
+      +'<div class="rx-card"><div class="rx-kpi-label">Perfil conservador</div><div class="rx-kpi-num" style="font-size:1.3rem">CDI &amp; caixinha</div><div class="rx-kpi-cap">'+anFmt(kpis.riskC,'int')+' clique(s) em ações/cripto — quase nada</div></div>'
+      +'<div class="rx-card"><div class="rx-kpi-label">Fala língua de gente</div><div class="rx-kpi-num" style="font-size:1.05rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+(kpis.topQ?anEsc(kpis.topQ):'')+'">"'+(kpis.topQ?anEsc(kpis.topQ):'—')+'"</div><div class="rx-kpi-cap">consulta com mais cliques no período</div></div>'
       +'</div>';
+    var pctPoup=totalRxC>0?(personas.poup.clicks/totalRxC*100):0,pctAcum=totalRxC>0?(personas.acum.clicks/totalRxC*100):0;
+    rxH+='<div class="rx-callout"><p><b>Com quem vamos falar:</b> um usuário conservador, que pensa em valores concretos e quer resposta imediata e visual — '+kpis.pctRende.toFixed(0)+'% dos cliques giram em torno de "quanto rende". Estratégia de duas pontas — <b>Poupador</b> ('+pctPoup.toFixed(0)+'% dos cliques): conteúdo de reservas pequenas e caixinha/cofrinho. <b>Acumulador</b> ('+pctAcum.toFixed(0)+'% dos cliques): comparativos entre bancos digitais para valores altos, onde está o eCPM mais valioso.</p></div>';
+    h+='<div class="rx-wrap">'+rxH+'</div>';
   }
   h+=rpDemoBlock();
   h+=rpCityBlock();
@@ -3431,8 +3480,11 @@ var monTab='rede';
 function monSetTab(t){monTab=t;rHub(document.getElementById('app'));}
 function hMON(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
-  var tabs=[['rede','Receita por rede','ti-cash'],['admanager','Ad Manager','ti-ad'],['adsense','AdSense','ti-ad-2']];
+  var tabs=[['rede','Receita por rede','ti-cash'],['admanager','Ad Manager','ti-ad'],['adsense','AdSense','ti-ad-2'],['urlrev','Receita por URL','ti-link']];
   var bar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(monTab===t[0]?' active':'')+'" onclick="monSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
+  if(monTab==='urlrev'){
+    return pageHeader('Receitas','Receita por URL · detalhamento do Ad Manager')+'<div class="an-root">'+bar+anAdsUrlView()+'</div>';
+  }
   if(monTab==='adsense'){
     anAdsSrc='adm';anAdsLbl='AdSense';
     return pageHeader('Receitas','AdSense · monetização diária')+'<div class="an-root">'+bar+anAdsBody()+'</div>';
@@ -6359,10 +6411,309 @@ function rpComboCard(icon,title,mkA,mkB){
   return '<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti '+icon+'"></i> '+title+'</div>'+toggle+'</div>'
     +rpComboChart(mkA,mkB)+'</div>';
 }
+/* ═══════════════════════════════════════════════════════════════
+   IMPORTAÇÃO DO RELATÓRIO "Análise de Monetização Jan–Jul 2026"
+   (guardar-dinheiro-analise-jan-jul-2026-v2.html) — dados mensais
+   do Ad Manager. Como o sistema trabalha em granularidade diária,
+   colocamos o total do mês no dia 1 de cada mês (dia 0 do array);
+   isso reproduz corretamente os totais/médias porque são os únicos
+   dados daquele mês. Persiste via sv() → Supabase, igual a qualquer
+   outra importação do dashboard.
+   ═══════════════════════════════════════════════════════════════ */
+var RP_MONETIZ_REPORT=[
+  {mi:0,rec:14.47,imp:23902,vis:85.3,ctr:1.16},
+  {mi:1,rec:14.42,imp:21599,vis:83.1,ctr:1.03},
+  {mi:2,rec:18.14,imp:24680,vis:83.4,ctr:1.52},
+  {mi:3,rec:19.44,imp:41932,vis:74.3,ctr:0.95},
+  {mi:4,rec:17.44,imp:26783,vis:70.7,ctr:0.73},
+  {mi:5,rec:22.61,imp:13009,vis:79.0,ctr:2.10},
+  {mi:6,rec:11.62,imp:7433, vis:83.0,ctr:2.17} // julho parcial (15 dias) — a projeção do mês é calculada pelo próprio dashboard
+];
+var RP_ADS_URL_DATA=[
+{u:'/quanto-rende/${valor}/${produto}/',r:38.6955,p:32.757,i:51670,e:0.7489,v:78.31},
+{u:'/calculadora-renda-fixa/',r:19.7044,p:16.68,i:32956,e:0.5979,v:71.48},
+{u:'/quanto-rende/${valor}/mil/${produto}/simulador/',r:11.9389,p:10.107,i:15697,e:0.7606,v:81.34},
+{u:'/quanto/${valorcdi}/cdi/',r:6.6053,p:5.592,i:6479,e:1.0195,v:85.23},
+{u:'/calculadoras/percentual-cdi/quanto-rende/${valor}/${valorcdi}/cdi/',r:6.0737,p:5.142,i:10289,e:0.5903,v:82.38},
+{u:'/',r:4.9339,p:4.177,i:4905,e:1.0059,v:89.22},
+{u:'/quanto-rende/picpay/',r:4.8164,p:4.077,i:6723,e:0.7164,v:67.75},
+{u:'/fii/${ticker}/',r:2.2143,p:1.874,i:2965,e:0.7468,v:83.53},
+{u:'/emprestimo/${valor}/simulador/',r:2.1443,p:1.815,i:1209,e:1.7736,v:87.7},
+{u:'/fundo/${cnpj}/${nome}/',r:1.9586,p:1.658,i:2147,e:0.9123,v:85.61},
+{u:'/calculadoras/percentual-cdi/simulador-cdb-lci-lca/',r:1.7322,p:1.466,i:1846,e:0.9384,v:85.89},
+{u:'/acoes/${ticker}/',r:1.7318,p:1.466,i:2233,e:0.7755,v:87.67},
+{u:'/categoria/calculadoras/',r:1.6878,p:1.429,i:2032,e:0.8306,v:92.3},
+{u:'/quem-ganha/${valor}/paga-quanto-imposto/',r:1.675,p:1.418,i:2303,e:0.7273,v:84.43},
+{u:'/como-juntar/${valor}/',r:1.1672,p:0.988,i:1824,e:0.6399,v:73.28},
+{u:'/calculadoras/juros-compostos/',r:1.1341,p:0.96,i:1780,e:0.6371,v:79.9},
+{u:'/fundos-de-investimento/',r:0.7046,p:0.596,i:565,e:1.2471,v:85.31},
+{u:'/categoria/investimentos/',r:0.6962,p:0.589,i:868,e:0.8021,v:85.58},
+{u:'/calculadoras/quanto-preciso-investir/${frase}/${valor}/',r:0.6429,p:0.544,i:674,e:0.9538,v:74.46},
+{u:'post de blog dinâmico (id interno p=9212)',r:0.5705,p:0.483,i:658,e:0.867,v:81.1},
+{u:'/calculadoras/liberdade-financeira/',r:0.5534,p:0.468,i:715,e:0.7739,v:85.63},
+{u:'/fii/${ticker}/simulacao/dividendos/',r:0.541,p:0.458,i:917,e:0.5899,v:91.14},
+{u:'/cartao-credito/${valor}/renda-minima/',r:0.4709,p:0.399,i:204,e:2.3085,v:89.68},
+{u:'/etf/${ticker}/',r:0.4687,p:0.397,i:500,e:0.9375,v:83.5},
+{u:'/fii/',r:0.4463,p:0.378,i:460,e:0.9703,v:81.84},
+{u:'post de blog dinâmico (id interno p=9211)',r:0.3503,p:0.297,i:377,e:0.9292,v:83.22},
+{u:'post de blog dinâmico (id interno p=5335)',r:0.3349,p:0.283,i:98,e:3.4172,v:78.57},
+{u:'/calculadoras/calculadora-de-reserva-de-emergencia/',r:0.3257,p:0.276,i:394,e:0.8267,v:76.34},
+{u:'/onde-investir/${valor}/',r:0.3256,p:0.276,i:453,e:0.7188,v:85.5},
+{u:'/calculadoras/horas-de-trabalho-produto/',r:0.3219,p:0.272,i:344,e:0.9357,v:81.3},
+{u:'/calculadoras/periodo/quanto-rende/${valor}/${tempo}/anos/',r:0.2487,p:0.211,i:567,e:0.4387,v:79.46},
+{u:'/simulador-de-dividendos/',r:0.2133,p:0.181,i:327,e:0.6523,v:77.22},
+{u:'/como-organizar-salario/${valor}/reais/',r:0.2087,p:0.177,i:338,e:0.6175,v:83.67},
+{u:'/acoes/',r:0.1959,p:0.166,i:301,e:0.6509,v:80.23},
+{u:'/cripto/quanto-rende/${valor}/${ticker}/',r:0.1862,p:0.158,i:374,e:0.4979,v:80.59},
+{u:'/categoria/dicas-financeiras/',r:0.1477,p:0.125,i:169,e:0.8739,v:88.65},
+{u:'/acoes/${ticker}/simulacao/dividendos/',r:0.1423,p:0.12,i:322,e:0.442,v:93.48},
+{u:'/acoes/${ticker}/fundamentos/preco-justo/',r:0.1371,p:0.116,i:349,e:0.3928,v:86.75},
+{u:'post de blog dinâmico (id interno p=1788)',r:0.1136,p:0.096,i:120,e:0.9464,v:88.72},
+{u:'post de blog dinâmico (id interno p=9210)',r:0.1128,p:0.096,i:141,e:0.8003,v:82.73},
+{u:'/categoria/dicas-financeiras/conteudo/conteudo-completo/',r:0.0952,p:0.081,i:120,e:0.7932,v:72.17},
+{u:'post de blog dinâmico (id interno p=9213)',r:0.0937,p:0.079,i:79,e:1.1861,v:88.61},
+{u:'post de blog dinâmico (id interno p=9207)',r:0.0929,p:0.079,i:130,e:0.7148,v:83.96},
+{u:'/etf/',r:0.0876,p:0.074,i:93,e:0.9416,v:81.72},
+{u:'/dica-financeira-do-dia/dia/${anomesdia}/',r:0.0823,p:0.07,i:129,e:0.6381,v:91.33},
+{u:'post de blog dinâmico (id interno p=9208)',r:0.0767,p:0.065,i:96,e:0.7987,v:83.33},
+{u:'/cripto/${ticker}/',r:0.0689,p:0.058,i:136,e:0.5063,v:88.92},
+{u:'/bdr/',r:0.0658,p:0.056,i:68,e:0.9675,v:71.76},
+{u:'/comparador-acoes/',r:0.0531,p:0.045,i:71,e:0.7485,v:87.32},
+{u:'/cupons-de-desconto/',r:0.0515,p:0.044,i:66,e:0.7802,v:89.3},
+{u:'/comparador-etf/',r:0.0422,p:0.036,i:92,e:0.4586,v:92.14},
+{u:'post de blog dinâmico (id interno p=45)',r:0.0387,p:0.033,i:16,e:2.4175,v:68.75},
+{u:'post de blog dinâmico (id interno p=2687)',r:0.0378,p:0.032,i:50,e:0.7559,v:91.81},
+{u:'post de blog dinâmico (id interno p=9201)',r:0.0351,p:0.03,i:47,e:0.7471,v:95.74},
+{u:'/bdr/${ticker}/',r:0.0346,p:0.029,i:72,e:0.4809,v:93.06},
+{u:'post de blog dinâmico (id interno p=2788)',r:0.0339,p:0.029,i:42,e:0.8071,v:78.02},
+{u:'/calculadoras/simulador-lucro/',r:0.0314,p:0.027,i:23,e:1.367,v:100.0},
+{u:'/quanto-rende/${valor}/fundo-imobiliario/',r:0.0254,p:0.021,i:13,e:1.9505,v:69.23},
+{u:'/categoria/investimentos/renda-fixa/',r:0.0244,p:0.021,i:69,e:0.3541,v:66.32},
+{u:'/categoria/investimentos/criptomoedas/',r:0.0221,p:0.019,i:24,e:0.9201,v:87.5},
+{u:'post de blog dinâmico (id interno p=1565)',r:0.0209,p:0.018,i:16,e:1.3044,v:77.08},
+{u:'post de blog dinâmico (id interno p=2803)',r:0.0186,p:0.016,i:18,e:1.0311,v:94.44},
+{u:'post de blog dinâmico (id interno p=5078)',r:0.0178,p:0.015,i:12,e:1.4802,v:83.33},
+{u:'/cripto/',r:0.0173,p:0.015,i:36,e:0.4801,v:83.33},
+{u:'post de blog dinâmico (id interno p=559)',r:0.0169,p:0.014,i:15,e:1.1282,v:93.33},
+{u:'/acoes/${ticker}/fundamentos/',r:0.0143,p:0.012,i:42,e:0.3402,v:95.24},
+{u:'post de blog dinâmico (id interno p=5307)',r:0.0132,p:0.011,i:4,e:3.3072,v:75.0},
+{u:'post de blog dinâmico (id interno p=9209)',r:0.0128,p:0.011,i:36,e:0.3553,v:80.56},
+{u:'/cartao-credito/',r:0.0124,p:0.011,i:5,e:2.4816,v:100.0},
+{u:'/categoria/investimentos/indicadores/',r:0.0122,p:0.01,i:10,e:1.2202,v:80.0},
+{u:'/fechamento-mercado/',r:0.0121,p:0.01,i:14,e:0.8661,v:92.86},
+{u:'post de blog dinâmico (id interno p=5343)',r:0.0118,p:0.01,i:14,e:0.8409,v:100.0},
+{u:'post de blog dinâmico (id interno p=5328)',r:0.0114,p:0.01,i:19,e:0.5986,v:100.0},
+{u:'post de blog dinâmico (id interno p=693)',r:0.0104,p:0.009,i:6,e:1.7253,v:83.33},
+{u:'/calculadoras/alcool-ou-gasolina/',r:0.01,p:0.008,i:20,e:0.4996,v:90.0},
+{u:'post de blog dinâmico (id interno p=25)',r:0.0096,p:0.008,i:6,e:1.5956,v:100.0},
+{u:'post de blog dinâmico (id interno p=9218)',r:0.0094,p:0.008,i:8,e:1.1714,v:100.0},
+{u:'post de blog dinâmico (id interno p=4333)',r:0.0087,p:0.007,i:6,e:1.4487,v:83.33},
+{u:'post de blog dinâmico (id interno p=707)',r:0.0085,p:0.007,i:6,e:1.4157,v:83.33},
+{u:'post de blog dinâmico (id interno p=9217)',r:0.0078,p:0.007,i:11,e:0.705,v:90.91},
+{u:'post de blog dinâmico (id interno p=5374)',r:0.0076,p:0.006,i:31,e:0.2462,v:87.1},
+{u:'post de blog dinâmico (id interno p=9205)',r:0.0076,p:0.006,i:8,e:0.9454,v:75.0},
+{u:'post de blog dinâmico (id interno p=5311)',r:0.007,p:0.006,i:10,e:0.703,v:88.75},
+{u:'post de blog dinâmico (id interno p=3606)',r:0.0066,p:0.006,i:8,e:0.825,v:100.0},
+{u:'post de blog dinâmico (id interno p=1556)',r:0.0061,p:0.005,i:4,e:1.531,v:100.0},
+{u:'post de blog dinâmico (id interno p=5253)',r:0.0058,p:0.005,i:3,e:1.9357,v:100.0},
+{u:'/stocks/${ticker}/',r:0.0057,p:0.005,i:66,e:0.0871,v:53.03},
+{u:'post de blog dinâmico (id interno p=5339)',r:0.005,p:0.004,i:10,e:0.4974,v:90.0},
+{u:'post de blog dinâmico (id interno p=5088)',r:0.0047,p:0.004,i:12,e:0.3941,v:83.33},
+{u:'post de blog dinâmico (id interno p=1846)',r:0.0047,p:0.004,i:4,e:1.1656,v:75.0},
+{u:'post de blog dinâmico (id interno p=9204)',r:0.0046,p:0.004,i:10,e:0.4554,v:90.0},
+{u:'post de blog dinâmico (id interno p=3238)',r:0.0033,p:0.003,i:10,e:0.3318,v:90.0},
+{u:'post de blog dinâmico (id interno p=5506)',r:0.0033,p:0.003,i:2,e:1.6512,v:50.0},
+{u:'post de blog dinâmico (id interno p=128)',r:0.0033,p:0.003,i:6,e:0.5461,v:100.0},
+{u:'post de blog dinâmico (id interno p=5298)',r:0.0028,p:0.002,i:7,e:0.3978,v:85.71},
+{u:'/categoria/investimentos/etf/',r:0.0025,p:0.002,i:6,e:0.4216,v:66.67},
+{u:'post de blog dinâmico (id interno p=5283)',r:0.0021,p:0.002,i:4,e:0.5168,v:100.0},
+{u:'post de blog dinâmico (id interno p=5483)',r:0.002,p:0.002,i:1,e:2.032,v:100.0},
+{u:'post de blog dinâmico (id interno p=1910)',r:0.002,p:0.002,i:2,e:1.0064,v:50.0},
+{u:'post de blog dinâmico (id interno p=146)',r:0.0018,p:0.002,i:3,e:0.6128,v:66.67},
+{u:'post de blog dinâmico (id interno p=134)',r:0.0016,p:0.001,i:4,e:0.3886,v:100.0},
+{u:'post de blog dinâmico (id interno p=3630)',r:0.0014,p:0.001,i:3,e:0.4797,v:66.67},
+{u:'post de blog dinâmico (id interno p=5266)',r:0.0014,p:0.001,i:2,e:0.6884,v:100.0},
+{u:'post de blog dinâmico (id interno p=4447)',r:0.0013,p:0.001,i:4,e:0.3346,v:50.0},
+{u:'/comparador-bdr/',r:0.0011,p:0.001,i:9,e:0.1215,v:100.0},
+{u:'post de blog dinâmico (id interno p=5085)',r:0.0011,p:0.001,i:2,e:0.5412,v:50.0},
+{u:'/stocks/',r:0.0011,p:0.001,i:5,e:0.2118,v:100.0},
+{u:'post de blog dinâmico (id interno p=5315)',r:0.001,p:0.001,i:5,e:0.2083,v:100.0},
+{u:'/categoria/investimentos/fundos-imobiliarios/',r:0.0008,p:0.001,i:8,e:0.1052,v:87.5},
+{u:'post de blog dinâmico (id interno p=9206)',r:0.0008,p:0.001,i:4,e:0.2086,v:66.67},
+{u:'/calculadoras/financiamento-imobiliario/',r:0.0008,p:0.001,i:1,e:0.808,v:100.0},
+{u:'post de blog dinâmico (id interno p=5092)',r:0.0008,p:0.001,i:2,e:0.3916,v:100.0},
+{u:'post de blog dinâmico (id interno p=3136)',r:0.0006,p:0.001,i:2,e:0.3224,v:100.0},
+{u:'post de blog dinâmico (id interno p=201)',r:0.0006,p:0.001,i:1,e:0.5968,v:0.0},
+{u:'post de blog dinâmico (id interno p=4294)',r:0.0006,p:0.001,i:2,e:0.2976,v:100.0},
+{u:'/categoria/investimentos/fundos-de-investimentos/',r:0.0006,p:0.001,i:5,e:0.1184,v:80.0},
+{u:'/comparador-cripto/',r:0.0004,p:0.0,i:3,e:0.1384,v:100.0},
+{u:'post de blog dinâmico (id interno p=5110)',r:0.0004,p:0.0,i:2,e:0.1988,v:100.0},
+{u:'post de blog dinâmico (id interno p=101)',r:0.0004,p:0.0,i:3,e:0.1312,v:66.67},
+{u:'post de blog dinâmico (id interno p=5122)',r:0.0004,p:0.0,i:5,e:0.0747,v:60.0},
+{u:'post de blog dinâmico (id interno p=150)',r:0.0003,p:0.0,i:1,e:0.3352,v:100.0},
+{u:'post de blog dinâmico (id interno p=5248)',r:0.0003,p:0.0,i:1,e:0.2656,v:100.0},
+{u:'post de blog dinâmico (id interno p=1933)',r:0.0002,p:0.0,i:1,e:0.1936,v:100.0},
+{u:'post de blog dinâmico (id interno p=5081)',r:0.0002,p:0.0,i:1,e:0.1816,v:100.0},
+{u:'post de blog dinâmico (id interno p=9202)',r:0.0002,p:0.0,i:1,e:0.1536,v:100.0},
+{u:'post de blog dinâmico (id interno p=136)',r:0.0001,p:0.0,i:1,e:0.1288,v:100.0},
+{u:'/dividas/como-sair-das-dividas-de/${valor}/',r:0.0001,p:0.0,i:6,e:0.0208,v:50.0},
+{u:'post de blog dinâmico (id interno p=163)',r:0.0001,p:0.0,i:1,e:0.1168,v:0.0},
+{u:'post de blog dinâmico (id interno p=790)',r:0.0001,p:0.0,i:1,e:0.1024,v:100.0},
+{u:'/comparador-fundos-de-investimentos/',r:0.0,p:0.0,i:5,e:0.0077,v:100.0},
+{u:'/melhor-maquininha-de-cartao/',r:0.0,p:0.0,i:3,e:0.0064,v:100.0},
+{u:'post de blog dinâmico (id interno p=3766)',r:0.0,p:0.0,i:1,e:0.016,v:0.0},
+{u:'post de blog dinâmico (id interno p=58)',r:0.0,p:0.0,i:1,e:0.0056,v:100.0},
+{u:'post de blog dinâmico (id interno p=5104)',r:0.0,p:0.0,i:1,e:0.0056,v:0.0},
+{u:'post de blog dinâmico (id interno p=5319)',r:0.0,p:0.0,i:1,e:0.0056,v:0.0}
+];
+var anAdsUrlSort={k:'r',dir:-1},anAdsUrlFilter='';
+/* ═══════════════════════════════════════════════════════════════
+   DE-PARA id_post → URL (depara-shortlinks-p.csv) — traduz o ID
+   numérico do Ad Manager (id_post_wp=XXXX) para a URL amigável do
+   site. Alguns IDs têm mais de uma URL possível (templates dinâmicos
+   com vários parâmetros); nesses casos mostramos a primeira + contagem.
+   ═══════════════════════════════════════════════════════════════ */
+var RP_POST_URL_MAP={'1':['/'],'1200':['/como-juntar/${valor}/'],'1201':['/calculadoras/liberdade-financeira/'],'1203':['/calculadoras/alcool-ou-gasolina/'],'1300':['/melhor-maquininha-de-cartao/'],'1400':['/cartao-credito/${valor}/renda-minima/','/cartao-credito/limite/${valor}/','/melhor-cartao-credito/'],'1500':['/como-organizar-salario/${valor}/reais/','/como-administrar-salario/${valor}/reais/'],'1600':['/onde-investir/${valor}/','/onde-investir/${valor}/mil/'],'1702':['/dica-financeira-do-dia/'],'1700':['/emprestimo/${valor}/simulador/'],'1701':['/dica-financeira-do-dia/dia/${anomesdia}/'],'1800':['/fechamento-mercado/'],'2000':['/calculadora-renda-fixa/'],'2200':['/quanto-rende/${valor}/${produto}/'],'2201':['/quanto-rende/${valor}/mil/${produto}/simulador/'],'3000':['/fundos-de-investimento/'],'3001':['/fundo/${cnpj}/${nome}/'],'3002':['/comparador-fundos-de-investimentos/'],'4000':['/fii/'],'4001':['/fii/${ticker}/','/fii/vale-a-pena/${ticker}/','/fii/simulador-dividendos/${ticker}/','/fii/simulador/${ticker}/','/fii/simulacao/${ticker}/','/fii/rendimento-mensal/${ticker}/','/fii/rendimento/${ticker}/','/fii/quanto-rende/${valor}/${ticker}/','/fii/quanto-paga-dividendos/${ticker}/','/fii/cotacao/${ticker}/','/fii/comprar-ou-vender/${ticker}/','/fii/calculadora-dividendos/${ticker}/'],'4003':['/quanto-rende/${valor}/fundo-imobiliario/'],'4005':['/fii/${ticker}/simulacao/dividendos/','/fii/${ticker}/simulacao/calculadora-dividendos/'],'5000':['/acoes/'],'5001':['/acoes/${ticker}/','/acoes/vale-a-pena/${ticker}/','/acoes/simulador/${ticker}/','/acoes/rendimento-mensal/${ticker}/','/acoes/rendimento/${ticker}/','/acoes/quanto-rende/${valor}/${ticker}/','/acoes/quanto-paga-dividendos/${ticker}/','/acoes/cotacao/${ticker}/','/acoes/comprar-ou-vender/${ticker}/','/acoes/calculadora-dividendos/${ticker}/'],'5002':['/comparador-acoes/','/comparador-acoes/${ticker}/'],'4002':['/comparador-fundos-imobiliarios/${ticker}/','/comparador-fundos-imobiliarios/'],'5005':['/acoes/${ticker}/simulacao/dividendos/','/acoes/${ticker}/simulacao/calculadora-dividendos/'],'5100':['/stocks/'],'5101':['/stocks/${ticker}/','/stocks/vale-a-pena/${ticker}/','/stocks/simulador/${ticker}/','/stocks/rendimento-mensal/${ticker}/','/stocks/rendimento/${ticker}/','/stocks/cotacao/${ticker}/','/stocks/comprar-ou-vender/${ticker}/'],'6000':['/etf/','/bdr-etf/'],'6001':['/etf/${ticker}/','/etf/vale-a-pena/${ticker}/','/etf/rendimento-mensal/${ticker}/','/etf/rendimento/${ticker}/','/etf/quanto-rende/${valor}/${ticker}/','/etf/cotacao/${ticker}/','/etf/comprar-ou-vender/${ticker}/'],'6002':['/comparador-etf/','/comparador-etf/${ticker}/'],'7000':['/bdr/'],'7001':['/bdr/${ticker}/','/bdr/vale-a-pena/${ticker}/','/bdr/rendimento-mensal/${ticker}/','/bdr/rendimento/${ticker}/','/bdr/quanto-rende/${valor}/${ticker}/','/bdr/quanto-paga-dividendos/${ticker}/','/bdr/cotacao/${ticker}/','/bdr/comprar-ou-vender/${ticker}/','/bdr/${ticker}/simulacao/dividendos/'],'7002':['/comparador-bdr/','/comparador-bdr/${ticker}/'],'8000':['/cripto/'],'8001':['/cripto/${ticker}/','/cripto/vale-a-pena/${ticker}/','/cripto/rendimento/${ticker}/','/cripto/cotacao/${ticker}/'],'8002':['/comparador-cripto/','/comparador-cripto/${ticker}/'],'8003':['/cripto/quanto-rende/${valor}/${ticker}/','/cripto/quanto-rende/${valor}/mil/${ticker}/'],'9001':['/analise-inteligente/'],'9006':['/quanto/${valorcdi}/cdi/'],'9007':['/termos-de-uso/'],'9008':['/sobre/'],'9009':['/acoes/${ticker}/fundamentos/'],'9999':['/politica-privacidade/'],'9010':['/acoes/${ticker}/fundamentos/preco-justo/'],'9019':['/simulador-de-dividendos/'],'9020':['/calculadoras/percentual-cdi/quanto-rende/${valor}/${valorcdi}/cdi/'],'9023':['/dividas/como-sair-das-dividas-de/${valor}/'],'9024':['/calculadoras/periodo/quanto-rende/${valor}/${tempo}/anos/'],'9026':['/calculadoras/juros-compostos/'],'9030':['/calculadoras/simulador-lucro/'],'9031':['/calculadoras/simulador-lucro/${ticker}/'],'9034':['/quem-ganha/${valor}/paga-quanto-imposto/'],'9998':['/politica-game-xp/'],'9035':['/categoria/investimentos/criptomoedas/'],'9997':['/ferramentas/premium/'],'9036':['/categoria/calculadoras/'],'9056':['/categoria/investimentos/acoes/'],'9037':['/categoria/dicas-financeiras/'],'9057':['/categoria/investimentos/bdr/'],'9038':['/calculadoras/percentual-cdi/simulador-cdb-lci-lca/'],'9039':['/categoria/investimentos/etf/'],'9040':['/calculadoras/calculadora-de-reserva-de-emergencia/'],'9041':['/categoria/investimentos/dividendos/'],'9042':['/chat/assistente-financeiro/'],'9043':['/categoria/dicas-financeiras/conteudo/'],'9044':['/categoria/dicas-financeiras/conteudo/conteudo-completo/'],'9045':['/cupons-de-desconto/'],'9046':['/quanto-rende/picpay/'],'9058':['/categoria/investimentos/indicadores/'],'9047':['/calculadoras/quanto-preciso-investir/${frase}/${valor}/'],'9049':['/categoria/investimentos/fundos-de-investimentos/'],'9050':['/categoria/investimentos/fundos-imobiliarios/'],'9051':['/categoria/investimentos/renda-fixa/'],'9052':['/categoria/investimentos/'],'9053':['/cartao-credito/xp/vale-a-pena/xp-legacy/'],'9054':['/calculadoras/financiamento-imobiliario/'],'9055':['/cartao-credito/'],'9259':['/calculadoras/horas-de-trabalho-produto/'],'${post.id_post} (dinâmico por post)':['/artigos/${post.slug}/']};
+function anPostUrlMapObj(){var s=anStore();if(!s.postUrlMap)s.postUrlMap=RP_POST_URL_MAP;return s.postUrlMap;}
+function anPostUrlLabel(key){
+  var m=String(key||'').match(/id_post_wp=(\d+)/i);if(!m)return key;
+  var p=m[1],map=anPostUrlMapObj(),urls=map[p];
+  if(!urls||!urls.length)return key;
+  return urls.length===1?urls[0]:(urls[0]+' (+'+(urls.length-1)+' outras)');
+}
+function anPostUrlMapImportOpen(){
+  var inp=document.createElement('input');inp.type='file';inp.accept='.csv,text/csv';
+  inp.onchange=function(e){
+    var f=e.target.files&&e.target.files[0];if(!f)return;
+    var rd=new FileReader();
+    rd.onload=function(ev){
+      var lines=ev.target.result.split(/\r?\n/).filter(function(l){return l.trim();});
+      if(!lines.length){toast('Arquivo vazio.','ti-alert-circle');return;}
+      var hdr=_csvRow(lines[0]).map(function(h){return String(h||'').toLowerCase().trim();});
+      var cP=hdr.indexOf('p'),cUrl=hdr.indexOf('url_padrao');
+      if(cP<0||cUrl<0){toast('Não reconheci o formato — esperava as colunas "p" e "url_padrao".','ti-alert-circle');return;}
+      var map={};
+      for(var i=1;i<lines.length;i++){
+        var c=_csvRow(lines[i]);if(!c||!c[cP])continue;
+        var p=String(c[cP]).trim(),url=c[cUrl];if(!p||!url)continue;
+        map[p]=map[p]||[];map[p].push(url);
+      }
+      var s=anStore();s.postUrlMap=map;sv();anR();
+      toast(Object.keys(map).length+' IDs mapeados a partir de "'+f.name+'".','ti-file-import');
+    };
+    rd.readAsText(f,'UTF-8');
+  };
+  inp.click();
+}
+function anAdsUrlTranslateAll(){
+  var list=anAdsUrlObj();var n=0;
+  list.forEach(function(r){
+    if(/id_post_wp=/i.test(r.u)){var label=anPostUrlLabel(r.u);if(label!==r.u){r.u=label;n++;}}
+  });
+  sv();anR();toast(n?(n+' IDs traduzidos para URL amigável.'):'Nenhum ID pendente de tradução (ou sem mapeamento correspondente).','ti-check');
+}
+function anAdsUrlObj(){var s=anStore();if(!s.adsUrl){s.adsUrl=RP_ADS_URL_DATA.map(function(r){return {u:r.u,r:r.r,i:r.i,e:r.e,v:r.v};});}return s.adsUrl;}
+function anAdsUrlSetSort(k){if(anAdsUrlSort.k===k)anAdsUrlSort.dir=-anAdsUrlSort.dir;else anAdsUrlSort={k:k,dir:-1};R();}
+function anAdsUrlSetFilter(v){anAdsUrlFilter=v;R();}
+function anAdsUrlImportOpen(){
+  var inp=document.createElement('input');inp.type='file';inp.accept='.xlsx,.xls,.csv';
+  inp.onchange=function(e){
+    var f=e.target.files&&e.target.files[0];if(!f)return;
+    var ext=(f.name.split('.').pop()||'').toLowerCase();
+    if(ext==='xlsx'||ext==='xls'){
+      loadXLSX().then(function(XLSX){
+        var rd=new FileReader();
+        rd.onload=function(ev){
+          try{
+            var wb=XLSX.read(ev.target.result,{type:'array'});
+            var rows=null;
+            wb.SheetNames.forEach(function(name){
+              if(rows)return;
+              var cand=XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,raw:true,defval:''});
+              var hasKey=cand.some(function(r){return r&&r[0]&&String(r[0]).toLowerCase().indexOf('id_post')>=0;});
+              if(hasKey)rows=cand;
+            });
+            if(!rows){toast('Não encontrei uma aba com dados de id_post neste arquivo (esperava o relatório "ID_POST" do Ad Manager).','ti-alert-circle');return;}
+            anAdsUrlApply(rows,f.name);
+          }catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}
+        };
+        rd.readAsArrayBuffer(f);
+      }).catch(function(err){toast(err.message,'ti-alert-circle');});
+    }else{
+      var rd=new FileReader();
+      rd.onload=function(ev){var rows=ev.target.result.split(/\r?\n/).map(function(l){return _csvRow(l);});anAdsUrlApply(rows,f.name);};
+      rd.readAsText(f,'UTF-8');
+    }
+  };
+  inp.click();
+}
+function anAdsUrlApply(rows,fname){
+  var hdrIdx=-1;
+  for(var i=0;i<rows.length;i++){if(rows[i]&&String(rows[i][0]||'').toLowerCase().indexOf('chaves-valor')>=0){hdrIdx=i;break;}}
+  if(hdrIdx<0){toast('Não reconheci o formato do arquivo — esperava a coluna "Chaves-valor" (relatório ID_POST do Ad Manager).','ti-alert-circle');return;}
+  var hdr=rows[hdrIdx].map(function(h){return String(h||'').toLowerCase();});
+  function findCol(patterns){for(var c=0;c<hdr.length;c++){for(var p=0;p<patterns.length;p++){if(hdr[c].indexOf(patterns[p])>=0)return c;}}return -1;}
+  var cRec=findCol(['receita']),cImp=findCol(['impress']),cEcpm=findCol(['ecpm']),cVis=findCol(['vis','ative view']);
+  var list=anAdsUrlObj();
+  var n=0;
+  for(var r=hdrIdx+1;r<rows.length;r++){
+    var row=rows[r];if(!row||!row[0])continue;
+    var key=String(row[0]).trim();if(!key||key.toLowerCase().indexOf('id_post')<0)continue;
+    var rec=Number(row[cRec])||0,imp=Number(row[cImp])||0;
+    var ecpm=cEcpm>=0?Number(row[cEcpm])||0:(imp>0?rec/imp*1000:0);
+    var visRaw=cVis>=0?Number(row[cVis])||0:0,vis=visRaw<=1?visRaw*100:visRaw; // arquivo original vem em fração (0–1)
+    var existing=list.find(function(x){return x.u===key||x.u===anPostUrlLabel(key);});
+    var label=anPostUrlLabel(key);
+    if(existing){existing.r=rec;existing.i=imp;existing.e=ecpm;existing.v=vis;}else list.push({u:label,r:rec,i:imp,e:ecpm,v:vis});
+    n++;
+  }
+  if(!n){toast('Nenhuma linha de id_post reconhecida no arquivo.','ti-alert-circle');return;}
+  sv();anR();toast(n+' páginas importadas/atualizadas de "'+fname+'".','ti-file-import');
+}
+function anAdsUrlView(){
+  var data=anAdsUrlObj();
+  var totalRec=data.reduce(function(s,r){return s+r.r;},0)||1;
+  var top10Pct=data.slice().sort(function(a,b){return b.r-a.r;}).slice(0,10).reduce(function(s,r){return s+r.r;},0)/totalRec*100;
+  var h='<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-link"></i> Receita por URL</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="an-btn" onclick="anAdsUrlTranslateAll()"><i class="ti ti-replace"></i> Traduzir IDs</button><button class="an-btn" onclick="anPostUrlMapImportOpen()"><i class="ti ti-map"></i> Atualizar de-para</button><button class="an-btn prim" onclick="anAdsUrlImportOpen()"><i class="ti ti-upload"></i> Importar ID_POST</button></div></div>'
+    +'<div class="an-metrics an-metrics-3">'
+    +'<div class="an-mcard"><div class="an-mcard-top"><div class="an-mcard-lbl">Receita total</div></div><div class="an-mcard-valrow"><div class="an-mcard-val">US$ '+totalRec.toFixed(2).replace('.',',')+'</div></div></div>'
+    +'<div class="an-mcard"><div class="an-mcard-top"><div class="an-mcard-lbl">URLs monetizadas</div></div><div class="an-mcard-valrow"><div class="an-mcard-val">'+data.length+'</div></div></div>'
+    +'<div class="an-mcard"><div class="an-mcard-top"><div class="an-mcard-lbl">Concentração top 10</div></div><div class="an-mcard-valrow"><div class="an-mcard-val">'+top10Pct.toFixed(1).replace('.',',')+'%</div></div></div>'
+    +'</div></div>';
+  var f=(anAdsUrlFilter||'').toLowerCase();
+  var rows=data.filter(function(r){return !f||r.u.toLowerCase().indexOf(f)>=0;}).map(function(r){return{u:r.u,r:r.r,p:r.r/totalRec*100,i:r.i,e:r.e,v:r.v};});
+  var sk=anAdsUrlSort.k,dir=anAdsUrlSort.dir;
+  rows=rows.slice().sort(function(a,b){var av=a[sk],bv=b[sk];if(typeof av==='string')return dir*av.localeCompare(bv);return dir*((av||0)-(bv||0));});
+  var cols=[['u','URL (padrão)'],['r','Receita (US$)'],['p','% receita'],['i','Impressões'],['e','eCPM (US$)'],['v','Viewability']];
+  var thead=cols.map(function(c){return '<th'+(c[0]!=='u'?' class="on"':'')+' style="cursor:pointer" onclick="anAdsUrlSetSort(\''+c[0]+'\')">'+c[1]+(sk===c[0]?(dir===1?' ▲':' ▼'):'')+'</th>';}).join('');
+  var body=rows.map(function(r){
+    return '<tr><td style="text-align:left" class="mono">'+anEsc(r.u)+'</td><td class="on mono">'+r.r.toFixed(2).replace('.',',')+'</td><td class="on mono">'+r.p.toFixed(1).replace('.',',')+'%</td><td class="on mono">'+anFmt(r.i,'int')+'</td><td class="on mono">'+r.e.toFixed(3).replace('.',',')+'</td><td class="on mono">'+r.v.toFixed(1).replace('.',',')+'%</td></tr>';
+  }).join('');
+  h+='<div class="an-card"><input type="text" placeholder="Filtrar por URL..." value="'+anEsc(anAdsUrlFilter)+'" oninput="anAdsUrlSetFilter(this.value)" style="width:100%;padding:9px 12px;border:1.5px solid rgba(0,0,0,.08);border-radius:10px;font-family:inherit;font-size:12.5px;margin-bottom:10px">'
+    +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr>'+thead+'</tr></thead><tbody>'+body+'</tbody></table></div>'
+    +'<div class="an-card-sub" style="margin-top:8px">'+rows.length+' de '+RP_ADS_URL_DATA.length+' URLs · fonte: relatório de monetização Jan-Jul/2026 (Ad Manager)</div></div>';
+  return h;
+}
+function rpImportMonetizReport(){
+  if(!confirm('Importar o relatório de monetização (Jan–Jul/2026) para Receitas → Ad Manager? Isso preenche o dia 1 de cada mês com o total mensal do relatório.'))return;
+  var s=anStore();s.ads=s.ads||{};s.ads['2026']=s.ads['2026']||{};
+  RP_MONETIZ_REPORT.forEach(function(m){
+    s.ads['2026'][m.mi]=s.ads['2026'][m.mi]||{};
+    var o=s.ads['2026'][m.mi];
+    var cli=Math.round(m.ctr/100*m.imp);
+    o.imp=Array(31).fill(null);o.imp[0]=m.imp;
+    o.cli=Array(31).fill(null);o.cli[0]=cli;
+    o.rec=Array(31).fill(null);o.rec[0]=m.rec;
+    o.vis=Array(31).fill(null);o.vis[0]=m.vis;
+  });
+  sv();anR();toast('Relatório de monetização importado — 7 meses (Jan a Jul).','ti-file-import');
+}
 function anAdsBody(){
   var years=anAdsYears();if(!years.includes(anAdsYear))anAdsYear=years[years.length-1];
   var mi=anAdsCurMi();
   var h=anAdsControls(mi);
+  if(anAdsSrc==='ads')h+='<div style="margin-bottom:10px"><button class="an-btn" onclick="rpImportMonetizReport()"><i class="ti ti-file-import"></i> Importar relatório de monetização (Jan–Jul 2026)</button></div>';
   if(!anAdsHasAny(anAdsYear,mi)){
     h+='<div class="an-hint"><i class="ti ti-info-circle"></i> Sem dados de '+anAdsLabel()+' em '+AN_MES_LONG[mi]+'/'+anAdsYear+' ainda. Importe o relatório diário do '+anAdsLabel()+' (com coluna de Data) ou use "Inserir manual" — os dados começam em Março. Os cards e o gráfico abaixo se preenchem automaticamente.</div>';
   }
