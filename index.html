@@ -53,6 +53,16 @@
 .rx-callout{background:rgba(124,194,66,.1);border-radius:16px;padding:20px 24px;margin-top:2px}
 .rx-callout b{color:#fff}
 .rx-callout p{font-size:12.5px;line-height:1.7;color:#D7DFDA}
+.rp-kpi{background:var(--card);border:1px solid rgba(0,0,0,.06);border-radius:16px;padding:20px 22px;box-shadow:0 1px 2px rgba(20,30,25,.05),0 10px 30px rgba(20,30,25,.04)}
+.rp-kpi-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary)}
+.rp-kpi-num{font-size:2.05rem;font-weight:800;letter-spacing:-.03em;margin:7px 0 4px;line-height:1}
+.rp-kpi-cap{font-size:11.5px;font-weight:500}
+.rp-kpi-num.co-g{color:var(--success)}
+.rp-kpi-num.co-k{color:var(--navy)}
+.rp-kpi-num.co-a{color:#9A7714}
+.rp-kpi-cap.co-g{color:var(--success)}
+.rp-kpi-cap.co-a{color:#9A7714}
+.rp-kpi-cap.co-n{color:var(--text-secondary)}
 .rp-callout.co-green{background:rgba(22,199,154,.07);border-color:rgba(22,199,154,.25)}
 .rp-callout.co-amber{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.28)}
 .rp-callout.co-red{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.25)}
@@ -3480,8 +3490,11 @@ var monTab='rede';
 function monSetTab(t){monTab=t;rHub(document.getElementById('app'));}
 function hMON(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
-  var tabs=[['rede','Receita por rede','ti-cash'],['admanager','Ad Manager','ti-ad'],['adsense','AdSense','ti-ad-2'],['urlrev','Receita por URL','ti-link']];
+  var tabs=[['rede','Receita por rede','ti-cash'],['admanager','Ad Manager','ti-ad'],['adsense','AdSense','ti-ad-2'],['urlrev','Receita por URL','ti-link'],['anunciantes','Anunciantes','ti-users']];
   var bar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(monTab===t[0]?' active':'')+'" onclick="monSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
+  if(monTab==='anunciantes'){
+    return pageHeader('Receitas','Anunciantes · quem compra anúncios no site')+'<div class="an-root">'+bar+anAdvView()+'</div>';
+  }
   if(monTab==='urlrev'){
     return pageHeader('Receitas','Receita por URL · detalhamento do Ad Manager')+'<div class="an-root">'+bar+anAdsUrlView()+'</div>';
   }
@@ -6605,17 +6618,42 @@ function anPostUrlMapImportOpen(){
   };
   inp.click();
 }
+/* ═══════════════════════════════════════════════════════════════
+   RECEITA POR URL — agora armazenada POR PERÍODO (ano+mês), permitindo
+   filtrar um mês específico ou ver o acumulado de tudo. O relatório
+   original (Jan-Jul, sem granularidade mensal por URL) fica guardado
+   à parte, em 'hist', e sempre entra no acumulado.
+   ═══════════════════════════════════════════════════════════════ */
+var anAdsUrlYear=String(new Date().getFullYear()),anAdsUrlMi=null; // mi=null → "Acumulado"
+function anAdsUrlPeriods(){var s=anStore();if(!s.adsUrlP){s.adsUrlP={hist:RP_ADS_URL_DATA.map(function(r){return {u:r.u,r:r.r,i:r.i,e:r.e,v:r.v,c:0};})};}return s.adsUrlP;}
+function anAdsUrlPeriodKey(){return anAdsUrlYear+'-'+anAdsUrlMi;}
+function anAdsUrlSetYear(v){anAdsUrlYear=String(v);R();}
+function anAdsUrlSetMi(v){anAdsUrlMi=(v===''||v==null)?null:parseInt(v,10);R();}
+function anAdsUrlPeriodsWithData(){var p=anAdsUrlPeriods();return Object.keys(p).filter(function(k){return k!=='hist'&&p[k].length;});}
+function anAdsUrlData(){
+  var periods=anAdsUrlPeriods();
+  if(anAdsUrlMi==null){ // Acumulado: soma tudo (histórico + todos os meses já importados), mesclando por URL
+    var map={};
+    Object.keys(periods).forEach(function(k){
+      periods[k].forEach(function(r){
+        if(!map[r.u])map[r.u]={u:r.u,r:0,i:0,c:0,visNum:0};
+        map[r.u].r+=r.r;map[r.u].i+=r.i;map[r.u].c+=(r.c||0);
+        map[r.u].visNum+=(r.v||0)*(r.i||0);
+      });
+    });
+    return Object.keys(map).map(function(u){var m=map[u];return{u:m.u,r:m.r,i:m.i,c:m.c,e:m.i>0?m.r/m.i*1000:0,v:m.i>0?m.visNum/m.i:0};});
+  }
+  return periods[anAdsUrlPeriodKey()]||[];
+}
 function anAdsUrlTranslateAll(){
-  var list=anAdsUrlObj();var n=0;
-  list.forEach(function(r){
-    if(/id_post_wp=/i.test(r.u)){var label=anPostUrlLabel(r.u);if(label!==r.u){r.u=label;n++;}}
+  var periods=anAdsUrlPeriods();var n=0;
+  Object.keys(periods).forEach(function(k){
+    periods[k].forEach(function(r){if(/id_post_wp=/i.test(r.u)){var label=anPostUrlLabel(r.u);if(label!==r.u){r.u=label;n++;}}});
   });
   sv();anR();toast(n?(n+' IDs traduzidos para URL amigável.'):'Nenhum ID pendente de tradução (ou sem mapeamento correspondente).','ti-check');
 }
-function anAdsUrlObj(){var s=anStore();if(!s.adsUrl){s.adsUrl=RP_ADS_URL_DATA.map(function(r){return {u:r.u,r:r.r,i:r.i,e:r.e,v:r.v};});}return s.adsUrl;}
-function anAdsUrlSetSort(k){if(anAdsUrlSort.k===k)anAdsUrlSort.dir=-anAdsUrlSort.dir;else anAdsUrlSort={k:k,dir:-1};R();}
-function anAdsUrlSetFilter(v){anAdsUrlFilter=v;R();}
 function anAdsUrlImportOpen(){
+  if(anAdsUrlMi==null){toast('Selecione um mês específico (não "Acumulado") antes de importar — é nele que os dados vão entrar.','ti-info-circle');return;}
   var inp=document.createElement('input');inp.type='file';inp.accept='.xlsx,.xls,.csv';
   inp.onchange=function(e){
     var f=e.target.files&&e.target.files[0];if(!f)return;
@@ -6667,7 +6705,8 @@ function anAdsUrlApply(rows,fname){
     grouped[key].rec+=rec;grouped[key].imp+=imp;grouped[key].cli+=cli;
     grouped[key].visNum+=vis*imp;grouped[key].visDen+=imp; // viewability ponderada por impressão
   }
-  var list=anAdsUrlObj();
+  var periods=anAdsUrlPeriods(),pk=anAdsUrlPeriodKey();
+  var list=periods[pk]=periods[pk]||[];
   var n=0;
   Object.keys(grouped).forEach(function(key){
     var g=grouped[key],rec=g.rec,imp=g.imp;
@@ -6679,10 +6718,225 @@ function anAdsUrlApply(rows,fname){
     n++;
   });
   if(!n){toast('Nenhuma linha de id_post reconhecida no arquivo.','ti-alert-circle');return;}
-  sv();anR();toast(n+' páginas importadas/atualizadas de "'+fname+'" (receita somada entre países).','ti-file-import');
+  sv();anR();toast(n+' páginas importadas/atualizadas em '+AN_MES_LONG[anAdsUrlMi]+'/'+anAdsUrlYear+' a partir de "'+fname+'" (receita somada entre países).','ti-file-import');
 }
+function anAdsUrlSetSort(k){if(anAdsUrlSort.k===k)anAdsUrlSort.dir=-anAdsUrlSort.dir;else anAdsUrlSort={k:k,dir:-1};R();}
+function anAdsUrlSetFilter(v){anAdsUrlFilter=v;R();}
+/* ═══════════════════════════════════════════════════════════════
+   TABELA GENÉRICA — ordenável (clique no cabeçalho), filtrável
+   (campo de texto) e paginada (25/página). Reaproveitada em
+   Blocos de Anúncios e Anunciantes.
+   ═══════════════════════════════════════════════════════════════ */
+var _gtState={};
+function gtGet(id,defSort){if(!_gtState[id])_gtState[id]={sort:defSort,dir:-1,filter:'',page:0};return _gtState[id];}
+function gtSetSort(id,k){var s=gtGet(id,k);if(s.sort===k)s.dir=-s.dir;else{s.sort=k;s.dir=-1;}s.page=0;R();}
+function gtSetFilter(id,v){var s=gtGet(id);s.filter=v;s.page=0;R();}
+function gtSetPage(id,d){var s=gtGet(id);s.page=Math.max(0,s.page+d);R();}
+function gtRender(id,data,cols,defSort){
+  var s=gtGet(id,defSort),pageSize=25;
+  var rows=data;
+  if(s.filter){
+    var f=s.filter.toLowerCase();
+    rows=data.filter(function(row){return cols.some(function(c){return c.filt!==false&&String(row[c.k]==null?'':row[c.k]).toLowerCase().indexOf(f)>=0;});});
+  }
+  rows=rows.slice().sort(function(a,b){var av=a[s.sort],bv=b[s.sort];if(typeof av==='string')return s.dir*av.localeCompare(bv);return s.dir*((av||0)-(bv||0));});
+  var totalPages=Math.max(1,Math.ceil(rows.length/pageSize));
+  if(s.page>=totalPages)s.page=totalPages-1;if(s.page<0)s.page=0;
+  var pageRows=rows.slice(s.page*pageSize,(s.page+1)*pageSize);
+  var h='<input type="text" placeholder="Filtrar..." value="'+anEsc(s.filter)+'" oninput="gtSetFilter(\''+id+'\',this.value)" style="width:100%;padding:9px 12px;border:1.5px solid rgba(0,0,0,.08);border-radius:10px;font-family:inherit;font-size:12.5px;margin-bottom:10px">';
+  h+='<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr>';
+  cols.forEach(function(c,i){var arrow=s.sort===c.k?(s.dir===1?' ▲':' ▼'):'';h+='<th'+(i>0?' class="on"':' style="text-align:left"')+' style="cursor:pointer" onclick="gtSetSort(\''+id+'\',\''+c.k+'\')">'+c.label+arrow+'</th>';});
+  h+='</tr></thead><tbody>';
+  pageRows.forEach(function(row){
+    h+='<tr>';
+    cols.forEach(function(c,i){var v=row[c.k];h+='<td'+(i===0?' style="text-align:left" class="mono"':' class="on mono"')+'>'+(c.fmt?c.fmt(v,row):anEsc(v))+'</td>';});
+    h+='</tr>';
+  });
+  if(!pageRows.length)h+='<tr><td colspan="'+cols.length+'" style="text-align:center;color:var(--text-secondary);padding:20px">Nenhum resultado</td></tr>';
+  h+='</tbody></table></div>';
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:11.5px;color:var(--text-secondary)"><span>'+rows.length+' resultado(s) · página '+(s.page+1)+' de '+totalPages+'</span><span><button class="an-btn" style="padding:5px 12px" '+(s.page<=0?'disabled':'')+' onclick="gtSetPage(\''+id+'\',-1)">‹ Anterior</button> <button class="an-btn" style="padding:5px 12px" '+(s.page>=totalPages-1?'disabled':'')+' onclick="gtSetPage(\''+id+'\',1)">Próxima ›</button></span></div>';
+  return h;
+}
+function anUsd3(v){return 'US$ '+Number(v||0).toFixed(3).replace('.',',');}
+function anBlocoFmtLabel(bloco){
+  if(!bloco)return 'Página inteira';
+  var s=String(bloco);
+  if(s.indexOf('»')<0)return 'Página inteira';
+  var part=s.split('»')[1].trim();
+  var pieces=part.split('_');
+  return pieces.length>1?pieces.slice(1).join('_'):part;
+}
+function anXlsxRows(f,cb){ // le um arquivo (xlsx/xls/csv) e devolve as linhas (header:1) pra função cb(rows,fname)
+  var ext=(f.name.split('.').pop()||'').toLowerCase();
+  if(ext==='xlsx'||ext==='xls'){
+    loadXLSX().then(function(XLSX){
+      var rd=new FileReader();
+      rd.onload=function(ev){
+        try{
+          var wb=XLSX.read(ev.target.result,{type:'array'});
+          var rows=null;
+          wb.SheetNames.forEach(function(name){
+            if(rows)return;
+            var cand=XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,raw:true,defval:''});
+            var hasKey=cand.some(function(r){return r&&r.some(function(cell){var s=String(cell||'').toLowerCase();return s.indexOf('chaves-valor')>=0||s.indexOf('anunciante')>=0;});});
+            if(hasKey)rows=cand;
+          });
+          if(!rows){toast('Não encontrei uma aba reconhecível neste arquivo.','ti-alert-circle');return;}
+          cb(rows,f.name);
+        }catch(err){toast('Falha ao ler XLSX: '+err.message,'ti-alert-circle');}
+      };
+      rd.readAsArrayBuffer(f);
+    }).catch(function(err){toast(err.message,'ti-alert-circle');});
+  }else{
+    var rd=new FileReader();
+    rd.onload=function(ev){var rows=ev.target.result.split(/\r?\n/).map(function(l){return _csvRow(l);});cb(rows,f.name);};
+    rd.readAsText(f,'UTF-8');
+  }
+}
+function anPickFile(accept,cb){var inp=document.createElement('input');inp.type='file';inp.accept=accept;inp.onchange=function(e){var f=e.target.files&&e.target.files[0];if(f)cb(f);};inp.click();}
+
+/* ── Blocos de anúncios (página × formato) — usa o mesmo período de Receita por URL ── */
+function anBlocosPeriods(){var s=anStore();if(!s.adsBlocosP)s.adsBlocosP={};return s.adsBlocosP;}
+function anBlocosData(){
+  var periods=anBlocosPeriods();
+  if(anAdsUrlMi==null){
+    var map={};
+    Object.keys(periods).forEach(function(k){periods[k].forEach(function(r){
+      var key=r.u+'|'+r.f;if(!map[key])map[key]={u:r.u,f:r.f,r:0,i:0};map[key].r+=r.r;map[key].i+=r.i;
+    });});
+    return Object.keys(map).map(function(k){var m=map[k];return{u:m.u,f:m.f,r:m.r,i:m.i,e:m.i>0?m.r/m.i*1000:0};});
+  }
+  return (periods[anAdsUrlPeriodKey()]||[]).map(function(r){return{u:r.u,f:r.f,r:r.r,i:r.i,e:r.i>0?r.r/r.i*1000:0};});
+}
+function anBlocosImportOpen(){
+  if(anAdsUrlMi==null){toast('Selecione um mês específico (não "Acumulado") antes de importar.','ti-info-circle');return;}
+  anPickFile('.xlsx,.xls,.csv',function(f){anXlsxRows(f,anBlocosApply);});
+}
+function anBlocosApply(rows,fname){
+  var hdrIdx=-1;
+  for(var i=0;i<rows.length;i++){if(rows[i]&&String(rows[i][0]||'').toLowerCase().indexOf('chaves-valor')>=0){hdrIdx=i;break;}}
+  if(hdrIdx<0){toast('Não reconheci o formato — esperava a coluna "Chaves-valor" (relatório de Bloco de anúncios).','ti-alert-circle');return;}
+  var hdr=rows[hdrIdx].map(function(h){return String(h||'').toLowerCase();});
+  function findCol(patterns){for(var c=0;c<hdr.length;c++){for(var p=0;p<patterns.length;p++){if(hdr[c].indexOf(patterns[p])>=0)return c;}}return -1;}
+  var cBloco=findCol(['bloco']),cRec=findCol(['receita']),cImp=findCol(['impress']);
+  var grouped={};
+  for(var r=hdrIdx+1;r<rows.length;r++){
+    var row=rows[r];if(!row||!row[0])continue;
+    var key=String(row[0]).trim();if(!key||key.toLowerCase().indexOf('id_post')<0)continue;
+    var fmt=anBlocoFmtLabel(cBloco>=0?row[cBloco]:'');
+    var rec=Number(row[cRec])||0,imp=Number(row[cImp])||0;
+    var label=anPostUrlLabel(key);
+    var gk=label+'|'+fmt;
+    if(!grouped[gk])grouped[gk]={u:label,f:fmt,r:0,i:0};
+    grouped[gk].r+=rec;grouped[gk].i+=imp;
+  }
+  var list=Object.keys(grouped).map(function(k){return grouped[k];});
+  if(!list.length){toast('Nenhuma linha de id_post reconhecida no arquivo.','ti-alert-circle');return;}
+  anBlocosPeriods()[anAdsUrlPeriodKey()]=list;
+  sv();anR();toast(list.length+' combinações página+formato importadas em '+AN_MES_LONG[anAdsUrlMi]+'/'+anAdsUrlYear+' a partir de "'+fname+'".','ti-file-import');
+}
+
+/* ── Anunciantes — próprio período (ano/mês) ── */
+var anAdvYear=String(new Date().getFullYear()),anAdvMi=null;
+function anAdvSetYear(v){anAdvYear=String(v);R();}
+function anAdvSetMi(v){anAdvMi=(v===''||v==null)?null:parseInt(v,10);R();}
+function anAdvPeriodKey(){return anAdvYear+'-'+anAdvMi;}
+function anAdvPeriods(){var s=anStore();if(!s.adsAdvP)s.adsAdvP={};return s.adsAdvP;}
+function anAdvPeriodsWithData(){var p=anAdvPeriods();return Object.keys(p).filter(function(k){return p[k].length;});}
+function anAdvDetail(){ // linhas anunciante x página, no período selecionado (ou acumulado de tudo)
+  var periods=anAdvPeriods();
+  if(anAdvMi==null){
+    var map={};
+    Object.keys(periods).forEach(function(k){periods[k].forEach(function(r){
+      var key=r.a+'|'+r.u;if(!map[key])map[key]={a:r.a,u:r.u,r:0,i:0};map[key].r+=r.r;map[key].i+=r.i;
+    });});
+    return Object.keys(map).map(function(k){var m=map[k];return{a:m.a,u:m.u,r:m.r,i:m.i,e:m.i>0?m.r/m.i*1000:0};});
+  }
+  return (periods[anAdvPeriodKey()]||[]).map(function(r){return{a:r.a,u:r.u,r:r.r,i:r.i,e:r.i>0?r.r/r.i*1000:0};});
+}
+function anAdvSummary(){ // agrega o detalhe por anunciante
+  var detail=anAdvDetail();
+  var map={};
+  detail.forEach(function(r){
+    if(!map[r.a])map[r.a]={a:r.a,r:0,i:0,pages:{}};
+    map[r.a].r+=r.r;map[r.a].i+=r.i;map[r.a].pages[r.u]=true;
+  });
+  return Object.keys(map).map(function(k){var m=map[k];return{a:m.a,r:m.r,i:m.i,e:m.i>0?m.r/m.i*1000:0,n:Object.keys(m.pages).length};});
+}
+function anAdvImportOpen(){
+  if(anAdvMi==null){toast('Selecione um mês específico (não "Acumulado") antes de importar.','ti-info-circle');return;}
+  anPickFile('.xlsx,.xls,.csv',function(f){anXlsxRows(f,anAdvApply);});
+}
+function anAdvApply(rows,fname){
+  var hdrIdx=-1;
+  for(var i=0;i<rows.length;i++){if(rows[i]&&rows[i].some(function(c){return String(c||'').toLowerCase().indexOf('anunciante')>=0;})){hdrIdx=i;break;}}
+  if(hdrIdx<0){toast('Não reconheci o formato — esperava uma coluna "Anunciante" (relatório ID_POST_ANUNCIANTE).','ti-alert-circle');return;}
+  var hdr=rows[hdrIdx].map(function(h){return String(h||'').toLowerCase();});
+  function findCol(patterns){for(var c=0;c<hdr.length;c++){for(var p=0;p<patterns.length;p++){if(hdr[c].indexOf(patterns[p])>=0)return c;}}return -1;}
+  var cAdv=findCol(['anunciante']),cKey=findCol(['chaves-valor']),cRec=findCol(['receita']),cImp=findCol(['impress']);
+  var grouped={};
+  for(var r=hdrIdx+1;r<rows.length;r++){
+    var row=rows[r];if(!row||!row[cAdv]||!row[cKey])continue;
+    var adv=String(row[cAdv]).trim();
+    var key=String(row[cKey]).trim();if(!key||key.toLowerCase().indexOf('id_post')<0)continue;
+    var rec=Number(row[cRec])||0,imp=Number(row[cImp])||0;
+    var label=anPostUrlLabel(key);
+    var gk=adv+'|'+label;
+    if(!grouped[gk])grouped[gk]={a:adv,u:label,r:0,i:0};
+    grouped[gk].r+=rec;grouped[gk].i+=imp;
+  }
+  var list=Object.keys(grouped).map(function(k){return grouped[k];});
+  if(!list.length){toast('Nenhuma linha reconhecida no arquivo.','ti-alert-circle');return;}
+  anAdvPeriods()[anAdvPeriodKey()]=list;
+  sv();anR();toast(list.length+' combinações anunciante+página importadas em '+AN_MES_LONG[anAdvMi]+'/'+anAdvYear+' a partir de "'+fname+'".','ti-file-import');
+}
+function anAdvView(){
+  var years=anYears();if(!years.includes(anAdvYear))anAdvYear=years[years.length-1];
+  var ySel='<select class="fsel" onchange="anAdvSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anAdvYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var withData=anAdvPeriodsWithData();
+  var moSel='<select class="fsel" onchange="anAdvSetMi(this.value)"><option value=""'+(anAdvMi==null?' selected':'')+'>Acumulado (tudo)</option>'+AN_MES_LONG.map(function(m,i){var has=withData.indexOf(anAdvYear+'-'+i)>=0;return '<option value="'+i+'"'+(anAdvMi===i?' selected':'')+'>'+m+(has?' ●':'')+'</option>';}).join('')+'</select>';
+  var periodLbl=anAdvMi==null?'Acumulado (todos os meses importados)':AN_MES_LONG[anAdvMi]+'/'+anAdvYear;
+  var summary=anAdvSummary(),detail=anAdvDetail();
+  var totalRec=summary.reduce(function(s,r){return s+r.r;},0);
+  var h='<div class="an-card an-camp-ctrl" style="margin-bottom:14px"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div></div>';
+  h+='<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd"><div><div class="an-card-ttl"><i class="ti ti-users"></i> Anunciantes</div><div class="an-card-sub">'+periodLbl+'</div></div>'
+    +'<button class="an-btn prim" onclick="anAdvImportOpen()"><i class="ti ti-upload"></i> Importar ID_POST_ANUNCIANTE</button></div>'
+    +'<div class="an-metrics an-metrics-3">'
+    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Receita total</div><div class="rp-kpi-num co-g">'+anUsd3(totalRec)+'</div><div class="rp-kpi-cap co-g">'+summary.length+' anunciantes distintos</div></div>'
+    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Páginas com anúncio vendido</div><div class="rp-kpi-num co-k">'+(new Set(detail.map(function(r){return r.u;}))).size+'</div><div class="rp-kpi-cap co-n">no período selecionado</div></div>'
+    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Combinações anunciante × página</div><div class="rp-kpi-num co-k">'+detail.length+'</div><div class="rp-kpi-cap co-n">linhas no detalhe abaixo</div></div>'
+    +'</div></div>';
+  if(!summary.length){
+    h+='<div class="an-card"><div class="an-empty"><i class="ti ti-users"></i><p>Sem dados de anunciantes em '+periodLbl+'</p><span>Importe o relatório "ID_POST_ANUNCIANTE" do Ad Manager para este mês</span></div></div>';
+    return h;
+  }
+  h+='<div class="an-card" style="margin-bottom:14px"><div class="an-card-ttl" style="margin-bottom:10px">Anunciantes — resumo</div>'
+    +gtRender('adv',summary,[
+      {k:'a',label:'Anunciante'},
+      {k:'r',label:'Receita',fmt:anUsd3},
+      {k:'i',label:'Impressões',fmt:function(v){return anFmt(v,'int');}},
+      {k:'e',label:'eCPM',fmt:anUsd3},
+      {k:'n',label:'Nº páginas'}
+    ],'r')+'</div>';
+  h+='<div class="an-card"><div class="an-card-ttl" style="margin-bottom:4px">Quanto cada anunciante paga em cada página</div>'
+    +'<div class="an-card-sub" style="margin-bottom:10px">Filtre pelo nome do anunciante ou da página pra cruzar os dois</div>'
+    +gtRender('advdet',detail,[
+      {k:'a',label:'Anunciante'},
+      {k:'u',label:'Página'},
+      {k:'r',label:'Receita',fmt:anUsd3},
+      {k:'i',label:'Impressões',fmt:function(v){return anFmt(v,'int');}},
+      {k:'e',label:'eCPM',fmt:anUsd3}
+    ],'r')+'</div>';
+  return h;
+}
+
 function anAdsUrlView(){
-  var data=anAdsUrlObj();
+  var years=anYears();if(!years.includes(anAdsUrlYear))anAdsUrlYear=years[years.length-1];
+  var ySel='<select class="fsel" onchange="anAdsUrlSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anAdsUrlYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
+  var withData=anAdsUrlPeriodsWithData();
+  var moSel='<select class="fsel" onchange="anAdsUrlSetMi(this.value)"><option value=""'+(anAdsUrlMi==null?' selected':'')+'>Acumulado (tudo)</option>'+AN_MES_LONG.map(function(m,i){var has=withData.indexOf(anAdsUrlYear+'-'+i)>=0;return '<option value="'+i+'"'+(anAdsUrlMi===i?' selected':'')+'>'+m+(has?' ●':'')+'</option>';}).join('')+'</select>';
+  var periodLbl=anAdsUrlMi==null?'Acumulado (histórico + todos os meses importados)':AN_MES_LONG[anAdsUrlMi]+'/'+anAdsUrlYear;
+  var data=anAdsUrlData();
   var totalRec=data.reduce(function(s,r){return s+r.r;},0);
   var totalImp=data.reduce(function(s,r){return s+r.i;},0);
   var totalCli=data.reduce(function(s,r){return s+(r.c||0);},0);
@@ -6693,17 +6947,22 @@ function anAdsUrlView(){
   var top10=data.slice().sort(function(a,b){return b.r-a.r;}).slice(0,10);
   var top10Sum=top10.reduce(function(s,r){return s+r.r;},0);
   var top10Pct=totalRec>0?top10Sum/totalRec*100:0;
+  var withImp=data.filter(function(r){return r.i>=50;}); // ignora URLs com pouquíssima amostra pra não distorcer mín./máx.
+  var minVis=withImp.length?withImp.reduce(function(a,b){return (b.v||0)<(a.v||0)?b:a;}):null;
+  var maxCtrRow=withImp.length?withImp.reduce(function(a,b){var ca=(a.c||0)/(a.i||1)*100,cb=(b.c||0)/(b.i||1)*100;return cb>ca?b:a;}):null;
   function usd(v,dec){return 'US$ '+v.toFixed(dec==null?2:dec).replace('.',',');}
-  var h='<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-link"></i> Receita por URL</div>'
+  function shortUrl(u){return u.length>28?u.slice(0,26)+'…':u;}
+  var h='<div class="an-card an-camp-ctrl" style="margin-bottom:14px"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div></div>';
+  h+='<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd"><div><div class="an-card-ttl"><i class="ti ti-link"></i> Receita por URL</div><div class="an-card-sub">'+periodLbl+'</div></div>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="an-btn" onclick="anAdsUrlTranslateAll()"><i class="ti ti-replace"></i> Traduzir IDs</button><button class="an-btn" onclick="anPostUrlMapImportOpen()"><i class="ti ti-map"></i> Atualizar de-para</button><button class="an-btn prim" onclick="anAdsUrlImportOpen()"><i class="ti ti-upload"></i> Importar ID_POST</button></div></div>'
     +'<div class="an-metrics an-metrics-3">'
-    +'<div class="an-mcard"><div class="an-mcard-top"><div class="an-mcard-lbl">Receita acumulada</div></div><div class="an-mcard-valrow"><div class="an-mcard-val">'+usd(totalRec)+'</div></div></div>'
-    +'<div class="an-mcard"><div class="an-mcard-top"><div class="an-mcard-lbl">Impressões</div></div><div class="an-mcard-valrow"><div class="an-mcard-val">'+anFmt(totalImp,'int')+'</div></div></div>'
-    +'<div class="an-mcard"><div class="an-mcard-top"><div class="an-mcard-lbl">eCPM médio</div></div><div class="an-mcard-valrow"><div class="an-mcard-val">'+usd(ecpmMedio,3)+'</div></div></div>'
-    +'</div><div class="an-metrics an-metrics-3" style="margin-top:10px">'
-    +'<div class="an-mcard"><div class="an-mcard-top"><div class="an-mcard-lbl">Viewability média</div></div><div class="an-mcard-valrow"><div class="an-mcard-val">'+visMedia.toFixed(1).replace('.',',')+'%</div></div></div>'
-    +'<div class="an-mcard"><div class="an-mcard-top"><div class="an-mcard-lbl">CTR médio</div></div><div class="an-mcard-valrow"><div class="an-mcard-val">'+ctrMedio.toFixed(2).replace('.',',')+'%</div></div></div>'
-    +'<div class="an-mcard"><div class="an-mcard-top"><div class="an-mcard-lbl">Concentração top 10 URLs</div></div><div class="an-mcard-valrow"><div class="an-mcard-val">'+top10Pct.toFixed(1).replace('.',',')+'%</div></div></div>'
+    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Receita acumulada</div><div class="rp-kpi-num co-g">'+usd(totalRec)+'</div><div class="rp-kpi-cap co-g">'+data.length+' URLs monetizadas</div></div>'
+    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Impressões</div><div class="rp-kpi-num co-g">'+anFmt(totalImp,'int')+'</div><div class="rp-kpi-cap co-g">acumulado no período importado</div></div>'
+    +'<div class="rp-kpi"><div class="rp-kpi-lbl">eCPM médio</div><div class="rp-kpi-num co-k">'+usd(ecpmMedio,2)+'</div><div class="rp-kpi-cap co-n">ponderado pelas impressões</div></div>'
+    +'</div><div class="an-metrics an-metrics-3" style="margin-top:14px">'
+    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Viewability média</div><div class="rp-kpi-num co-k">'+visMedia.toFixed(1).replace('.',',')+'%</div><div class="rp-kpi-cap co-a">'+(minVis?'mín. '+minVis.v.toFixed(1).replace('.',',')+'% em '+anEsc(shortUrl(minVis.u)):'—')+'</div></div>'
+    +'<div class="rp-kpi"><div class="rp-kpi-lbl">CTR médio</div><div class="rp-kpi-num co-k">'+ctrMedio.toFixed(2).replace('.',',')+'%</div><div class="rp-kpi-cap co-n">'+(maxCtrRow?'máx. '+((maxCtrRow.c||0)/(maxCtrRow.i||1)*100).toFixed(2).replace('.',',')+'% em '+anEsc(shortUrl(maxCtrRow.u)):'—')+'</div></div>'
+    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Concentração top 10 URLs</div><div class="rp-kpi-num co-a">'+top10Pct.toFixed(1).replace('.',',')+'%</div><div class="rp-kpi-cap co-a">de '+data.length+' páginas monetizadas</div></div>'
     +'</div></div>';
   h+='<div class="an-card" style="margin-bottom:14px"><div class="an-card-ttl" style="margin-bottom:10px">Top 10 URLs mais rentáveis</div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr><th style="text-align:left">URL (padrão)</th><th class="on">Receita</th><th class="on">% receita</th><th class="on">Impressões</th><th class="on">eCPM</th></tr></thead><tbody>'
@@ -6721,6 +6980,18 @@ function anAdsUrlView(){
   h+='<div class="an-card"><input type="text" placeholder="Filtrar por URL..." value="'+anEsc(anAdsUrlFilter)+'" oninput="anAdsUrlSetFilter(this.value)" style="width:100%;padding:9px 12px;border:1.5px solid rgba(0,0,0,.08);border-radius:10px;font-family:inherit;font-size:12.5px;margin-bottom:10px">'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead><tr>'+thead+'</tr></thead><tbody>'+body+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px">'+rows.length+' de '+RP_ADS_URL_DATA.length+' URLs · fonte: relatório de monetização Jan-Jul/2026 (Ad Manager)</div></div>';
+  var blocos=anBlocosData();
+  h+='<div class="an-card" style="margin-top:14px"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-layout-grid"></i> Blocos de anúncios · página × formato</div>'
+    +'<button class="an-btn" onclick="anBlocosImportOpen()"><i class="ti ti-upload"></i> Importar Bloco de Anúncios</button></div>'
+    +'<div class="an-card-sub" style="margin-bottom:10px">Receita de cada formato (Anchor, Interstitial, Content1-4, etc.) por página — usa o mesmo período (ano/mês) selecionado acima</div>'
+    +(blocos.length?gtRender('blocos',blocos,[
+      {k:'u',label:'Página'},
+      {k:'f',label:'Formato'},
+      {k:'r',label:'Receita',fmt:anUsd3},
+      {k:'i',label:'Impressões',fmt:function(v){return anFmt(v,'int');}},
+      {k:'e',label:'eCPM',fmt:anUsd3}
+    ],'r'):'<div class="an-empty"><i class="ti ti-layout-grid"></i><p>Sem dados de blocos de anúncios em '+periodLbl+'</p><span>Importe o relatório "ID_POST_BLOCO_ANUNCIOS" do Ad Manager para este mês</span></div>')
+    +'</div>';
   return h;
 }
 function rpImportMonetizReport(){
