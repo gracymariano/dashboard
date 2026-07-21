@@ -53,9 +53,21 @@
 .rx-callout{background:rgba(124,194,66,.1);border-radius:16px;padding:20px 24px;margin-top:2px}
 .rx-callout b{color:#fff}
 .rx-callout p{font-size:12.5px;line-height:1.7;color:#D7DFDA}
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN SYSTEM · CARD DE KPI (métrica em destaque)
+   Este é o ÚNICO padrão de card de métrica do dashboard. Usado por:
+   .an-mcard  → cards com ferramentas extras (editar, mês ant./projeção) — SEO Busca, Analytics, Ad Manager
+   .rp-kpi    → cards simples (label → número → legenda) — Receita por URL, Anunciantes, Raio-X
+   Qualquer card de métrica NOVO deve reaproveitar estas classes
+   (-lbl/-val ou -num/-cap), não criar um estilo de rótulo/número novo.
+     Rótulo:  11px · 700 · uppercase · letter-spacing .08em · cinza (--text-secondary)
+     Número:  2.05rem · 800 · letter-spacing -.03em · navy (ou cor semântica: verde=bom, âmbar=atenção)
+     Legenda: 11.5px · peso normal · cor de contexto (verde/âmbar/cinza)
+   ═══════════════════════════════════════════════════════════════ */
 .rp-kpi{background:var(--card);border:1px solid rgba(0,0,0,.06);border-radius:16px;padding:20px 22px;box-shadow:0 1px 2px rgba(20,30,25,.05),0 10px 30px rgba(20,30,25,.04)}
-.rp-kpi-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary)}
-.rp-kpi-num{font-size:2.05rem;font-weight:800;letter-spacing:-.03em;margin:7px 0 4px;line-height:1}
+.rp-kpi-lbl,.an-mcard-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary)}
+.rp-kpi-num,.an-mcard-val{font-size:2.05rem;font-weight:800;letter-spacing:-.03em;line-height:1}
+.rp-kpi-num{margin:7px 0 4px}
 .rp-kpi-cap{font-size:11.5px;font-weight:500}
 .rp-kpi-num.co-g{color:var(--success)}
 .rp-kpi-num.co-k{color:var(--navy)}
@@ -532,13 +544,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .an-mcard{background:var(--card);border:1px solid rgba(11,34,57,.06);border-radius:var(--radius-sm);padding:17px;transition:all .2s;box-shadow:0 3px 14px rgba(11,34,57,.04)}
 .an-mcard:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
 .an-mcard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px;min-height:32px}
-.an-mcard-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);line-height:1.35}
 .an-mcard-tools{display:flex;align-items:center;gap:7px;flex-shrink:0}
 .an-edit{border:none;background:transparent;color:var(--text-secondary);cursor:pointer;padding:3px;border-radius:7px;display:flex;align-items:center;opacity:0;transition:all .15s;font-size:13px}
 .an-mcard:hover .an-edit{opacity:.65}
 .an-edit:hover{opacity:1!important;background:var(--primary-light);color:var(--primary-dark)}
 .an-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px}
-.an-mcard-val{font-size:2.05rem;font-weight:800;color:var(--navy);letter-spacing:-.03em;line-height:1}
+.an-mcard-val{color:var(--navy)}
 .an-mcard-foot{display:flex;align-items:center;gap:7px;margin-top:13px;flex-wrap:wrap}
 .an-pill{font-size:10.5px;color:var(--text-secondary);background:var(--bg);border-radius:6px;padding:4px 8px;font-weight:600;white-space:nowrap}
 .an-pill b{color:var(--navy);font-weight:700}
@@ -559,6 +570,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .an-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 13px;border-radius:10px;border:1.5px solid rgba(11,34,57,.1);background:var(--card);color:var(--text-primary);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .18s}
 .an-btn:hover{border-color:var(--primary);color:var(--primary-dark)}
 .an-btn.prim{background:var(--grad);color:#fff;border-color:transparent}
+.an-btn.danger{color:var(--danger);border-color:rgba(220,38,38,.25)}
 .an-btn.prim:hover{opacity:.92;color:#fff}
 .an-btn:disabled{opacity:.45;cursor:not-allowed}
 .an-btn i{font-size:14px}
@@ -817,6 +829,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         <div class="sb-user-email">gracy.mariano@gmail.com</div>
       </div>
     </div>
+    <div style="display:flex;gap:10px;margin-top:10px;padding:0 2px;flex-wrap:wrap">
+      <span onclick="anBackupExport()" style="font-size:10.5px;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:4px" title="Baixa todos os dados em um arquivo local"><i class="ti ti-download" style="font-size:11px"></i> Backup</span>
+      <span onclick="anBackupImportOpen()" style="font-size:10.5px;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:4px" title="Restaura os dados a partir de um arquivo de backup"><i class="ti ti-upload" style="font-size:11px"></i> Restaurar</span>
+      <span onclick="anResetAllOpen()" style="font-size:10.5px;color:var(--danger);cursor:pointer;display:flex;align-items:center;gap:4px" title="Apaga tudo — pede confirmação"><i class="ti ti-trash" style="font-size:11px"></i> Resetar</span>
+    </div>
   </div>
 </aside>
 
@@ -984,6 +1001,59 @@ const s=localStorage.getItem('gd_v4');if(s){try{const lsd=JSON.parse(s);cT=lsd.t
 var _svPending=false; // true enquanto o salvamento no Supabase ainda está em andamento — usado para avisar antes de recarregar/fechar a página
 window.addEventListener('beforeunload',function(e){if(_svPending){e.preventDefault();e.returnValue='';return '';}});
 var _svInFlight=false,_svQueued=false;
+/* ═══════════════════════════════════════════════════════════════
+   BACKUP MANUAL — o Supabase Free não tem backup automático, então
+   isso é a rede de segurança: baixa/restaura todo o estado (ac/cT/tE)
+   como um arquivo JSON local.
+   ═══════════════════════════════════════════════════════════════ */
+function anBackupExport(){
+  var data={t:cT,a:ac,e:tE,_exportedAt:new Date().toISOString()};
+  var blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download='backup-guardardinheiro-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Backup baixado.','ti-download');
+}
+function anBackupImportOpen(){
+  if(!confirm('Isso vai SUBSTITUIR todos os dados atuais pelo conteúdo do arquivo de backup. Tem certeza?'))return;
+  var inp=document.createElement('input');inp.type='file';inp.accept='.json';
+  inp.onchange=function(e){
+    var f=e.target.files&&e.target.files[0];if(!f)return;
+    var rd=new FileReader();
+    rd.onload=function(ev){
+      try{
+        var data=JSON.parse(ev.target.result);
+        if(!data||typeof data.a!=='object'){toast('Arquivo de backup inválido.','ti-alert-circle');return;}
+        cT=data.t||{};ac=data.a||{};tE=data.e||{};
+        sv();anR();
+        toast('Backup restaurado com sucesso.','ti-check');
+      }catch(err){toast('Falha ao ler o arquivo: '+err.message,'ti-alert-circle');}
+    };
+    rd.readAsText(f,'UTF-8');
+  };
+  inp.click();
+}
+/* ── Reset total — sempre exige o usuário digitar "APAGAR"; nunca roda sozinho ── */
+function anResetAllOpen(){
+  var o=document.createElement('div');o.className='ov';o.id='an-reset-ov';
+  o.innerHTML='<div class="mx" style="width:440px;max-width:96vw">'
+    +'<h4><i class="ti ti-alert-triangle" style="color:var(--danger)"></i> Resetar todos os dados</h4>'
+    +'<p style="font-size:12.5px;line-height:1.6;color:var(--text-primary);margin:10px 0">Isso apaga <b>permanentemente</b> todos os dados do dashboard (Analytics, SEO, Receitas, Anunciantes, Raio-X, tudo) — não tem como desfazer depois. Recomendamos fortemente baixar um backup antes de confirmar.</p>'
+    +'<p style="font-size:12px;color:var(--text-secondary);margin-bottom:8px">Digite <b>APAGAR</b> para confirmar:</p>'
+    +'<input id="reset-confirm" type="text" placeholder="Digite APAGAR" autocomplete="off" style="width:100%;padding:9px 12px;border:1.5px solid rgba(220,38,38,.3);border-radius:10px;font-family:inherit;font-size:13px">'
+    +'<div class="mbb" style="margin-top:14px">'+btn('Cancelar','document.getElementById(\'an-reset-ov\').remove()')+btn('Baixar backup antes','anBackupExport()',{icon:'download'})+btn('Confirmar e apagar tudo','anResetAllConfirm()',{variant:'danger'})+'</div></div>';
+  document.body.appendChild(o);
+}
+function anResetAllConfirm(){
+  var val=(document.getElementById('reset-confirm').value||'').trim().toUpperCase();
+  if(val!=='APAGAR'){toast('Digite exatamente "APAGAR" (em maiúsculas) para confirmar.','ti-alert-circle');return;}
+  cT={};ac={};tE={};
+  var o=document.getElementById('an-reset-ov');if(o)o.remove();
+  sv();anR();
+  toast('Todos os dados foram apagados. Pode começar do zero.','ti-trash');
+}
 function sv(){
   _svPending=true;
   if(_svInFlight){_svQueued=true;return;} // já existe um salvamento em andamento — a versão mais atual do estado será enviada assim que ele terminar (evita duas requisições em paralelo que poderiam voltar fora de ordem e uma antiga sobrescrever uma nova)
@@ -2274,11 +2344,54 @@ function entryBarP(dsId){
 }
 
 // ── VISÃO GERAL ──
+/* ═══════════════════════════════════════════════════════════════
+   FUNIL: Impressões (busca) → Cliques (SEO) → Sessões (Analytics) → Receita
+   "Conversão" = receita consolidada (AdSense + Ad Manager + afiliados,
+   via anDashRevStat — a mesma fonte do KPI "Receita total"), a pedido
+   do usuário. Mostra a taxa entre cada etapa.
+   ═══════════════════════════════════════════════════════════════ */
+function anFunnelCard(year,stImp,stCli,stSes,stRev){
+  var stages=[
+    {label:'Impressões (busca)',val:stImp.cur,fmt:'int',icon:'ti-eye',color:'#16C79A'},
+    {label:'Cliques (SEO)',val:stCli.cur,fmt:'int',icon:'ti-cursor-text',color:'#0EA5E9'},
+    {label:'Sessões',val:stSes.cur,fmt:'int',icon:'ti-users',color:'#8B5CF6'},
+    {label:'Receita',val:stRev.cur,fmt:'money',icon:'ti-currency-dollar',color:'#F59E0B'}
+  ];
+  if(!stages.some(function(s){return s.val!=null;}))return '';
+  var mi=stImp.idx!=null?stImp.idx:(stCli.idx!=null?stCli.idx:new Date().getMonth());
+  var vals=stages.map(function(s){return s.val||0;});
+  var maxV=Math.max.apply(null,vals.concat([1]));
+  var W=600,stageH=78,gap=22,padTop=6,padBottom=6;
+  var minW=110,maxW=480;
+  function widthFor(v){if(!v||maxV<=0)return minW;return minW+(maxW-minW)*Math.sqrt(v/maxV);}
+  var widths=vals.map(widthFor);
+  var totalH=padTop+stages.length*stageH+(stages.length-1)*gap+padBottom;
+  var svg='<svg viewBox="0 0 '+W+' '+totalH+'" style="width:100%;height:auto;display:block">';
+  var y=padTop;
+  stages.forEach(function(s,i){
+    var wTop=widths[i],wBot=(i<stages.length-1)?widths[i+1]:widths[i];
+    var xTopL=(W-wTop)/2,xTopR=(W+wTop)/2,xBotL=(W-wBot)/2,xBotR=(W+wBot)/2;
+    var yTop=y,yBot=y+stageH,midY=(yTop+yBot)/2;
+    svg+='<polygon points="'+xTopL.toFixed(1)+','+yTop+' '+xTopR.toFixed(1)+','+yTop+' '+xBotR.toFixed(1)+','+yBot+' '+xBotL.toFixed(1)+','+yBot+'" fill="'+s.color+'" opacity=".9"><title>'+s.label+': '+(s.val==null?'sem dado':anFmt(s.val,s.fmt))+'</title></polygon>'
+      +'<text x="'+(W/2)+'" y="'+(midY-6)+'" text-anchor="middle" style="font-size:16px;font-weight:800;fill:#fff;font-family:inherit">'+(s.val==null?'—':anFmt(s.val,s.fmt))+'</text>'
+      +'<text x="'+(W/2)+'" y="'+(midY+13)+'" text-anchor="middle" style="font-size:10px;font-weight:700;fill:rgba(255,255,255,.9);text-transform:uppercase;letter-spacing:.04em;font-family:inherit">'+s.label+'</text>';
+    if(i<stages.length-1){
+      var next=stages[i+1];
+      var rate=(s.val!=null&&next.val!=null&&s.val>0)?(next.val/s.val*100):null;
+      if(rate!=null)svg+='<text x="'+(W/2)+'" y="'+(yBot+gap*0.68).toFixed(1)+'" text-anchor="middle" style="font-size:10.5px;font-weight:700;fill:var(--text-secondary);font-family:inherit">'+(rate<1?rate.toFixed(2):rate.toFixed(1))+'%</text>';
+    }
+    y=yBot+gap;
+  });
+  svg+='</svg>';
+  return '<div class="an-card" style="margin-bottom:18px"><div class="an-card-hd"><div><div class="an-card-ttl"><i class="ti ti-filter"></i> Funil: Busca → Receita</div><div class="an-card-sub">'+HMESES[mi]+'/'+year+' · impressão de busca até receita (AdSense + Ad Manager + afiliados) · largura em escala não-linear (raiz quadrada) pra caber a diferença de grandeza entre as etapas</div></div></div>'
+    +svg+'</div>';
+}
 function hVG(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
   anFxEnsure().then(function(rate){if(rate!=null)anR();}); // garante cotação atualizada para a Receita total/RPM
   var year=anYear,thresh=anDashThresh;
   var stSes=anStats(year,'traf','all','sessoes_tot'),stUsr=anStats(year,'user','all','usuarios_tot'),stCli=anStats(year,'gsc','all','cliques');
+  var stImp=anStats(year,'gsc','all','impressoes');
   var stRev=anDashRevStat(year),stRpm=anDashRpmStat(year);
   var anyData=[stSes,stUsr,stCli,stRev,stRpm].some(function(s){return s.cur!=null;});
   var kpis='<div class="an-metrics" style="margin-bottom:18px">'
@@ -2288,11 +2401,12 @@ function hVG(){
     +anDashKpiCard('RPM unificado','ti-bolt',stRpm,'money',false,null)
     +anDashKpiCard('Cliques (busca)','ti-pointer',stCli,'int',false,anDashYoY(year,'gsc','cliques',stCli.idx,stCli.cur))
     +'</div>';
+  var funnelCard=anFunnelCard(year,stImp,stCli,stSes,stRev);
   var thr='<div class="an-card an-camp-ctrl" style="margin-bottom:18px"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'
     +'<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===year?' selected':'')+'>'+y+'</option>';}).join('')+'</select>'
     +'<span class="an-camp-cl">Sensibilidade padrão</span>'
     +'<select class="fsel" onchange="anDashSetThresh(this.value)">'+[10,15,25].map(function(t){return '<option value="'+t+'"'+(t===thresh?' selected':'')+'>±'+t+'%</option>';}).join('')+'</select></div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn" onclick="anDashThrOpen()"><i class="ti ti-adjustments"></i> Limites por métrica</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Limites por métrica','anDashThrOpen()',{icon:'adjustments'})+'</div></div>';
   // Metas + ritmo
   var metas=anDashMetas(year);
   var metaRisk=metas.filter(function(m){return m.status==='risco'&&m.isCur;}).map(function(m){return {kind:'meta',label:m.label,sec:m.secL,fmt:m.fmt,goal:m.goal,proj:m.proj,mi:m.mi};});
@@ -2322,7 +2436,7 @@ function hVG(){
   if(!anyData){
     body='<div class="an-card"><div class="an-empty"><i class="ti ti-dashboard"></i><p>Seu painel está pronto, mas ainda sem dados</p><span>Preencha Analytics (Tráfego), SEO (Busca), App e Receitas. Conforme você lança, este Dashboard mostra KPIs, alertas, oportunidades e metas automaticamente.</span></div></div>';
   }else{
-    body=kpis+'<div class="an-dash-grid">'+alertsCard+oppsCard+'</div>'+metasCard+gapCards;
+    body=kpis+funnelCard+'<div class="an-dash-grid">'+alertsCard+oppsCard+'</div>'+metasCard+gapCards;
   }
   return '<div class="an-root">'+pageHeader('Dashboard','Visão geral — alertas, oportunidades e metas do ecossistema Guardar Dinheiro')+thr+body+'</div>';
 }
@@ -2772,7 +2886,7 @@ function anSegView(){
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="segSetMi(this.value)">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select>';
   var ctrl='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" '+(isAll?'onclick="anNeedsProp()"':'onclick="anSegImportOpen()"')+'><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Importar CSV',isAll?'anNeedsProp()':'anSegImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
   var rows=anSegRows(anYear,anProp,dim,mi),body;
   if(!rows.length){
     body='<div class="an-card" style="text-align:center;padding:30px 16px;color:var(--text-secondary)"><i class="ti '+segDimObj(dim).ic+'" style="font-size:30px;color:var(--primary);opacity:.5"></i><p style="margin:10px 0 4px;font-weight:600;color:var(--navy)">Sem dados de '+segDimObj(dim).l+' em '+AN_MES_LONG[mi]+'/'+anYear+'</p><p style="font-size:11.5px;margin:0">Exporte do Search Console (aba '+segDimObj(dim).l+') e clique em <strong>Importar Search Console</strong>.</p></div>';
@@ -2934,8 +3048,8 @@ function rpDevPosChart(){
 }
 function rpDevPosCard(){
   var importBtn=rpDevPosMode==='mensal'
-    ?'<button class="an-btn" onclick="pgDevImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button>'
-    :'<button class="an-btn" onclick="pgDevDImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button>';
+    ?btn('Importar CSV','pgDevImportOpen()',{icon:'upload'})
+    :btn('Importar CSV','pgDevDImportOpen()',{icon:'upload'});
   return rpToggleCard('ti-devices','Posição média por dispositivo',rpDevPosMode,'rpDevPosSetMode',rpDevPosChart(),importBtn);
 }
 
@@ -2981,7 +3095,7 @@ function rpFmtMil(v){
 }
 function anIdxBlock(){
   if(anProp==='all')return '';
-  var addBtn='<button class="an-btn prim" onclick="anIdxQuickOpen()">Inserir Manualmente</button>';
+  var addBtn=btn('Inserir Manualmente','anIdxQuickOpen()',{variant:'prim'});
   var wrapOpen='<div class="an-card" style="margin-bottom:14px;background:linear-gradient(135deg,rgba(22,199,154,.07),rgba(0,139,139,.03));border:1px solid rgba(22,199,154,.2)">'
     +'<div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti ti-list-check"></i> Páginas Indexadas e Não Indexadas</div>'+addBtn+'</div>';
   var idx=anIdxLastVal(anYear,anProp,'idx'),nidx=anIdxLastVal(anYear,anProp,'nidx');
@@ -3057,7 +3171,7 @@ function rpTopQView(){
     dayCtrl='<span class="an-camp-cl">Dia</span>'+dsel;
   }
   var h='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+dayCtrl+toggle+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anSeoImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Importar CSV','anSeoImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
   var rows=rpTopQRows(mi);
   if(!rows.length){
     h+='<div class="an-card"><div class="an-empty"><i class="ti ti-list-numbers"></i><p>Sem dados</p>'+(rpTopQMode==='mensal'?'<span>Importe Consultas em SEO → Busca ou Consultas por Dispositivo (mensal) para esse mês</span>':'<span>Precisa ter Consultas por Dispositivo importadas nesse dia (aba Consultas/Disp. → Acompanhamento diário)</span>')+'</div></div>';
@@ -3126,7 +3240,7 @@ function rpBrandEditOpen(){
   o.innerHTML='<div class="mx" style="width:560px;max-width:96vw"><h4><i class="ti ti-tag" style="color:var(--primary)"></i> Marcas monitoradas</h4>'
     +'<p style="font-size:11px;color:var(--text-secondary);margin:6px 0 10px">Uma consulta entra na primeira marca cujas palavras-chave aparecerem nela — separe várias por vírgula.</p>'
     +'<div id="rp-brand-rows">'+rows+'</div>'
-    +'<button class="an-btn" onclick="rpBrandAddRow()"><i class="ti ti-plus"></i> Adicionar marca</button>'
+    +btn('Adicionar marca','rpBrandAddRow()',{icon:'plus'})
     +'<div class="mbb" style="margin-top:14px"><button onclick="document.getElementById(\'rp-brandedit-ov\').remove()">Cancelar</button><button class="pr" onclick="rpBrandSave()"><i class="ti ti-check" style="font-size:11px"></i> Salvar</button></div></div>';
   document.body.appendChild(o);o.addEventListener('click',function(e){if(e.target===o)o.remove();});
 }
@@ -3144,7 +3258,7 @@ function rpBrandView(){
   var toggle='<span class="an-seg" style="margin-left:6px;margin-bottom:0"><button class="an-seg-btn'+(rpBrandMode==='mensal'?' active':'')+'" onclick="rpBrandSetMode(\'mensal\')"><i class="ti ti-calendar"></i>Mensal</button><button class="an-seg-btn'+(rpBrandMode==='diario'?' active':'')+'" onclick="rpBrandSetMode(\'diario\')"><i class="ti ti-chart-line"></i>Diário</button></span>';
   var dayCtrl='';
   if(rpBrandMode==='diario'){var tD=dIM(Number(anYear),mi),curDay=rpBrandDay||Math.min(new Date().getDate(),tD),dsel='<select class="fsel" onchange="rpBrandSetDay(this.value)">';for(var d=1;d<=tD;d++)dsel+='<option value="'+d+'"'+(d===curDay?' selected':'')+'>'+d+'</option>';dsel+='</select>';dayCtrl='<span class="an-camp-cl">Dia</span>'+dsel;}
-  var h='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+dayCtrl+toggle+'</div><div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anSeoImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button><button class="an-btn" onclick="rpBrandEditOpen()"><i class="ti ti-tag"></i> Editar marcas</button></div></div>';
+  var h='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+dayCtrl+toggle+'</div><div class="an-camp-ctrl-r">'+btn('Importar CSV','anSeoImportOpen()',{variant:'prim',icon:'upload'})+btn('Editar marcas','rpBrandEditOpen()',{icon:'tag'})+'</div></div>';
   var brandRows=rpBrandRows(mi),withData=brandRows.filter(function(b){return b.i>0;});
   if(!withData.length){
     h+='<div class="an-card"><div class="an-empty"><i class="ti ti-tag"></i><p>Sem dados para as marcas monitoradas</p>'+(rpBrandMode==='mensal'?'<span>Importe Consultas em SEO → Busca ou Consultas por Dispositivo (mensal) para esse mês</span>':'<span>Precisa ter Consultas por Dispositivo importadas nesse dia</span>')+'</div></div>';
@@ -3208,7 +3322,7 @@ function rpDemoBlock(){
   if(anProp==='all')return '<div class="an-card" style="margin-bottom:14px"><div class="an-empty"><i class="ti ti-users"></i><p>Selecione uma propriedade</p></div></div>';
   var mi=rpCurMonthIdx(),data=anDemoGet(anYear,anProp,mi);
   if(!data){var lastMi=anDemoLastMi(anYear,anProp);if(lastMi!=null){data=anDemoGet(anYear,anProp,lastMi);mi=lastMi;}}
-  var editBtn='<button class="an-btn prim" onclick="anDemoEditOpen()"><i class="ti ti-pencil"></i> '+(data?'Atualizar':'Registrar')+'</button>';
+  var editBtn=btn(data?'Atualizar':'Registrar','anDemoEditOpen()',{variant:'prim',icon:'pencil'});
   var head='<div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti ti-users"></i> Perfil demográfico'+(data?(' · '+AN_MES_LONG[mi]+'/'+anYear):'')+'</div>'+editBtn+'</div>';
   if(!data)return '<div class="an-card" style="margin-bottom:14px">'+head+'<div class="an-empty" style="padding:18px 0"><i class="ti ti-users"></i><p>Nenhum dado ainda</p><span>Google Analytics → Público-alvo → Dados demográficos (Gênero / Idade)</span></div></div>';
   var g=data.gender||{},a=data.age||{};
@@ -3224,7 +3338,7 @@ function rpDemoBrandPreview(){
   if(anProp==='all')return '';
   var mi=anSeoCurMi();
   var rows=rpBrandRows(mi).filter(function(b){return b.i>0;}).sort(function(a,b){return (b.c||0)-(a.c||0);}).slice(0,5);
-  var goBtn='<button class="an-btn" onclick="seoSetTab(\'marca\');navTo(\'hub\',\'seo\')"><i class="ti ti-arrow-right"></i> Ver tudo em SEO → Marca</button>';
+  var goBtn=btn('Ver tudo em SEO → Marca','seoSetTab(\'marca\');navTo(\'hub\',\'seo\')',{icon:'arrow-right'});
   var headTtl='<div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti ti-tag"></i> Marcas mais buscadas'+(rows.length?(' · '+AN_MES_LONG[mi]+'/'+anYear):'')+'</div>';
   if(!rows.length)return '<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">'+headTtl+goBtn+'</div><div class="an-empty" style="padding:14px 0"><i class="ti ti-tag"></i><p>Sem dados de marca ainda</p><span>Configure em SEO → Marca</span></div></div>';
   var body=rows.map(function(b){return '<tr><td style="text-align:left;font-weight:600">'+anEsc(b.l)+'</td><td>'+anFmt(b.c,'int')+'</td><td>'+anFmt(b.i,'int')+'</td><td class="on" style="font-weight:700">'+(b.p!=null?b.p.toFixed(1).replace('.',','):'—')+'</td></tr>';}).join('');
@@ -3239,7 +3353,7 @@ function rpInsightsBlock(){
   return '<div class="rp-callout co-green"><i class="ti ti-bulb" style="font-size:20px;color:var(--success)"></i>'
     +'<div style="flex:1"><div style="font-weight:700;font-size:13px;margin-bottom:6px;color:var(--navy)">Insights e observações</div>'
     +'<textarea id="rp-insights-txt" style="width:100%;min-height:70px;border:1px solid var(--border);border-radius:8px;padding:8px;font-family:inherit;font-size:12.5px;resize:vertical" placeholder="Anote aqui diagnósticos e decisões — ex: causa raiz identificada, mudança de estratégia, teste em andamento…">'+anEsc(txt)+'</textarea>'
-    +'<div style="margin-top:8px"><button class="an-btn prim" onclick="rpInsightsSave()"><i class="ti ti-check"></i> Salvar nota</button></div></div></div>';
+    +'<div style="margin-top:8px">'+btn('Salvar nota','rpInsightsSave()',{variant:'prim',icon:'check'})+'</div></div></div>';
 }
 function rpInsightsSave(){var txt=document.getElementById('rp-insights-txt').value;anInsightsSave(anProp,txt);toast('Nota salva.','ti-check');}
 /* ═══════════════════════════════════════════════════════════════
@@ -3385,7 +3499,7 @@ function rpCityBlock(){
   if(anProp==='all')return '';
   var mi=rpCurMonthIdx(),rows=anCityGet(anYear,anProp,mi);
   if(!rows){var lastMi=anCityLastMi(anYear,anProp);if(lastMi!=null){rows=anCityGet(anYear,anProp,lastMi);mi=lastMi;}}
-  var impBtn='<button class="an-btn prim" onclick="anCityImportOpen()"><i class="ti ti-upload"></i> '+(rows?'Atualizar':'Importar CSV')+'</button>';
+  var impBtn=btn(rows?'Atualizar':'Importar CSV','anCityImportOpen()',{variant:'prim',icon:'upload'});
   var head='<div class="an-card-hd" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="an-card-ttl rp-title-sm" style="display:flex;align-items:center;gap:6px"><i class="ti ti-map-pin"></i> Usuários ativos por cidade'+(rows?(' · '+AN_MES_LONG[mi]+'/'+anYear):'')+'</div>'+impBtn+'</div>';
   if(!rows)return '<div class="an-card" style="margin-bottom:14px">'+head+'<div class="an-empty" style="padding:18px 0"><i class="ti ti-map-pin"></i><p>Nenhum dado ainda</p><span>Google Analytics → Público-alvo → Detalhes demográficos → Cidade → exportar CSV</span></div></div>';
   var total=rows.reduce(function(s,r){return s+(r.users||0);},0)||1,top=rows.slice(0,10);
@@ -3462,9 +3576,12 @@ function hRAIOX(){
 function hSEO(){
   anInit();var years=anYears();if(!years.includes(anYear))anYear=years[years.length-1];
   if(seoTab==='vel')seoTab='busca'; // aba Velocidade foi removida — evita ficar preso numa aba inexistente
-  var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['topq','Top Consultas','ti-list-numbers'],['marca','Marca','ti-tag'],['seg','Segmentos','ti-chart-donut'],['pgdev','Páginas/Disp.','ti-devices'],['qdev','Consultas/Disp.','ti-search']];
+  var tabs=[['busca','Busca','ti-brand-google'],['opp','Oportunidades','ti-target-arrow'],['topq','Top Consultas','ti-list-numbers'],['marca','Marca','ti-tag'],['seg','Segmentos','ti-chart-donut'],['pgdev','Páginas/Disp.','ti-devices'],['qdev','Consultas/Disp.','ti-search'],['concorrencia','Concorrência','ti-swords']];
   var bar='<div class="an-seg" style="margin-bottom:16px">'+tabs.map(function(t){return '<button class="an-seg-btn'+(seoTab===t[0]?' active':'')+'" onclick="seoSetTab(\''+t[0]+'\')"><i class="ti '+t[2]+'"></i>'+t[1]+'</button>';}).join('')+'</div>';
   var propSel=anPropDropdown(AN_SEO_PROPS); // propriedades primeiro — hierarquia propriedade > métrica
+  if(seoTab==='concorrencia'){
+    return pageHeader('SEO','Concorrência · registro manual de SERP e gaps de conteúdo')+'<div class="an-root">'+propSel+bar+anCompView()+'</div>';
+  }
   if(seoTab==='busca'){
     anSection='gsc';
     var h=pageHeader('SEO','Busca · Search Console (cliques, impressões, CTR, posição) — por site/app')+'<div class="an-root">'+propSel+bar;
@@ -3614,7 +3731,7 @@ function edPostModalBody(){
     +'<div><label style="font-size:11px;font-weight:600;color:var(--navy)">Dificuldade</label><select class="fsel" style="width:100%" id="ed-f-dif">'+difOpts+'</select></div>'
     +'<div><label style="font-size:11px;font-weight:600;color:var(--navy)">Prioridade</label><select class="fsel" style="width:100%" id="ed-f-pri">'+priOpts+'</select></div>'
     +'</div>'
-    +'<div class="mbb" style="margin-top:14px">'+(p._isNew?'':'<button class="an-btn" style="color:var(--danger);margin-right:auto" onclick="edDelPost('+p._idx+');document.getElementById(\'ed-post-ov\').remove();_edPost=null">Excluir</button>')
+    +'<div class="mbb" style="margin-top:14px">'+(p._isNew?'':btn('Excluir','edDelPost('+p._idx+');document.getElementById(\'ed-post-ov\').remove();_edPost=null',{variant:'danger',style:'margin-right:auto'}))
     +'<button onclick="document.getElementById(\'ed-post-ov\').remove();_edPost=null">Cancelar</button><button class="pr" onclick="edPostSave()"><i class="ti ti-check" style="font-size:11px"></i> Salvar</button></div>';
   document.getElementById('ed-post-body').innerHTML=h;
 }
@@ -3649,7 +3766,7 @@ function hCON(){
   var moSel='<select class="fsel" onchange="edSetMi(this.value)">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+year+'</option>';}).join('')+'</select>';
   var h=pageHeader('Conteúdo','Calendário editorial — pautas de conteúdo por site/app');
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="edNewPost(1)"><i class="ti ti-plus"></i> Nova pauta</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Nova pauta','edNewPost(1)',{variant:'prim',icon:'plus'})+'</div></div>';
   h+=propChips;
   if(!posts.length){
     h+='<div class="empty-state large"><i class="ti ti-notebook ti-2x"></i><p>Sem pautas cadastradas em '+AN_MES_LONG[mi]+'/'+year+'</p><span>'+propLabel(prop)+' · clique em "Nova pauta" para começar a planejar o conteúdo deste mês</span></div>';
@@ -4310,7 +4427,7 @@ function anGoalProgress(){
   var projCol=projPct==null?col:projPct>=100?'var(--success)':projPct>=60?'var(--warning)':'var(--danger)';
   var mSel='<select class="fsel" onchange="anSetGoalMetric(this.value)" title="Métrica da meta">'+sec.metrics.map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="anSetGoalMonth(this.value)" title="Mês da meta">'+AN_MES_LONG.map(function(nm,i){return '<option value="'+i+'"'+(i===mi?' selected':'')+'>'+nm+'/'+anYear+'</option>';}).join('')+'</select>';
-  var setBtn='<button class="an-btn prim" onclick="anMGoalEdit('+mi+')"><i class="ti ti-target"></i> '+(goal>0?'Editar meta':'Definir meta')+'</button>';
+  var setBtn=btn(goal>0?'Editar meta':'Definir meta','anMGoalEdit('+mi+')',{variant:'prim',icon:'target'});
   // mesma ordem e estilo de "pill" usado nos cards de métrica (Realizado | Mês anterior | Meta | Falta | Projeção do mês)
   function pair(lbl,val,color){return '<div class="an-gp-pair"><span>'+lbl+'</span><b'+(color?' style="color:'+color+'"':'')+'>'+val+'</b></div>';}
   var right;
@@ -4398,8 +4515,8 @@ function anEntryBar(){
   return '<div class="an-entry">'
     +'<span class="lbl"><i class="ti ti-database"></i> Dados anuais · '+propLabel(anProp)+(isAll?' (somatório — selecione um site para editar)':'')+'</span>'
     +yrSel
-    +'<button class="an-btn prim" '+(isAll?'onclick="anNeedsProp()"':'onclick="anManualOpen()"')+'>Inserir Manualmente</button>'
-    +'<button class="an-btn prim" '+(isAll?'onclick="anNeedsProp()"':'onclick="anImportOpen()"')+'><i class="ti ti-upload"></i> Importar CSV</button>'
+    +btn('Inserir Manualmente',isAll?'anNeedsProp()':'anManualOpen()',{variant:'prim'})
+    +btn('Importar CSV',isAll?'anNeedsProp()':'anImportOpen()',{variant:'prim',icon:'upload'})
     +'</div>';
 }
 function anNewYear(){sM('Novo ano (ex.: 2027)','',function(v){var y=String(parseInt(v)||'').trim();if(!y||y==='0'){anR();return;}anYear=y;anRaw(y,anSection,anProp==='all'?'gd':anProp);sv();anR();toast('Ano '+y+' criado.','ti-calendar-plus');},'number');}
@@ -4497,7 +4614,7 @@ function anAnnotationsCard(){
   }
   return '<div class="an-card">'
     +'<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-notes"></i> Anotações · '+anYear+'</div>'
-    +'<button class="an-btn prim" onclick="anNoteModalOpen(-1)"><i class="ti ti-plus"></i> Adicionar</button></div>'
+    +btn('Adicionar','anNoteModalOpen(-1)',{variant:'prim',icon:'plus'})+'</div>'
     +body+'</div>';
 }
 function anEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -4801,8 +4918,7 @@ function anCampControls(disabled){
   var mkSel='<select class="fsel" onchange="anCampSetMetric(this.value)"'+(disabled?' disabled':'')+'>'+ms.map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select>';
   return '<div class="an-card an-camp-ctrl">'
     +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Métrica</span>'+mkSel+'<span class="an-camp-cl">Mês (detalhe)</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anCampManualOpen()">Inserir Manualmente</button>'
-    +'<button class="an-btn prim" onclick="anCampImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Inserir Manualmente','anCampManualOpen()',{variant:'prim'})+btn('Importar CSV','anCampImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
 }
 
 /* ── Render: resumo do mês (totais entre origens) ── */
@@ -5053,8 +5169,7 @@ function anTchControls(disabled){
   var mkSel='<select class="fsel" onchange="anTchSetMetric(this.value)"'+(disabled?' disabled':'')+'>'+ms.map(function(m){return '<option value="'+m.k+'"'+(m.k===mk?' selected':'')+'>'+m.l+'</option>';}).join('')+'</select>';
   return '<div class="an-card an-camp-ctrl">'
     +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Métrica</span>'+mkSel+'<span class="an-camp-cl">Mês (detalhe)</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anTchManualOpen()">Inserir Manualmente</button>'
-    +'<button class="an-btn prim" onclick="anTchImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Inserir Manualmente','anTchManualOpen()',{variant:'prim'})+btn('Importar CSV','anTchImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
 }
 function anTchTable(mi,mk){
   var mets=AN_SECTIONS.trafch.metrics,o=anTchObj(anYear,anProp);
@@ -5308,8 +5423,7 @@ function anRevView(){
   var h='',years=anYears();
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anRevManualOpen()">Inserir Manualmente</button>'
-    +'<button class="an-btn prim" onclick="anRevImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Inserir Manualmente','anRevManualOpen()',{variant:'prim'})+btn('Importar CSV','anRevImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
   h+='<div class="an-card">'+anRevPivot()+'</div>';
   return h;
 }
@@ -5345,7 +5459,7 @@ function anRevPivot(){
   }).join('');
   var totRow='<tr class="an-camp-tot"><td class="stick" style="text-align:left">Total redes (R$)</td>'+months.map(function(mi){var v=anRevTotal(anYear,anProp,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anShort(v,'money'))+'</td>';}).join('')+'<td style="font-weight:700">'+anShort((function(){var t=0;months.forEach(function(mi){var v=anRevTotal(anYear,anProp,mi);if(v!=null)t+=v;});return t;})(),'money')+'</td></tr>';
   var rpmRow='<tr class="an-camp-tot an-rev-rpm"><td class="stick" style="text-align:left"><i class="ti ti-bolt" style="font-size:12px"></i> RPM unificado (R$)</td>'+months.map(function(mi){var v=anRevRPM(anYear,anProp,mi);return '<td'+(mi===lastCol?' class="on"':'')+'>'+(v==null?'<span class="an-na">—</span>':anFmt(v,'money'))+'</td>';}).join('')+'<td></td></tr>';
-  var fxNote=showAds?('<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-currency-dollar" style="font-size:12px"></i> Cotação do dólar usada na conversão: '+(fx?('US$ 1 = R$ '+fx.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:4})):'buscando…')+' <button class="an-btn" style="padding:1px 8px;font-size:11px" onclick="anFxRefresh()"><i class="ti ti-refresh" style="font-size:10px"></i> Atualizar</button></div>'):'';
+  var fxNote=showAds?('<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-currency-dollar" style="font-size:12px"></i> Cotação do dólar usada na conversão: '+(fx?('US$ 1 = R$ '+fx.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:4})):'buscando…')+' '+btn('Atualizar','anFxRefresh()',{icon:'refresh',style:'padding:1px 8px;font-size:11px'})+'</div>'):'';
   var adsNote=showAds?'<div class="an-card-sub" style="margin-top:4px"><i class="ti ti-info-circle" style="font-size:12px"></i> AdSense e Ad Manager são lidos automaticamente do que você importa/lança nas abas próprias — não lance esses dois aqui, para não duplicar.</div>':'';
   return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-cash"></i> Receita por rede · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+(nets.length+(showAds?2:0))+' redes · RPM unificado = (todas as redes, convertidas p/ R$, ÷ sessões) × 1000</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+autoRows+body+totRow+rpmRow+'</tbody></table></div>'
@@ -5365,7 +5479,7 @@ function anRevManBody(){
   h+='<p style="font-size:11.5px;color:var(--text-secondary);margin:6px 0 10px;line-height:1.5">Lance aqui as redes em real (R$): UOL Afiliados, Indoleads, DGMax, Cofrinho… <b>AdSense e Ad Manager não são lançados aqui</b> — eles entram automaticamente a partir do que você importa/insere nas próprias abas, já convertidos de dólar para real pela cotação do dia. Salva no Supabase.</p>';
   if(legacyAds.length){
     h+='<div class="an-card-sub" style="background:rgba(245,158,11,.08);border-radius:8px;padding:8px 10px;margin-bottom:10px"><i class="ti ti-alert-triangle" style="font-size:12px;color:var(--warning)"></i> Encontrei lançamentos antigos de <b>'+legacyAds.map(anEsc).join(', ')+'</b> aqui. Eles não entram mais no total (para não duplicar com as abas automáticas). '
-      +legacyAds.map(function(n){var ne=anEsc(n).replace(/'/g,"\\'");return '<button class="an-btn" style="padding:1px 8px;font-size:11px;margin:4px 4px 0 0" onclick="anRevDelNet(\''+ne+'\');anRevManBody()"><i class="ti ti-trash" style="font-size:10px"></i> Remover '+anEsc(n)+'</button>';}).join('')
+      +legacyAds.map(function(n){var ne=anEsc(n).replace(/'/g,"\\'");return btn('Remover '+anEsc(n),'anRevDelNet(\''+ne+'\');anRevManBody()',{icon:'trash',style:'padding:1px 8px;font-size:11px;margin:4px 4px 0 0'});}).join('')
       +'</div>';
   }
   h+='<div class="hwrap" style="margin-bottom:12px"><table class="htbl"><thead><tr><th style="text-align:left">Rede</th>'+months.map(function(mi){return '<th>'+HMESES[mi]+'</th>';}).join('')+'<th></th></tr></thead><tbody>';
@@ -5464,7 +5578,7 @@ function anSeoView(){
   var moSel='<select class="fsel" onchange="anSeoSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel
     +'<span class="an-seg" style="margin-left:6px;margin-bottom:0"><button class="an-seg-btn'+(anSeoTab==='opp'?' active':'')+'" onclick="anSeoSetTab(\'opp\')"><i class="ti ti-target-arrow"></i>Oportunidade</button><button class="an-seg-btn'+(anSeoTab==='imp'?' active':'')+'" onclick="anSeoSetTab(\'imp\')"><i class="ti ti-eye"></i>Impressão</button><button class="an-seg-btn'+(anSeoTab==='decay'?' active':'')+'" onclick="anSeoSetTab(\'decay\')"><i class="ti ti-trending-down"></i>Decaimento</button></span></div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anSeoImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Importar CSV','anSeoImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Selecione uma propriedade</p><span>O SEO é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   if(!anSeoHasAny(anYear,anProp)){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Sem dados de Search Console</p><span>Exporte o relatório "Desempenho" (Consultas ou Páginas) do Google Search Console e importe — um arquivo por mês</span></div></div>';return h;}
   if(anSeoTab==='opp')h+=anSeoOpp(mi);else if(anSeoTab==='imp')h+=anImpOppCard(mi);else h+=anSeoDecay(mi);
@@ -5607,7 +5721,7 @@ function pgDevView(){
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="pgDevSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="pgDevImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Importar CSV','pgDevImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
   h+=anDevFilterBox(pgDevFilter,'pgDevSetFilter','Buscar por URL ou trecho da URL… (ex: picpay)');
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-devices"></i><p>Selecione uma propriedade</p><span>Páginas por Dispositivo é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   // mapa device -> {url -> row}, para qualquer subconjunto de dispositivos já importados (Celular/Computador/Tablet)
@@ -5731,7 +5845,7 @@ function pgDevDView(){
   var daySel=allDays.length?('<select class="fsel" onchange="pgDevDSetDay(this.value)">'+allDays.map(function(d){return '<option value="'+d+'"'+(d===curDay?' selected':'')+'>'+String(d).padStart(2,'0')+'/'+String(mi+1).padStart(2,'0')+'</option>';}).join('')+'</select>'):'<span style="font-size:12px;color:var(--text-secondary)">Nenhum dia importado ainda</span>';
   var topSel='<select class="fsel" onchange="pgDevDSetTop(this.value)">'+[10,20,30,50].map(function(n){return '<option value="'+n+'"'+(n===pgDevDTop?' selected':'')+'>Top '+n+'</option>';}).join('')+'</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Mês</span>'+moSel+'<span class="an-camp-cl">Dia</span>'+daySel+'<span class="an-camp-cl">Mostrar</span>'+topSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="pgDevDImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Importar CSV','pgDevDImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
   h+=anDevFilterBox(pgDevDFilter,'pgDevDSetFilter','Buscar por URL ou trecho da URL… (ex: picpay)');
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-calendar-stats"></i><p>Selecione uma propriedade</p><span>O acompanhamento diário é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   if(curDay==null){
@@ -5820,7 +5934,7 @@ function qDevView(){
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   var moSel='<select class="fsel" onchange="qDevSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="qDevImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Importar CSV','qDevImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
   h+=anDevFilterBox(qDevFilter,'qDevSetFilter','Buscar por palavra-chave… (ex: picpay)');
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-search"></i><p>Selecione uma propriedade</p><span>Consultas por Dispositivo é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   var devMaps={},devsWithData=PGDEV_LIST.filter(function(d){var rows=qDevRows(anYear,anProp,d.k,mi);devMaps[d.k]={};rows.forEach(function(r){devMaps[d.k][r.q]=r;});return rows.length>0;});
@@ -5930,7 +6044,7 @@ function qDevDView(){
   var daySel=allDays.length?('<select class="fsel" onchange="qDevDSetDay(this.value)">'+allDays.map(function(d){return '<option value="'+d+'"'+(d===curDay?' selected':'')+'>'+String(d).padStart(2,'0')+'/'+String(mi+1).padStart(2,'0')+'</option>';}).join('')+'</select>'):'<span style="font-size:12px;color:var(--text-secondary)">Nenhum dia importado ainda</span>';
   var topSel='<select class="fsel" onchange="qDevDSetTop(this.value)">'+[10,20,30,50].map(function(n){return '<option value="'+n+'"'+(n===qDevDTop?' selected':'')+'>Top '+n+'</option>';}).join('')+'</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Mês</span>'+moSel+'<span class="an-camp-cl">Dia</span>'+daySel+'<span class="an-camp-cl">Mostrar</span>'+topSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="qDevDImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Importar CSV','qDevDImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
   h+=anDevFilterBox(qDevFilter,'qDevSetFilter','Buscar por palavra-chave… (ex: picpay)');
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-calendar-stats"></i><p>Selecione uma propriedade</p><span>O acompanhamento diário é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   if(curDay==null){
@@ -6060,8 +6174,7 @@ function anRetView(){
   var h='';var years=anYears();
   var ySel='<select class="fsel" onchange="anSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anRetManualOpen()">Inserir Manualmente</button>'
-    +'<button class="an-btn prim" onclick="anRetImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Inserir Manualmente','anRetManualOpen()',{variant:'prim'})+btn('Importar CSV','anRetImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-repeat"></i><p>Selecione uma propriedade</p><span>A retenção é exibida por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   if(!anRetHasAny(anYear,anProp)){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-repeat"></i><p>Sem dados de retenção</p><span>Use o relatório de Coorte do GA4 (Explorar → Coorte) — pode importar com o número de usuários bruto de cada mês, a conversão para % é automática (base = Mês 0 de cada linha)</span></div></div>';return h;}
   h+='<div class="an-card">'+anRetMatrix()+'</div>';
@@ -6275,8 +6388,7 @@ function anAdsControls(mi){
   var moSel='<select class="fsel" onchange="anAdsSetMi(this.value)">'+months+'</select>';
   return '<div class="an-card an-camp-ctrl">'
     +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anAdsManualOpen()">Inserir Manualmente</button>'
-    +'<button class="an-btn prim" onclick="anAdsImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Inserir Manualmente','anAdsManualOpen()',{variant:'prim'})+btn('Importar CSV','anAdsImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
 }
 
 /* ── Modelo CSV ── */
@@ -6769,7 +6881,7 @@ function gtRender(id,data,cols,defSort){
   h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:11.5px;color:var(--text-secondary)"><span>'+rows.length+' resultado(s) · página '+(s.page+1)+' de '+totalPages+'</span><span><button class="an-btn" style="padding:5px 12px" '+(s.page<=0?'disabled':'')+' onclick="gtSetPage(\''+id+'\',-1)">‹ Anterior</button> <button class="an-btn" style="padding:5px 12px" '+(s.page>=totalPages-1?'disabled':'')+' onclick="gtSetPage(\''+id+'\',1)">Próxima ›</button></span></div>';
   return h;
 }
-function anUsd3(v){return 'US$ '+Number(v||0).toFixed(3).replace('.',',');}
+function anUsd3(v){return 'US$ '+Number(v||0).toFixed(2).replace('.',',');}
 function anUsd2(v){return 'US$ '+Number(v||0).toFixed(2).replace('.',',');}
 function anBlocoFmtLabel(bloco){
   if(!bloco)return 'Página inteira';
@@ -6906,6 +7018,127 @@ function anAdvApply(rows,fname){
   anAdvPeriods()[anAdvPeriodKey()]=list;
   sv();anR();toast(list.length+' combinações anunciante+página importadas em '+AN_MES_LONG[anAdvMi]+'/'+anAdvYear+' a partir de "'+fname+'".','ti-file-import');
 }
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENTE REUTILIZÁVEL: kpiCard()
+   Gera sempre o mesmo HTML/CSS do card de KPI — usar esta função em
+   qualquer card novo de métrica simples (label → número → legenda),
+   em vez de escrever o HTML na mão. Isso é o que garante consistência
+   de verdade: se o padrão mudar, muda aqui uma vez só.
+   opts.color / opts.capColor: 'g' (verde/bom), 'k' (navy/neutro), 'a' (âmbar/atenção)
+   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENTE REUTILIZÁVEL: btn()
+   opts.variant: 'prim' (verde, ação principal — ex.: Importar CSV,
+   Inserir Manualmente) · 'danger' (vermelho, ação destrutiva) · nada = secundário (branco)
+   opts.icon: nome do ícone Tabler sem o prefixo "ti-" (ex.: 'upload')
+   ═══════════════════════════════════════════════════════════════ */
+function btn(text,onclick,opts){
+  opts=opts||{};
+  var cls='an-btn'+(opts.variant?' '+opts.variant:'');
+  var icon=opts.icon?'<i class="ti ti-'+opts.icon+'"></i> ':'';
+  var style=opts.style?' style="'+opts.style+'"':'';
+  return '<button class="'+cls+'"'+style+' onclick="'+onclick+'">'+icon+text+'</button>';
+}
+function kpiCard(label,value,opts){
+  opts=opts||{};
+  var color=opts.color||'k',cap=opts.cap||'',capColor=opts.capColor||'n';
+  return '<div class="rp-kpi"><div class="rp-kpi-lbl">'+label+'</div><div class="rp-kpi-num co-'+color+'">'+value+'</div>'+(cap?'<div class="rp-kpi-cap co-'+capColor+'">'+cap+'</div>':'')+'</div>';
+}
+/* ═══════════════════════════════════════════════════════════════
+   CONCORRÊNCIA — registro manual de SERP (sem ferramenta paga
+   conectada) + gap de conteúdo. Guardado por propriedade (anProp).
+   ═══════════════════════════════════════════════════════════════ */
+function anCompObj(){var s=anStore();if(!s.comp)s.comp={};if(!s.comp[anProp])s.comp[anProp]=[];return s.comp[anProp];}
+function anGapObj(){var s=anStore();if(!s.gap)s.gap={};if(!s.gap[anProp])s.gap[anProp]=[];return s.gap[anProp];}
+function anCompAddOpen(idx){
+  var list=anCompObj();
+  var row=idx!=null?list[idx]:{kw:'',myPos:'',compDomain:'',compPos:'',date:new Date().toISOString().slice(0,10),notes:''};
+  var o=document.createElement('div');o.className='ov';o.id='an-comp-ov';
+  o.innerHTML='<div class="mx" style="width:460px;max-width:96vw"><h4><i class="ti ti-swords" style="color:var(--primary)"></i> '+(idx!=null?'Editar':'Nova')+' observação de concorrência</h4>'
+    +'<label style="font-size:11px;font-weight:600;color:var(--text-secondary);display:block;margin:10px 0 4px">Palavra-chave</label><input id="cp-kw" type="text" value="'+anEsc(row.kw)+'" style="width:100%;padding:8px 10px;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;font-family:inherit">'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Minha posição</label><input id="cp-mypos" type="number" step="0.1" value="'+(row.myPos||'')+'" style="width:100%;padding:8px 10px;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;font-family:inherit"></div>'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Data da checagem</label><input id="cp-date" type="date" value="'+row.date+'" style="width:100%;padding:8px 10px;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;font-family:inherit"></div>'
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Domínio concorrente</label><input id="cp-domain" type="text" value="'+anEsc(row.compDomain)+'" placeholder="ex.: nubank.com.br" style="width:100%;padding:8px 10px;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;font-family:inherit"></div>'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Posição do concorrente</label><input id="cp-comppos" type="number" step="0.1" value="'+(row.compPos||'')+'" style="width:100%;padding:8px 10px;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;font-family:inherit"></div>'
+    +'</div>'
+    +'<label style="font-size:11px;font-weight:600;color:var(--text-secondary);display:block;margin:8px 0 4px">Notas (opcional)</label><textarea id="cp-notes" rows="2" style="width:100%;padding:8px 10px;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;font-family:inherit;resize:vertical">'+anEsc(row.notes||'')+'</textarea>'
+    +'<div class="mbb" style="margin-top:14px">'+(idx!=null?btn('Excluir','anCompDel('+idx+')',{variant:'danger',style:'margin-right:auto'}):'')+btn('Cancelar','document.getElementById(\'an-comp-ov\').remove()')+btn('Salvar','anCompSave('+(idx!=null?idx:'null')+')',{variant:'prim'})+'</div></div>';
+  document.body.appendChild(o);
+}
+function anCompSave(idx){
+  var kw=document.getElementById('cp-kw').value.trim();
+  if(!kw){toast('Preencha a palavra-chave.','ti-alert-circle');return;}
+  var row={kw:kw,myPos:parseFloat(document.getElementById('cp-mypos').value)||null,compDomain:document.getElementById('cp-domain').value.trim(),compPos:parseFloat(document.getElementById('cp-comppos').value)||null,date:document.getElementById('cp-date').value,notes:document.getElementById('cp-notes').value.trim()};
+  var list=anCompObj();
+  if(idx!=null)list[idx]=row;else list.push(row);
+  document.getElementById('an-comp-ov').remove();
+  sv();anR();toast('Observação salva.','ti-check');
+}
+function anCompDel(idx){anCompObj().splice(idx,1);var o=document.getElementById('an-comp-ov');if(o)o.remove();sv();anR();toast('Removido.','ti-trash');}
+function anGapAddOpen(idx){
+  var list=anGapObj();
+  var row=idx!=null?list[idx]:{tema:'',motivo:'',prioridade:'Média',status:'Pendente'};
+  var o=document.createElement('div');o.className='ov';o.id='an-gap-ov';
+  o.innerHTML='<div class="mx" style="width:460px;max-width:96vw"><h4><i class="ti ti-bulb" style="color:var(--primary)"></i> '+(idx!=null?'Editar':'Novo')+' gap de conteúdo</h4>'
+    +'<label style="font-size:11px;font-weight:600;color:var(--text-secondary);display:block;margin:10px 0 4px">Tema / palavra-chave</label><input id="gp-tema" type="text" value="'+anEsc(row.tema)+'" style="width:100%;padding:8px 10px;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;font-family:inherit">'
+    +'<label style="font-size:11px;font-weight:600;color:var(--text-secondary);display:block;margin:8px 0 4px">Por que é oportunidade</label><textarea id="gp-motivo" rows="2" style="width:100%;padding:8px 10px;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;font-family:inherit;resize:vertical">'+anEsc(row.motivo||'')+'</textarea>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Prioridade</label><select id="gp-prio" style="width:100%;padding:8px 10px;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;font-family:inherit"><option'+(row.prioridade==='Alta'?' selected':'')+'>Alta</option><option'+(row.prioridade==='Média'?' selected':'')+'>Média</option><option'+(row.prioridade==='Baixa'?' selected':'')+'>Baixa</option></select></div>'
+    +'<div><label style="font-size:11px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Status</label><select id="gp-status" style="width:100%;padding:8px 10px;border:1.5px solid rgba(0,0,0,.1);border-radius:8px;font-family:inherit"><option'+(row.status==='Pendente'?' selected':'')+'>Pendente</option><option'+(row.status==='Na pauta'?' selected':'')+'>Na pauta</option><option'+(row.status==='Publicado'?' selected':'')+'>Publicado</option></select></div>'
+    +'</div>'
+    +'<div class="mbb" style="margin-top:14px">'+(idx!=null?btn('Excluir','anGapDel('+idx+')',{variant:'danger',style:'margin-right:auto'}):'')+btn('Cancelar','document.getElementById(\'an-gap-ov\').remove()')+btn('Salvar','anGapSave('+(idx!=null?idx:'null')+')',{variant:'prim'})+'</div></div>';
+  document.body.appendChild(o);
+}
+function anGapSave(idx){
+  var tema=document.getElementById('gp-tema').value.trim();
+  if(!tema){toast('Preencha o tema.','ti-alert-circle');return;}
+  var row={tema:tema,motivo:document.getElementById('gp-motivo').value.trim(),prioridade:document.getElementById('gp-prio').value,status:document.getElementById('gp-status').value};
+  var list=anGapObj();
+  if(idx!=null)list[idx]=row;else list.push(row);
+  document.getElementById('an-gap-ov').remove();
+  sv();anR();toast('Gap salvo.','ti-check');
+}
+function anGapDel(idx){anGapObj().splice(idx,1);var o=document.getElementById('an-gap-ov');if(o)o.remove();sv();anR();toast('Removido.','ti-trash');}
+function anCompView(){
+  var list=anCompObj(),gaps=anGapObj();
+  var wins=list.filter(function(r){return r.myPos!=null&&r.compPos!=null&&r.myPos<r.compPos;}).length;
+  var losses=list.filter(function(r){return r.myPos!=null&&r.compPos!=null&&r.myPos>r.compPos;}).length;
+  var h='<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd"><div><div class="an-card-ttl"><i class="ti ti-swords"></i> Monitor de concorrência</div><div class="an-card-sub">Registro manual — sem ferramenta de SERP conectada, esse dado é o que você observar e anotar</div></div>'
+    +btn('Nova observação','anCompAddOpen()',{variant:'prim',icon:'plus'})+'</div>'
+    +'<div class="an-metrics an-metrics-3">'
+    +kpiCard('Palavras monitoradas',list.length,{cap:'observações registradas'})
+    +kpiCard('Ganhando',wins,{color:'g',cap:'à frente do concorrente anotado',capColor:'g'})
+    +kpiCard('Perdendo',losses,{color:losses>0?'a':'k',cap:'atrás do concorrente anotado',capColor:losses>0?'a':'n'})
+    +'</div></div>';
+  if(!list.length){
+    h+='<div class="an-card" style="margin-bottom:14px"><div class="an-empty"><i class="ti ti-swords"></i><p>Nenhuma observação ainda</p><span>Busque suas palavras-chave mais importantes no Google de vez em quando e anote quem aparece na frente</span></div></div>';
+  }else{
+    var rows=list.map(function(r,i){return {kw:r.kw,myPos:r.myPos==null?'—':r.myPos,compDomain:r.compDomain||'—',compPos:r.compPos==null?'—':r.compPos,date:r.date?r.date.split('-').reverse().join('/'):'—',_i:i};});
+    h+='<div class="an-card" style="margin-bottom:14px"><div class="an-card-ttl" style="margin-bottom:10px">Observações (clique numa linha pra editar)</div>'
+      +gtRender('comp',rows,[
+        {k:'kw',label:'Palavra-chave'},
+        {k:'myPos',label:'Minha posição'},
+        {k:'compDomain',label:'Concorrente'},
+        {k:'compPos',label:'Posição dele'},
+        {k:'date',label:'Data'}
+      ],'date')+'</div>';
+  }
+  h+='<div class="an-card"><div class="an-card-hd"><div><div class="an-card-ttl"><i class="ti ti-bulb"></i> Gap de conteúdo</div><div class="an-card-sub">Temas que concorrentes cobrem e você ainda não — vira pauta pro calendário editorial</div></div>'
+    +btn('Novo gap','anGapAddOpen()',{variant:'prim',icon:'plus'})+'</div>';
+  if(!gaps.length){
+    h+='<div class="an-empty"><i class="ti ti-bulb"></i><p>Nenhum gap registrado ainda</p><span>Anote temas que você percebeu que concorrentes cobrem e você não</span></div>';
+  }else{
+    var prioColor={Alta:'var(--danger)',Média:'var(--warning)',Baixa:'var(--text-secondary)'};
+    h+=gaps.map(function(g,i){
+      return '<div class="an-alert" style="border-left-color:'+(prioColor[g.prioridade]||'var(--text-secondary)')+';cursor:pointer" onclick="anGapAddOpen('+i+')"><i class="ti ti-bulb" style="color:'+(prioColor[g.prioridade]||'var(--text-secondary)')+'"></i><div class="an-alert-tx"><b>'+anEsc(g.tema)+'</b><span class="an-alert-sec">'+anEsc(g.motivo||'')+'</span></div><div style="display:flex;gap:6px;align-items:center"><span class="an-pill">'+g.prioridade+'</span><span class="an-pill">'+g.status+'</span></div></div>';
+    }).join('');
+  }
+  h+='</div>';
+  return h;
+}
 function anAdvView(){
   var years=anYears();if(!years.includes(anAdvYear))anAdvYear=years[years.length-1];
   var ySel='<select class="fsel" onchange="anAdvSetYear(this.value)">'+years.map(function(y){return '<option'+(y===anAdvYear?' selected':'')+'>'+y+'</option>';}).join('')+'</select>';
@@ -6916,11 +7149,11 @@ function anAdvView(){
   var totalRec=summary.reduce(function(s,r){return s+r.r;},0);
   var h='<div class="an-card an-camp-ctrl" style="margin-bottom:14px"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div></div>';
   h+='<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd"><div><div class="an-card-ttl"><i class="ti ti-users"></i> Anunciantes</div><div class="an-card-sub">'+periodLbl+'</div></div>'
-    +'<button class="an-btn prim" onclick="anAdvImportOpen()"><i class="ti ti-upload"></i> Importar ID_POST_ANUNCIANTE</button></div>'
+    +btn('Importar ID_POST_ANUNCIANTE','anAdvImportOpen()',{variant:'prim',icon:'upload'})+'</div>'
     +'<div class="an-metrics an-metrics-3">'
-    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Receita total</div><div class="rp-kpi-num co-g">'+anUsd3(totalRec)+'</div><div class="rp-kpi-cap co-g">'+summary.length+' anunciantes distintos</div></div>'
-    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Páginas com anúncio vendido</div><div class="rp-kpi-num co-k">'+(new Set(detail.map(function(r){return r.u;}))).size+'</div><div class="rp-kpi-cap co-n">no período selecionado</div></div>'
-    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Combinações anunciante × página</div><div class="rp-kpi-num co-k">'+detail.length+'</div><div class="rp-kpi-cap co-n">linhas no detalhe abaixo</div></div>'
+    +kpiCard('Receita total',anUsd3(totalRec),{color:'g',cap:summary.length+' anunciantes distintos',capColor:'g'})
+    +kpiCard('Páginas com anúncio vendido',(new Set(detail.map(function(r){return r.u;}))).size,{cap:'no período selecionado'})
+    +kpiCard('Combinações anunciante × página',detail.length,{cap:'linhas no detalhe abaixo'})
     +'</div></div>';
   if(!summary.length){
     h+='<div class="an-card"><div class="an-empty"><i class="ti ti-users"></i><p>Sem dados de anunciantes em '+periodLbl+'</p><span>Importe o relatório "ID_POST_ANUNCIANTE" do Ad Manager para este mês</span></div></div>';
@@ -6970,15 +7203,15 @@ function anAdsUrlView(){
   function shortUrl(u){return u.length>28?u.slice(0,26)+'…':u;}
   var h='<div class="an-card an-camp-ctrl" style="margin-bottom:14px"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'</div></div>';
   h+='<div class="an-card" style="margin-bottom:14px"><div class="an-card-hd"><div><div class="an-card-ttl"><i class="ti ti-link"></i> Receita por URL</div><div class="an-card-sub">'+periodLbl+'</div></div>'
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="an-btn" onclick="anAdsUrlTranslateAll()"><i class="ti ti-replace"></i> Traduzir IDs</button><button class="an-btn" onclick="anPostUrlMapImportOpen()"><i class="ti ti-map"></i> Atualizar de-para</button><button class="an-btn prim" onclick="anAdsUrlImportOpen()"><i class="ti ti-upload"></i> Importar ID_POST</button></div></div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'+btn('Traduzir IDs','anAdsUrlTranslateAll()',{icon:'replace'})+btn('Atualizar de-para','anPostUrlMapImportOpen()',{icon:'map'})+btn('Importar ID_POST','anAdsUrlImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>'
     +'<div class="an-metrics an-metrics-3">'
-    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Receita acumulada</div><div class="rp-kpi-num co-g">'+usd(totalRec)+'</div><div class="rp-kpi-cap co-g">'+data.length+' URLs monetizadas</div></div>'
-    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Impressões</div><div class="rp-kpi-num co-g">'+anFmt(totalImp,'int')+'</div><div class="rp-kpi-cap co-g">acumulado no período importado</div></div>'
-    +'<div class="rp-kpi"><div class="rp-kpi-lbl">eCPM médio</div><div class="rp-kpi-num co-k">'+usd(ecpmMedio,2)+'</div><div class="rp-kpi-cap co-n">ponderado pelas impressões</div></div>'
+    +kpiCard('Receita acumulada',usd(totalRec),{color:'g',cap:data.length+' URLs monetizadas',capColor:'g'})
+    +kpiCard('Impressões',anFmt(totalImp,'int'),{color:'g',cap:'acumulado no período importado',capColor:'g'})
+    +kpiCard('eCPM médio',usd(ecpmMedio,2),{cap:'ponderado pelas impressões'})
     +'</div><div class="an-metrics an-metrics-3" style="margin-top:14px">'
-    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Viewability média</div><div class="rp-kpi-num co-k">'+visMedia.toFixed(1).replace('.',',')+'%</div><div class="rp-kpi-cap co-a">'+(minVis?'mín. '+minVis.v.toFixed(1).replace('.',',')+'% em '+anEsc(shortUrl(minVis.u)):'—')+'</div></div>'
-    +'<div class="rp-kpi"><div class="rp-kpi-lbl">CTR médio</div><div class="rp-kpi-num co-k">'+ctrMedio.toFixed(2).replace('.',',')+'%</div><div class="rp-kpi-cap co-n">'+(maxCtrRow?'máx. '+((maxCtrRow.c||0)/(maxCtrRow.i||1)*100).toFixed(2).replace('.',',')+'% em '+anEsc(shortUrl(maxCtrRow.u)):'—')+'</div></div>'
-    +'<div class="rp-kpi"><div class="rp-kpi-lbl">Concentração top 10 URLs</div><div class="rp-kpi-num co-a">'+top10Pct.toFixed(1).replace('.',',')+'%</div><div class="rp-kpi-cap co-a">de '+data.length+' páginas monetizadas</div></div>'
+    +kpiCard('Viewability média',visMedia.toFixed(1).replace('.',',')+'%',{cap:minVis?'mín. '+minVis.v.toFixed(1).replace('.',',')+'% em '+anEsc(shortUrl(minVis.u)):'—',capColor:'a'})
+    +kpiCard('CTR médio',ctrMedio.toFixed(2).replace('.',',')+'%',{cap:maxCtrRow?'máx. '+((maxCtrRow.c||0)/(maxCtrRow.i||1)*100).toFixed(2).replace('.',',')+'% em '+anEsc(shortUrl(maxCtrRow.u)):'—'})
+    +kpiCard('Concentração top 10 URLs',top10Pct.toFixed(1).replace('.',',')+'%',{color:'a',cap:'de '+data.length+' páginas monetizadas',capColor:'a'})
     +'</div></div>';
   var top10ForTable=top10.map(function(r){return{u:r.u,r:r.r,p:totalRec>0?r.r/totalRec*100:0,i:r.i,e:r.e};});
   h+='<div class="an-card" style="margin-bottom:14px"><div class="an-card-ttl" style="margin-bottom:10px">Top 10 URLs mais rentáveis</div>'
@@ -7003,7 +7236,7 @@ function anAdsUrlView(){
     +'<div class="an-card-sub" style="margin-top:8px">'+rows.length+' de '+RP_ADS_URL_DATA.length+' URLs · fonte: relatório de monetização Jan-Jul/2026 (Ad Manager)</div></div>';
   var blocos=anBlocosData();
   h+='<div class="an-card" style="margin-top:14px"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-layout-grid"></i> Blocos de anúncios · página × formato</div>'
-    +'<button class="an-btn" onclick="anBlocosImportOpen()"><i class="ti ti-upload"></i> Importar Bloco de Anúncios</button></div>'
+    +btn('Importar Bloco de Anúncios','anBlocosImportOpen()',{icon:'upload'})+'</div>'
     +'<div class="an-card-sub" style="margin-bottom:10px">Receita de cada formato (Anchor, Interstitial, Content1-4, etc.) por página — usa o mesmo período (ano/mês) selecionado acima</div>'
     +(blocos.length?gtRender('blocos',blocos,[
       {k:'u',label:'Página'},
@@ -7033,7 +7266,7 @@ function anAdsBody(){
   var years=anAdsYears();if(!years.includes(anAdsYear))anAdsYear=years[years.length-1];
   var mi=anAdsCurMi();
   var h=anAdsControls(mi);
-  if(anAdsSrc==='ads')h+='<div style="margin-bottom:10px"><button class="an-btn" onclick="rpImportMonetizReport()"><i class="ti ti-file-import"></i> Importar relatório de monetização (Jan–Jul 2026)</button></div>';
+  if(anAdsSrc==='ads')h+='<div style="margin-bottom:10px">'+btn('Importar relatório de monetização (Jan–Jul 2026)','rpImportMonetizReport()',{icon:'file-import'})+'</div>';
   if(!anAdsHasAny(anAdsYear,mi)){
     h+='<div class="an-hint"><i class="ti ti-info-circle"></i> Sem dados de '+anAdsLabel()+' em '+AN_MES_LONG[mi]+'/'+anAdsYear+' ainda. Importe o relatório diário do '+anAdsLabel()+' (com coluna de Data) ou use "Inserir manual" — os dados começam em Março. Os cards e o gráfico abaixo se preenchem automaticamente.</div>';
   }
@@ -7140,7 +7373,7 @@ function anPgPivot(){
     +'<td class="on">'+anPgVarCell(totVar)+'</td></tr>';
   var projNote=projFactor?' · projeção estima o fechamento de '+HMESES[lastCol]+' com base nos dias já decorridos':'';
   var moreNote=totalNames>visibleNames.length
-    ?'<div class="an-card-sub" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span>Mostrando '+visibleNames.length+' de '+totalNames+' páginas</span><button class="an-btn" onclick="anPgShowMore()"><i class="ti ti-chevron-down" style="font-size:11px"></i> Carregar mais 100</button></div>'
+    ?'<div class="an-card-sub" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span>Mostrando '+visibleNames.length+' de '+totalNames+' páginas</span>'+btn('Carregar mais 100','anPgShowMore()',{icon:'chevron-down'})+'</div>'
     :'';
   return '<div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-table"></i> '+meta.l+' por página e mês · '+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+totalNames+' páginas · variação = '+HMESES[lastCol]+' vs '+(lastCol>0?HMESES[lastCol-1]:'—')+projNote+'</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+totRow+'</tbody></table></div>'
@@ -7153,8 +7386,7 @@ function anPgControls(){
   var mSel=PG_METRICS.map(function(m){return '<button class="an-mtab'+(mk===m.k?' active':'')+'" onclick="anPgSetMetric(\''+m.k+'\')">'+m.l+'</button>';}).join('');
   return '<div class="an-card an-camp-ctrl">'
     +'<div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Métrica</span>'+mSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="anPgManualOpen()">Inserir Manualmente</button>'
-    +'<button class="an-btn prim" onclick="anPgImportOpen()"><i class="ti ti-upload"></i> Importar CSV</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Inserir Manualmente','anPgManualOpen()',{variant:'prim'})+btn('Importar CSV','anPgImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
 }
 function anPgView(){
   var h=anPgControls();
@@ -7373,7 +7605,7 @@ function pvView(){
   var moSel='<select class="fsel" onchange="pvSetMi(this.value)">';for(var i=0;i<12;i++)moSel+='<option value="'+i+'"'+(i===mi?' selected':'')+'>'+AN_MES_LONG[i]+'/'+anYear+'</option>';moSel+='</select>';
   var minSel='<input type="number" class="hin" style="width:80px;padding:6px 10px" min="0" step="10" value="'+pvMinViews+'" onchange="pvSetMinViews(this.value)" title="Visualizações mínimas para entrar no insight e no destaque de rejeição">';
   h+='<div class="an-card an-camp-ctrl"><div class="an-camp-ctrl-l"><span class="an-camp-cl">Ano</span>'+ySel+'<span class="an-camp-cl">Mês</span>'+moSel+'<span class="an-camp-cl">Mín. visualizações</span>'+minSel+'</div>'
-    +'<div class="an-camp-ctrl-r"><button class="an-btn prim" onclick="pvImportOpen()"><i class="ti ti-upload"></i> Importar Páginas e Telas</button></div></div>';
+    +'<div class="an-camp-ctrl-r">'+btn('Importar Páginas e Telas','pvImportOpen()',{variant:'prim',icon:'upload'})+'</div></div>';
   h+=anDevFilterBox(pvFilter,'pvSetFilter','Buscar por página… (ex: poupanca, calculadora)');
   if(anProp==='all'){h+='<div class="an-card"><div class="an-empty"><i class="ti ti-file-text"></i><p>Selecione uma propriedade</p><span>Páginas e Telas é exibido por propriedade. Escolha uma nos chips acima.</span></div></div>';return h;}
   if(!pvHasAny(anYear,anProp)){
@@ -7411,7 +7643,7 @@ function pvView(){
       +'<td class="on" style="color:'+bounceColor+';font-weight:700">'+(r.bounce!=null?(r.bounce*100).toFixed(1).replace('.',',')+'%':'—')+'</td>'
       +'<td>'+(r.engTime!=null?r.engTime.toFixed(0)+'s':'—')+'</td></tr>';
   }).join('');
-  var moreNote=totalRows>visible.length?'<div class="an-card-sub" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span>Mostrando '+visible.length+' de '+totalRows+' páginas</span><button class="an-btn" onclick="pvShowMore()"><i class="ti ti-chevron-down" style="font-size:11px"></i> Carregar mais 100</button></div>':'';
+  var moreNote=totalRows>visible.length?'<div class="an-card-sub" style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span>Mostrando '+visible.length+' de '+totalRows+' páginas</span>'+btn('Carregar mais 100','pvShowMore()',{icon:'chevron-down'})+'</div>':'';
   return h+'<div class="an-card"><div class="an-card-hd"><div class="an-card-ttl"><i class="ti ti-file-text"></i> Páginas e Telas · '+AN_MES_LONG[mi]+'/'+anYear+'</div><div class="an-card-sub">'+propLabel(anProp)+' · '+totalRows+' página(s)'+(pvFilter.trim()?' filtradas por "'+anEsc(pvFilter)+'"':'')+' · clique no cabeçalho para ordenar</div></div>'
     +'<div class="an-camp-tblw"><table class="an-camp-tbl an-camp-pivot"><thead>'+head+'</thead><tbody>'+body+'</tbody></table></div>'
     +'<div class="an-card-sub" style="margin-top:8px"><i class="ti ti-info-circle" style="font-size:12px"></i> Páginas com visualizações abaixo do mínimo aparecem esmaecidas e sempre no fim da lista, em qualquer ordenação (com pouco volume a rejeição vira 0% ou 100%, distorcendo o ranking). Ajuste o "Mín. visualizações" para refinar.</div>'
@@ -7879,7 +8111,7 @@ function centralSetDaily(idx,checked){_centralFiles[idx].dailyMode=checked;centr
 function centralRenderBody(){
   var h='<h4 style="display:flex;align-items:center;gap:7px"><i class="ti ti-cloud-upload" style="color:var(--primary)"></i> Upload Central — '+propLabel(anProp)+' · '+anYear+'</h4>';
   h+='<p style="font-size:12px;color:var(--text-secondary);line-height:1.55;margin:6px 0 12px">Selecione quantos arquivos quiser de uma vez — inclusive o pacote completo do Search Console (Consultas, Páginas, Dispositivos, Países, Aspecto da pesquisa, Gráfico, Filtros). O sistema identifica o(s) destino(s) de cada um pelo conteúdo, pelo nome do arquivo e, quando presente, pelo "Filtros.csv" do pacote (que revela automaticamente se o lote foi filtrado por Celular/Computador/Tablet). Alguns arquivos alimentam mais de uma tela ao mesmo tempo — marque/desmarque os destinos antes de confirmar.</p>';
-  h+='<button class="an-btn prim" onclick="centralPickFiles()" style="margin-bottom:14px"><i class="ti ti-upload"></i> Selecionar arquivos</button>';
+  h+=btn('Selecionar arquivos','centralPickFiles()',{variant:'prim',icon:'upload',style:'margin-bottom:14px'});
   if(!_centralFiles.length){
     h+='<div class="an-empty" style="padding:30px 10px"><i class="ti ti-files"></i><p>Nenhum arquivo selecionado ainda</p><span>Clique em "Selecionar arquivos" e escolha 1 ou vários CSVs/XLSX de uma vez.</span></div>';
   }else{
